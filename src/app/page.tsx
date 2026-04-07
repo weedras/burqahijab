@@ -26,6 +26,7 @@ import { AboutPage } from '@/components/pages/about-page';
 import { BrandStoryPage } from '@/components/pages/brand-story-page';
 import { CareersPage } from '@/components/pages/careers-page';
 import { WishlistPage } from '@/components/pages/wishlist-page';
+import { CheckoutPage } from '@/components/checkout-page';
 import { useUIStore } from '@/stores/ui-store';
 
 const contentPages = [
@@ -104,12 +105,13 @@ export default function Home() {
         {viewMode === 'shop' && <ShopPage />}
         {viewMode === 'product' && <ProductDetail />}
         {viewMode === 'wishlist' && <WishlistPage />}
+        {viewMode === 'checkout' && <CheckoutPage />}
         {isContentPage && (
           <ContentPageRenderer view={viewMode as (typeof contentPages)[number]} />
         )}
       </main>
-      {viewMode !== 'product' && <Footer />}
-      <MobileNav />
+      {viewMode !== 'product' && viewMode !== 'checkout' && <Footer />}
+      {viewMode !== 'checkout' && <MobileNav />}
       <CartDrawer />
       <SearchDialog />
     </div>

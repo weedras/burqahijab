@@ -19,6 +19,7 @@ export function CartDrawer() {
   const removeItem = useCartStore((s) => s.removeItem);
   const updateQuantity = useCartStore((s) => s.updateQuantity);
   const navigateHome = useUIStore((s) => s.navigateHome);
+  const navigateToCheckout = useUIStore((s) => s.navigateToCheckout);
 
   const currentSubtotal = useMemo(() => getCartSubtotal(items), [items]);
   const itemCount = useMemo(() => getCartTotalItems(items), [items]);
@@ -242,6 +243,7 @@ export function CartDrawer() {
                   className="h-12 w-full rounded-lg bg-[#d79c4a] text-sm font-bold uppercase tracking-widest text-[#0A0A0A] transition-all hover:bg-[#c48a35] "
                   onClick={() => {
                     closeCart();
+                    navigateToCheckout();
                   }}
                 >
                   Proceed to Checkout

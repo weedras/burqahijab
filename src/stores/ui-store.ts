@@ -30,6 +30,7 @@ interface UIState {
   navigateToAbout: () => void;
   navigateToBrandStory: () => void;
   navigateToCareers: () => void;
+  navigateToCheckout: () => void;
 }
 
 export const useUIStore = create<UIState>()((set, get) => ({
@@ -111,6 +112,10 @@ export const useUIStore = create<UIState>()((set, get) => ({
   },
   navigateToCareers: () => {
     set({ viewMode: 'careers', selectedProduct: null, selectedCategory: null, selectedCollection: null });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  },
+  navigateToCheckout: () => {
+    set({ viewMode: 'checkout', selectedProduct: null, selectedCategory: null, selectedCollection: null });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   },
 }));

@@ -11,6 +11,7 @@ import {
   Moon,
   ChevronDown,
   X,
+  User,
 } from 'lucide-react';
 import Image from 'next/image';
 import { useTheme } from 'next-themes';
@@ -218,6 +219,37 @@ export function Header() {
             >
               <Heart className={cn('w-5 h-5', wishlistCount > 0 && 'fill-red-500 text-red-500')} />
             </button>
+
+            {/* Account dropdown (desktop only) */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  className={cn(
+                    'hidden md:flex p-2 transition-colors duration-300',
+                    isTransparent
+                      ? 'text-white hover:text-[#d79c4a]'
+                      : 'text-gray-700 hover:text-[#d79c4a] dark:text-gray-200'
+                  )}
+                  aria-label="Account"
+                >
+                  <User className="w-5 h-5" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem onClick={() => handleNavClick({ action: 'faq' })}>
+                  FAQ & Help
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleNavClick({ action: 'shipping' })}>
+                  Track Order
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleNavClick({ action: 'returns' })}>
+                  Returns & Exchanges
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleNavClick({ action: 'size-guide' })}>
+                  Size Guide
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
 
             <button
               className={cn(
