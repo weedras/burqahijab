@@ -4,10 +4,13 @@ import {
   jsonResponse,
   errorResponse,
 } from '@/lib/api-utils';
+import { requireAdmin } from '@/lib/auth';
 
 // GET /api/admin/categories — List all categories (tree structure)
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const authError = await requireAdmin(request);
+    if (authError) return authError;
     const categories = await db.category.findMany({
       orderBy: { order: 'asc' },
       include: {
@@ -69,6 +72,9 @@ export async function GET() {
 // POST /api/admin/categories — Create a new category
 export async function POST(request: Request) {
   try {
+    const authError = await requireAdmin(request);
+    if (authError) return authError;
+
     const body = await request.json();
 
     const { name, slug, description, parentId, order } = body;

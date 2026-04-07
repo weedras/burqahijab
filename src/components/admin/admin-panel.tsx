@@ -64,9 +64,15 @@ export function AdminPanel() {
     setIsAuthenticated(true);
   }, []);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     sessionStorage.removeItem('bhq-admin-auth');
     setIsAuthenticated(false);
+    // Clear the server-side session cookie
+    try {
+      await fetch('/api/admin/auth', { method: 'DELETE' });
+    } catch {
+      // Ignore errors - session will expire server-side anyway
+    }
     navigateHome();
   };
 

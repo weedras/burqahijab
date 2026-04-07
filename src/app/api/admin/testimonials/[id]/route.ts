@@ -1,12 +1,16 @@
 import { db } from '@/lib/db';
 import { jsonResponse, errorResponse } from '@/lib/api-utils';
+import { requireAdmin } from '@/lib/auth';
 
 // GET /api/admin/testimonials/[id] — Get a single testimonial
 export async function GET(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const authError = await requireAdmin(request);
+    if (authError) return authError;
+
     const { id } = await params;
 
     const testimonial = await db.testimonial.findUnique({
@@ -30,6 +34,9 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const authError = await requireAdmin(request);
+    if (authError) return authError;
+
     const { id } = await params;
     const body = await request.json();
 
@@ -66,10 +73,13 @@ export async function PUT(
 
 // DELETE /api/admin/testimonials/[id] — Delete a testimonial
 export async function DELETE(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const authError = await requireAdmin(request);
+    if (authError) return authError;
+
     const { id } = await params;
 
     const testimonial = await db.testimonial.findUnique({ where: { id } });

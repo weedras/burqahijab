@@ -1,9 +1,12 @@
 import { db } from '@/lib/db';
 import { jsonResponse, errorResponse } from '@/lib/api-utils';
+import { requireAdmin } from '@/lib/auth';
 
 // GET /api/admin/dashboard — Dashboard statistics
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const authError = await requireAdmin(request);
+    if (authError) return authError;
     const [
       totalProducts,
       totalCollections,

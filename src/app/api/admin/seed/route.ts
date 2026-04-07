@@ -1,5 +1,6 @@
 import { db } from '@/lib/db';
 import { stringifyJsonField, jsonResponse, errorResponse } from '@/lib/api-utils';
+import { requireAdmin } from '@/lib/auth';
 import {
   categories as seedCategories,
   collections as seedCollections,
@@ -10,8 +11,10 @@ import {
 } from '@/data/seed';
 
 // POST /api/admin/seed — Seed the database with sample data
-export async function POST() {
+export async function POST(request: Request) {
   try {
+    const authError = await requireAdmin(request);
+    if (authError) return authError;
     // Clear existing data in reverse dependency order
     await db.review.deleteMany();
     await db.productCategory.deleteMany();

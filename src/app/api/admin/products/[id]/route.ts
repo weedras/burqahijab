@@ -6,13 +6,17 @@ import {
   jsonResponse,
   errorResponse,
 } from '@/lib/api-utils';
+import { requireAdmin } from '@/lib/auth';
 
 // GET /api/admin/products/[id] — Get a single product
 export async function GET(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const authError = await requireAdmin(request);
+    if (authError) return authError;
+
     const { id } = await params;
 
     const product = await db.product.findUnique({
@@ -48,6 +52,9 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const authError = await requireAdmin(request);
+    if (authError) return authError;
+
     const { id } = await params;
     const body = await request.json();
 
@@ -153,10 +160,13 @@ export async function PUT(
 
 // DELETE /api/admin/products/[id] — Delete a product
 export async function DELETE(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const authError = await requireAdmin(request);
+    if (authError) return authError;
+
     const { id } = await params;
 
     const product = await db.product.findUnique({ where: { id } });

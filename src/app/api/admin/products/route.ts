@@ -10,10 +10,13 @@ import {
   errorResponse,
 } from '@/lib/api-utils';
 import { Prisma } from '@prisma/client';
+import { requireAdmin } from '@/lib/auth';
 
 // GET /api/admin/products — List all products with pagination, search, filters
 export async function GET(request: Request) {
   try {
+    const authError = await requireAdmin(request);
+    if (authError) return authError;
     const { searchParams } = new URL(request.url);
     const search = searchParams.get('search') || '';
     const categorySlug = searchParams.get('category') || '';
@@ -109,6 +112,9 @@ export async function GET(request: Request) {
 // POST /api/admin/products — Create a new product
 export async function POST(request: Request) {
   try {
+    const authError = await requireAdmin(request);
+    if (authError) return authError;
+
     const body = await request.json();
 
     const {

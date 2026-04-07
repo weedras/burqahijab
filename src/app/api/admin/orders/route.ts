@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
+import { requireAdmin } from '@/lib/auth';
 
 // GET /api/admin/orders - list all orders
 export async function GET(request: NextRequest) {
   try {
+    const authError = await requireAdmin(request);
+    if (authError) return authError;
     const { searchParams } = new URL(request.url);
     const status = searchParams.get('status');
     const page = parseInt(searchParams.get('page') || '1');
@@ -45,6 +48,9 @@ export async function GET(request: NextRequest) {
 // POST /api/admin/orders - create an order
 export async function POST(request: NextRequest) {
   try {
+    const authError = await requireAdmin(request);
+    if (authError) return authError;
+
     const body = await request.json();
 
     // Generate order number
@@ -77,6 +83,9 @@ export async function POST(request: NextRequest) {
 // PATCH /api/admin/orders - update order status
 export async function PATCH(request: NextRequest) {
   try {
+    const authError = await requireAdmin(request);
+    if (authError) return authError;
+
     const body = await request.json();
     const { id, ...updateData } = body;
 
@@ -104,6 +113,9 @@ export async function PATCH(request: NextRequest) {
 // DELETE /api/admin/orders - delete an order
 export async function DELETE(request: NextRequest) {
   try {
+    const authError = await requireAdmin(request);
+    if (authError) return authError;
+
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
 

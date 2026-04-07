@@ -4,13 +4,17 @@ import {
   jsonResponse,
   errorResponse,
 } from '@/lib/api-utils';
+import { requireAdmin } from '@/lib/auth';
 
 // GET /api/admin/collections/[id] — Get a single collection
 export async function GET(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const authError = await requireAdmin(request);
+    if (authError) return authError;
+
     const { id } = await params;
 
     const collection = await db.collection.findUnique({
@@ -51,6 +55,9 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const authError = await requireAdmin(request);
+    if (authError) return authError;
+
     const { id } = await params;
     const body = await request.json();
 
@@ -104,10 +111,13 @@ export async function PUT(
 
 // DELETE /api/admin/collections/[id] — Delete a collection
 export async function DELETE(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const authError = await requireAdmin(request);
+    if (authError) return authError;
+
     const { id } = await params;
 
     const collection = await db.collection.findUnique({ where: { id } });

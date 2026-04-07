@@ -4,13 +4,17 @@ import {
   jsonResponse,
   errorResponse,
 } from '@/lib/api-utils';
+import { requireAdmin } from '@/lib/auth';
 
 // GET /api/admin/categories/[id] — Get a single category
 export async function GET(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const authError = await requireAdmin(request);
+    if (authError) return authError;
+
     const { id } = await params;
 
     const category = await db.category.findUnique({
@@ -57,6 +61,9 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const authError = await requireAdmin(request);
+    if (authError) return authError;
+
     const { id } = await params;
     const body = await request.json();
 
@@ -124,10 +131,13 @@ export async function PUT(
 
 // DELETE /api/admin/categories/[id] — Delete a category
 export async function DELETE(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const authError = await requireAdmin(request);
+    if (authError) return authError;
+
     const { id } = await params;
 
     const category = await db.category.findUnique({

@@ -7,8 +7,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
-const CORRECT_PASSWORD = 'bhq2026';
-
 interface AdminLoginProps {
   onSuccess: () => void;
 }
