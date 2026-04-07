@@ -32,6 +32,13 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
+
+# Database files (regenerated via prisma push + seed)
+db/*.db
+db/*.db-journal
+*.sqlite
+*.sqlite3
 
 # vercel
 .vercel
@@ -50,5 +57,12 @@ test
 prompt
 
 server.log
+
 # Skills directory
 /skills/
+
+# Project archive
+project.tar
+
+# Mini services (runtime only)
+mini-services/node_modules
