@@ -36,6 +36,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { toast } from 'sonner';
+import { adminFetch } from '@/lib/admin-fetch';
 
 interface CollectionData {
   id: string;
@@ -77,7 +78,7 @@ export function AdminCollections() {
 
   const fetchCollections = useCallback(async () => {
     try {
-      const res = await fetch('/api/admin/collections');
+      const res = await adminFetch('/api/admin/collections');
       if (!res.ok) throw new Error('Failed');
       const data = await res.json();
       setCollections(data.collections ?? data);
@@ -130,7 +131,7 @@ export function AdminCollections() {
         image: form.image || null,
       };
 
-      const res = await fetch(url, {
+      const res = await adminFetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -150,7 +151,7 @@ export function AdminCollections() {
   const handleDelete = async () => {
     if (!deleting) return;
     try {
-      const res = await fetch(`/api/admin/collections/${deleting.id}`, {
+      const res = await adminFetch(`/api/admin/collections/${deleting.id}`, {
         method: 'DELETE',
       });
       if (!res.ok) throw new Error('Failed');

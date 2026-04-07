@@ -42,6 +42,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { toast } from 'sonner';
+import { adminFetch } from '@/lib/admin-fetch';
 
 interface CategoryData {
   id: string;
@@ -83,7 +84,7 @@ export function AdminCategories() {
 
   const fetchCategories = useCallback(async () => {
     try {
-      const res = await fetch('/api/admin/categories');
+      const res = await adminFetch('/api/admin/categories');
       if (!res.ok) throw new Error('Failed');
       const data = await res.json();
       setCategories(data.categories ?? data);
@@ -164,7 +165,7 @@ export function AdminCategories() {
         parentId: form.parentId || null,
       };
 
-      const res = await fetch(url, {
+      const res = await adminFetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -184,7 +185,7 @@ export function AdminCategories() {
   const handleDelete = async () => {
     if (!deleting) return;
     try {
-      const res = await fetch(`/api/admin/categories/${deleting.id}`, {
+      const res = await adminFetch(`/api/admin/categories/${deleting.id}`, {
         method: 'DELETE',
       });
       if (!res.ok) throw new Error('Failed');

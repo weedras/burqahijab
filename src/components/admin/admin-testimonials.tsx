@@ -34,6 +34,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { toast } from 'sonner';
+import { adminFetch } from '@/lib/admin-fetch';
 
 interface TestimonialData {
   id: string;
@@ -67,7 +68,7 @@ export function AdminTestimonials() {
 
   const fetchTestimonials = useCallback(async () => {
     try {
-      const res = await fetch('/api/admin/testimonials');
+      const res = await adminFetch('/api/admin/testimonials');
       if (!res.ok) throw new Error('Failed');
       const data = await res.json();
       setTestimonials(data.testimonials ?? data);
@@ -120,7 +121,7 @@ export function AdminTestimonials() {
         photoUrl: form.photoUrl || null,
       };
 
-      const res = await fetch(url, {
+      const res = await adminFetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -140,7 +141,7 @@ export function AdminTestimonials() {
   const handleDelete = async () => {
     if (!deleting) return;
     try {
-      const res = await fetch(`/api/admin/testimonials/${deleting.id}`, {
+      const res = await adminFetch(`/api/admin/testimonials/${deleting.id}`, {
         method: 'DELETE',
       });
       if (!res.ok) throw new Error('Failed');

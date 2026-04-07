@@ -50,6 +50,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { toast } from 'sonner';
+import { adminFetch } from '@/lib/admin-fetch';
 
 interface ProductData {
   id: string;
@@ -121,7 +122,7 @@ export function AdminProducts() {
 
   const fetchProducts = useCallback(async () => {
     try {
-      const res = await fetch('/api/admin/products');
+      const res = await adminFetch('/api/admin/products');
       if (!res.ok) throw new Error('Failed to fetch');
       const data = await res.json();
       setProducts(data.products ?? data);
@@ -204,7 +205,7 @@ export function AdminProducts() {
         fabric: form.fabric || null,
       };
 
-      const res = await fetch(url, {
+      const res = await adminFetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -225,7 +226,7 @@ export function AdminProducts() {
   const handleDelete = async () => {
     if (!deletingProduct) return;
     try {
-      const res = await fetch(`/api/admin/products/${deletingProduct.id}`, {
+      const res = await adminFetch(`/api/admin/products/${deletingProduct.id}`, {
         method: 'DELETE',
       });
       if (!res.ok) throw new Error('Failed to delete');

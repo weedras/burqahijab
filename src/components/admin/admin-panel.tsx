@@ -29,6 +29,7 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { useUIStore } from '@/stores/ui-store';
+import { onAdminAuthExpired } from '@/lib/admin-fetch';
 import type { AdminSection } from '@/types';
 import { AdminDashboard } from './admin-dashboard';
 import { AdminOrders } from './admin-orders';
@@ -57,6 +58,31 @@ export function AdminPanel() {
     return false;
   });
   const [checking, setChecking] = useState(false);
+
+  // Validate session on mount — if server session expired, force re-login
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    (async () => {
+      try {
+        const res = await fetch('/api/admin/auth');
+        if (!res.ok) {
+          // Session expired — clear client state and show login
+          sessionStorage.removeItem('bhq-admin-auth');
+          setIsAuthenticated(false);
+        }
+      } catch {
+        // Network error — keep current state, don't force logout
+      }
+    })();
+  }, [isAuthenticated]);
+
+  // Listen for auth-expired events from admin sub-components
+  useEffect(() => {
+    return onAdminAuthExpired(() => {
+      sessionStorage.removeItem('bhq-admin-auth');
+      setIsAuthenticated(false);
+    });
+  }, []);
 
   // Change password dialog
   const [changePwOpen, setChangePwOpen] = useState(false);

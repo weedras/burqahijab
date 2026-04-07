@@ -30,6 +30,7 @@ import {
 } from '@/components/ui/table';
 import { useUIStore } from '@/stores/ui-store';
 import { toast } from 'sonner';
+import { adminFetch } from '@/lib/admin-fetch';
 
 interface DashboardStats {
   totalOrders: number;
@@ -96,14 +97,14 @@ export function AdminDashboard() {
 
   const fetchDashboard = useCallback(async () => {
     try {
-      const res = await fetch('/api/admin/dashboard');
+      const res = await adminFetch('/api/admin/dashboard');
       if (!res.ok) throw new Error('Failed to load dashboard');
       const data = await res.json();
       const apiStats = data.stats ?? {};
       const apiLowStock = data.lowStockAlerts ?? [];
 
       // Fetch recent products for the table
-      const productsRes = await fetch('/api/admin/products?limit=5');
+      const productsRes = await adminFetch('/api/admin/products?limit=5');
       const productsData = await productsRes.json();
       const recentProducts = (productsData.products ?? productsData ?? []).slice(0, 5);
 
@@ -117,7 +118,7 @@ export function AdminDashboard() {
       let recentOrders: DashboardStats['recentOrders'] = [];
 
       try {
-        const ordersRes = await fetch('/api/admin/orders?limit=5');
+        const ordersRes = await adminFetch('/api/admin/orders?limit=5');
         const ordersData = await ordersRes.json();
         const allOrdersList = ordersData.orders ?? [];
         recentOrders = allOrdersList.map((o: { id: string; orderNumber: string; customerName: string; totalAmount: number; status: string; paymentMethod: string; createdAt: string }) => ({
@@ -174,7 +175,7 @@ export function AdminDashboard() {
   const handleSeed = async () => {
     setSeeding(true);
     try {
-      const res = await fetch('/api/admin/seed', { method: 'POST' });
+      const res = await adminFetch('/api/admin/seed', { method: 'POST' });
       if (!res.ok) throw new Error('Failed to seed');
       toast.success('Database seeded successfully!');
       fetchDashboard();

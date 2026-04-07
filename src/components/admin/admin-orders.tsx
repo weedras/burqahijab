@@ -55,6 +55,7 @@ import {
 } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
+import { adminFetch } from '@/lib/admin-fetch';
 
 interface OrderItem {
   id: string;
@@ -194,7 +195,7 @@ export function AdminOrders() {
       params.set('page', page.toString());
       params.set('limit', '20');
 
-      const res = await fetch(`/api/admin/orders?${params.toString()}`);
+      const res = await adminFetch(`/api/admin/orders?${params.toString()}`);
       if (!res.ok) throw new Error('Failed to fetch orders');
       const data = await res.json();
 
@@ -215,7 +216,7 @@ export function AdminOrders() {
   const handleStatusChange = async (orderId: string, newStatus: string) => {
     setUpdatingStatus(orderId);
     try {
-      const res = await fetch('/api/admin/orders', {
+      const res = await adminFetch('/api/admin/orders', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: orderId, status: newStatus }),
@@ -237,7 +238,7 @@ export function AdminOrders() {
     if (!confirm(`Are you sure you want to delete order ${orderNumber}?`)) return;
     setDeleting(orderId);
     try {
-      const res = await fetch(`/api/admin/orders?id=${orderId}`, {
+      const res = await adminFetch(`/api/admin/orders?id=${orderId}`, {
         method: 'DELETE',
       });
       if (!res.ok) throw new Error('Failed to delete order');

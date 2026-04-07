@@ -2,6 +2,20 @@ import { jsonResponse, errorResponse } from '@/lib/api-utils';
 import { createSession, getSessionToken, destroySession, SESSION_COOKIE_NAME } from '@/lib/auth';
 import { getAdminPassword } from '@/lib/password-config';
 
+// GET /api/admin/auth — Validate existing session (used by admin panel to check auth on mount)
+export async function GET(request: Request) {
+  try {
+    const token = await getSessionToken(request);
+    if (!token) {
+      return errorResponse('Not authenticated', 401);
+    }
+    return jsonResponse({ success: true, authenticated: true });
+  } catch (error) {
+    console.error('Session validation error:', error);
+    return errorResponse('Session validation failed', 500);
+  }
+}
+
 // POST /api/admin/auth — Verify admin password and create session
 export async function POST(request: Request) {
   try {
