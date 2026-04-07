@@ -118,32 +118,32 @@ export function HeroSection() {
         </motion.div>
       </AnimatePresence>
 
-      {/* Prev/Next - small on mobile */}
+      {/* Prev/Next - minimal transparent buttons */}
       <button
         onClick={goPrev}
-        className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-12 sm:h-12 flex items-center justify-center border border-white/30 text-white hover:bg-white/10 hover:border-[#d79c4a] transition-all duration-300 z-10"
+        className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center text-white/60 hover:text-white transition-all duration-300 z-10 hover:bg-black/20 rounded-full"
         aria-label="Previous slide"
       >
         <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
       </button>
       <button
         onClick={goNext}
-        className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-12 sm:h-12 flex items-center justify-center border border-white/30 text-white hover:bg-white/10 hover:border-[#d79c4a] transition-all duration-300 z-10"
+        className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center text-white/60 hover:text-white transition-all duration-300 z-10 hover:bg-black/20 rounded-full"
         aria-label="Next slide"
       >
         <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
       </button>
 
-      {/* Dots */}
-      <div className="absolute bottom-20 sm:bottom-8 left-1/2 -translate-x-1/2 flex space-x-2 sm:space-x-3 z-10">
+      {/* Dots - subtle minimal indicators */}
+      <div className="absolute bottom-20 sm:bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-2 sm:gap-2.5 z-10">
         {slides.map((_, i) => (
           <button
             key={i}
             onClick={() => goTo(i)}
-            className={`h-2 sm:h-3 rounded-full transition-all duration-300 ${
+            className={`rounded-full transition-all duration-500 ${
               i === currentSlide
-                ? 'bg-[#d79c4a] w-6 sm:w-8'
-                : 'bg-white/40 hover:bg-white/70'
+                ? 'bg-white w-5 h-1.5 sm:w-7 sm:h-2'
+                : 'bg-white/30 hover:bg-white/50 w-1.5 h-1.5 sm:w-2 sm:h-2'
             }`}
             aria-label={`Go to slide ${i + 1}`}
           />
