@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowLeft,
@@ -26,7 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { products, productCollections, productCategories, categories, collections } from '@/data/seed';
+import { useProductStore } from '@/stores/product-store';
 import { useCartStore } from '@/stores/cart-store';
 import { useWishlistStore, isProductWishlisted } from '@/stores/wishlist-store';
 import { useUIStore } from '@/stores/ui-store';
@@ -34,7 +34,6 @@ import { formatPrice } from '@/lib/format';
 import { cn } from '@/lib/utils';
 import type { Product } from '@/types';
 
-const CATEGORY_OPTIONS = ['Abayas', 'Hijabs', 'Accessories'];
 const OCCASION_OPTIONS = ['Wedding', 'Eid', 'Daily', 'Office', 'Travel'];
 const FABRIC_OPTIONS = ['Chiffon', 'Crepe', 'Silk', 'Cotton', 'Nida', 'Jersey'];
 const SORT_OPTIONS = [
@@ -260,10 +259,12 @@ function FilterSidebar({
   filters,
   onChange,
   onClear,
+  categoryOptions,
 }: {
   filters: FilterState;
   onChange: (f: FilterState) => void;
   onClear: () => void;
+  categoryOptions: string[];
 }) {
   const activeCount =
     filters.categories.length +
@@ -310,7 +311,7 @@ function FilterSidebar({
 
       <FilterSection
         title="Category"
-        options={CATEGORY_OPTIONS}
+        options={categoryOptions}
         selected={filters.categories}
         onToggle={toggleCategory}
       />
@@ -355,51 +356,40 @@ function FilterSidebar({
 
 export function ShopPage() {
   const { selectedCategory, selectedCollection, navigateHome, navigateToProduct } = useUIStore();
+  const { products: dbProducts, categories: dbCategories, collections: dbCollections, initialize } = useProductStore();
   const [filters, setFilters] = useState<FilterState>(DEFAULT_FILTERS);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
-  // Resolve collection/category by slug to ID
-  const resolvedCollectionId = useMemo(() => {
-    if (!selectedCollection) return null;
-    // First try direct ID match, then try slug match
-    const byId = collections.find((c) => c.id === selectedCollection);
-    if (byId) return byId.id;
-    const bySlug = collections.find((c) => c.slug === selectedCollection);
-    return bySlug?.id || null;
-  }, [selectedCollection]);
+  useEffect(() => { initialize(); }, [initialize]);
 
-  const resolvedCategoryId = useMemo(() => {
-    if (!selectedCategory) return null;
-    const byId = categories.find((c) => c.id === selectedCategory);
-    if (byId) return byId.id;
-    const bySlug = categories.find((c) => c.slug === selectedCategory);
-    return bySlug?.id || null;
-  }, [selectedCategory]);
+  // Dynamic category options from the store (top-level only)
+  const CATEGORY_OPTIONS = useMemo(() => {
+    return dbCategories.filter((c) => !c.parentId).map((c) => c.name);
+  }, [dbCategories]);
 
   // Determine the header
   const headerTitle = useMemo(() => {
-    if (resolvedCollectionId) {
-      return collections.find((c) => c.id === resolvedCollectionId)?.name || 'Collection';
+    if (selectedCollection) {
+      const col = dbCollections.find((c) => c.slug === selectedCollection || c.id === selectedCollection);
+      return col?.name || 'Collection';
     }
-    if (resolvedCategoryId) {
-      const cat = categories.find((c) => c.id === resolvedCategoryId);
+    if (selectedCategory) {
+      const cat = dbCategories.find((c) => c.slug === selectedCategory || c.id === selectedCategory);
       return cat?.name || 'Shop';
     }
     return 'All Products';
-  }, [resolvedCategoryId, resolvedCollectionId]);
+  }, [selectedCollection, selectedCategory, dbCollections, dbCategories]);
 
   // Get base products from collection/category selection
   const baseProducts = useMemo(() => {
-    if (resolvedCollectionId) {
-      const ids = productCollections[resolvedCollectionId] || [];
-      return products.filter((p) => ids.includes(p.id));
+    if (selectedCollection) {
+      return useProductStore.getState().getProductsByCollectionSlug(selectedCollection);
     }
-    if (resolvedCategoryId) {
-      const ids = productCategories[resolvedCategoryId] || [];
-      return products.filter((p) => ids.includes(p.id));
+    if (selectedCategory) {
+      return useProductStore.getState().getProductsByCategorySlug(selectedCategory);
     }
-    return [...products];
-  }, [resolvedCategoryId, resolvedCollectionId]);
+    return dbProducts;
+  }, [selectedCollection, selectedCategory, dbProducts]);
 
   // Apply filters
   const filteredProducts = useMemo(() => {
@@ -419,7 +409,7 @@ export function ShopPage() {
     if (filters.categories.length > 0) {
       const categoryIds: string[] = [];
       filters.categories.forEach((catName) => {
-        const cat = categories.find((c) => c.name === catName);
+        const cat = dbCategories.find((c) => c.name === catName);
         if (cat) {
           categoryIds.push(cat.id);
           if (cat.children) {
@@ -429,7 +419,13 @@ export function ShopPage() {
       });
       const productIds = new Set<string>();
       categoryIds.forEach((id) => {
-        (productCategories[id] || []).forEach((pid) => productIds.add(pid));
+        // Find products that have this category ID in their categories array
+        dbProducts.forEach((p) => {
+          const productCats = (p as Record<string, unknown>).categories as Array<{ id: string }> | undefined;
+          if (productCats && productCats.some((c) => categoryIds.includes(c.id))) {
+            productIds.add(p.id);
+          }
+        });
       });
       result = result.filter((p) => productIds.has(p.id));
     }
@@ -471,7 +467,7 @@ export function ShopPage() {
     }
 
     return result;
-  }, [baseProducts, filters]);
+  }, [baseProducts, filters, dbCategories, dbProducts]);
 
   // Active filter tags
   const activeTags = useMemo(() => {
@@ -505,6 +501,7 @@ export function ShopPage() {
       filters={filters}
       onChange={setFilters}
       onClear={() => setFilters(DEFAULT_FILTERS)}
+      categoryOptions={CATEGORY_OPTIONS}
     />
   );
 

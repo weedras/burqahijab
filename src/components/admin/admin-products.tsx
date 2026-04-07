@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion } from 'framer-motion';
 import {
   Plus,
@@ -10,6 +10,9 @@ import {
   Package,
   Loader2,
   Filter,
+  ImagePlus,
+  X as XIcon,
+  Upload,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -236,6 +239,49 @@ export function AdminProducts() {
     } catch {
       toast.error('Failed to delete product');
     }
+  };
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    setUploading(true);
+    const newUrls: string[] = [];
+
+    for (const file of Array.from(files)) {
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const res = await adminFetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          toast.error(err.error || 'Upload failed');
+          continue;
+        }
+
+        const data = await res.json();
+        newUrls.push(data.url);
+      } catch {
+        toast.error(`Failed to upload ${file.name}`);
+      }
+    }
+
+    if (newUrls.length > 0) {
+      updateField('images', [...form.images, ...newUrls]);
+      toast.success(`${newUrls.length} image${newUrls.length > 1 ? 's' : ''} uploaded!`);
+    }
+
+    setUploading(false);
+    // Reset file input
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   const updateField = (field: string, value: string | number | boolean | null | string[]) => {
@@ -568,29 +614,71 @@ export function AdminProducts() {
 
             {/* Images */}
             <div className="space-y-2">
-              <Label className="text-foreground">Image URLs</Label>
+              <Label className="text-foreground">Product Images</Label>
+
+              {/* Upload Button */}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/gif"
+                multiple
+                className="hidden"
+                onChange={handleImageUpload}
+              />
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploading}
+                className="gap-2 w-full border-dashed border-2 border-border hover:border-[#d79c4a] hover:bg-[#d79c4a]/5 transition-colors"
+              >
+                {uploading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <ImagePlus className="h-4 w-4" />
+                )}
+                {uploading ? 'Uploading...' : 'Upload from Device'}
+              </Button>
+
+              {/* URL Input (manual) */}
               <Textarea
-                value={form.images.join(', ')}
+                value={form.images.filter((url) => !url.startsWith('/uploads/')).join(', ')}
                 onChange={(e) => {
-                  const arr = e.target.value.split(',').map((s) => s.trim()).filter(Boolean);
-                  updateField('images', arr);
+                  const manualUrls = e.target.value.split(',').map((s) => s.trim()).filter(Boolean);
+                  const uploadedUrls = form.images.filter((url) => url.startsWith('/uploads/'));
+                  updateField('images', [...uploadedUrls, ...manualUrls]);
                 }}
-                placeholder="Comma-separated image URLs"
+                placeholder="Or paste image URLs (comma-separated)"
                 rows={2}
                 className="border-border bg-background resize-none text-xs"
               />
+
+              {/* Image Previews */}
               {form.images.length > 0 && (
                 <div className="flex gap-2 flex-wrap">
                   {form.images.map((url, i) => (
                     <div
                       key={i}
-                      className="relative h-16 w-16 overflow-hidden rounded-lg bg-muted"
+                      className="relative group h-20 w-20 overflow-hidden rounded-lg border border-border bg-muted"
                     >
                       <img src={url} alt="" className="h-full w-full object-cover" />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const updated = form.images.filter((_, idx) => idx !== i);
+                          updateField('images', updated);
+                        }}
+                        className="absolute top-0.5 right-0.5 h-5 w-5 flex items-center justify-center rounded-full bg-black/70 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500"
+                      >
+                        <XIcon className="h-3 w-3" />
+                      </button>
                     </div>
                   ))}
                 </div>
               )}
+              <p className="text-[11px] text-muted-foreground">
+                {form.images.length} image{form.images.length !== 1 ? 's' : ''} · JPEG, PNG, WebP · Max 5MB each
+              </p>
             </div>
 
             {/* Colors & Sizes */}

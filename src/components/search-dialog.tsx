@@ -1,28 +1,22 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, X, ArrowRight } from 'lucide-react';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
-import { products, categories } from '@/data/seed';
+import { useProductStore } from '@/stores/product-store';
 import { useUIStore } from '@/stores/ui-store';
 import { formatPrice } from '@/lib/format';
-
-function getCategoryForProduct(productId: string): string {
-  for (const [catId, productIds] of Object.entries({ 'cat-1': ['prod-1', 'prod-2', 'prod-3', 'prod-4', 'prod-9', 'prod-10'], 'cat-2': ['prod-5', 'prod-6', 'prod-7', 'prod-8'], 'cat-3': ['prod-11', 'prod-12'] })) {
-    if (productIds.includes(productId)) {
-      return categories.find((c) => c.id === catId)?.name || '';
-    }
-  }
-  return '';
-}
 
 export function SearchDialog() {
   const searchOpen = useUIStore((s) => s.searchOpen);
   const toggleSearch = useUIStore((s) => s.toggleSearch);
   const navigateToProduct = useUIStore((s) => s.navigateToProduct);
+  const { products: dbProducts, categories: dbCategories, initialize } = useProductStore();
   const [query, setQuery] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => { initialize(); }, [initialize]);
 
   // Auto-focus on open (only side-effect, no setState)
   useEffect(() => {
@@ -55,9 +49,27 @@ export function SearchDialog() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [searchOpen, toggleSearch]);
 
+  // Category lookup map for display
+  const categoryMap = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const cat of dbCategories) {
+      map.set(cat.id, cat.name);
+    }
+    return map;
+  }, [dbCategories]);
+
+  // Get category name for a product from its categories array
+  const getCategoryName = useCallback((product: { id: string } & Record<string, unknown>): string => {
+    const productCats = product.categories as Array<{ id: string }> | undefined;
+    if (productCats && productCats.length > 0) {
+      return categoryMap.get(productCats[0].id) || '';
+    }
+    return '';
+  }, [categoryMap]);
+
   // Search products
   const results = query.trim().length > 0
-    ? products.filter((p) => {
+    ? dbProducts.filter((p) => {
         const q = query.toLowerCase().trim();
         return (
           p.name.toLowerCase().includes(q) ||
@@ -70,13 +82,13 @@ export function SearchDialog() {
 
   const handleSelect = useCallback(
     (productId: string) => {
-      const product = products.find((p) => p.id === productId);
+      const product = dbProducts.find((p) => p.id === productId);
       if (product) {
         toggleSearch();
         navigateToProduct(product);
       }
     },
-    [toggleSearch, navigateToProduct]
+    [toggleSearch, navigateToProduct, dbProducts]
   );
 
   return (
@@ -159,7 +171,7 @@ export function SearchDialog() {
                         </p>
                         <div className="mt-0.5 flex items-center gap-2">
                           <span className="text-xs text-gray-500 dark:text-gray-400 ">
-                            {getCategoryForProduct(product.id)}
+                            {getCategoryName(product)}
                           </span>
                           {product.salePrice && (
                             <>

@@ -1,18 +1,16 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Heart, ShoppingCart, Shield, Star, Truck, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { products } from '@/data/seed';
+import { useProductStore } from '@/stores/product-store';
 import { useCartStore } from '@/stores/cart-store';
 import { useWishlistStore, isProductWishlisted } from '@/stores/wishlist-store';
 import { useUIStore } from '@/stores/ui-store';
 import { formatPrice } from '@/lib/format';
 import { cn } from '@/lib/utils';
-
-const featuredProducts = products.filter((p) => p.isFeatured).slice(0, 4);
-const newArrivalsList = products.filter((p) => p.isNew).slice(0, 4);
+import type { Product } from '@/types';
 
 const features = [
   {
@@ -37,7 +35,7 @@ const features = [
   },
 ];
 
-function ProductCard({ product }: { product: typeof products[0] }) {
+function ProductCard({ product }: { product: Product }) {
   const addItem = useCartStore((s) => s.addItem);
   const toggleItem = useWishlistStore((s) => s.toggleItem);
   const wishlistItems = useWishlistStore((s) => s.items);
@@ -179,6 +177,12 @@ function Eye(props: React.SVGProps<SVGSVGElement> & { className?: string }) {
 
 export function NewArrivals() {
   const { navigateToShop } = useUIStore();
+  const { products: dbProducts, initialize } = useProductStore();
+
+  useEffect(() => { initialize(); }, [initialize]);
+
+  const featuredProducts = useMemo(() => dbProducts.filter((p) => p.isFeatured).slice(0, 4), [dbProducts]);
+  const newArrivalsList = useMemo(() => dbProducts.filter((p) => p.isNew).slice(0, 4), [dbProducts]);
 
   return (
     <>

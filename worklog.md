@@ -58,3 +58,36 @@ Stage Summary:
 - Responsive design: mobile-first grid layout (1 col -> 2 col -> 3-4 col)
 - Live indicator badge, compact PKR formatting, relative timestamps
 - Verified working with dev server (200 responses)
+
+---
+Task ID: 3
+Agent: Main Agent
+Task: Fix products not showing on store + add device photo upload + test everything
+
+Work Log:
+- **ROOT CAUSE**: Entire frontend (shop-page, new-arrivals, product-detail, search-dialog) imported products from hardcoded `@/data/seed` file, while admin wrote to SQLite database — two completely disconnected data sources
+- Created 4 new API routes:
+  - `GET /api/products` — Public product listing with search, category/collection filters
+  - `GET /api/products/[slug]` — Single product by slug
+  - `GET /api/categories` — Public categories listing
+  - `GET /api/collections` — Public collections listing
+  - `POST /api/upload` — Admin-only image upload (saves to `public/uploads/products/`, validates type/size)
+- Created Zustand product store (`/src/stores/product-store.ts`) with: `initialize()`, `fetchProducts()`, `getProductBySlug()`, `getProductById()`, `getProductsByCategorySlug()`, `getProductsByCollectionSlug()`, `invalidate()`
+- Updated 4 frontend components to use product store instead of `@/data/seed`:
+  - `shop-page.tsx` — Dynamic categories from DB, collection/category filtering via store
+  - `new-arrivals.tsx` — Featured/new products from DB via store
+  - `product-detail.tsx` — Related products via shared collections from DB
+  - `search-dialog.tsx` — Search results from DB products
+- Added device photo upload to admin products form:
+  - "Upload from Device" button with file picker (accepts JPEG/PNG/WebP/GIF, max 5MB)
+  - Image preview grid with delete (X) button on hover
+  - Manual URL input still available as alternative
+  - Upload progress spinner and toast notifications
+- Verified: API returns 13 products (including user-added ones), all routes 200, upload requires auth (401 without)
+
+Stage Summary:
+- Products added from admin now appear on the store frontend
+- Device photo upload available in Add/Edit Product dialog
+- All 4 frontend components now read from database via Zustand store
+- Seed file (`@/data/seed`) no longer used by frontend (kept for reference/seeding)
+- ESLint: 0 errors, 0 warnings

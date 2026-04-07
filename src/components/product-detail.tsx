@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { useCartStore } from '@/stores/cart-store';
 import { useWishlistStore, isProductWishlisted } from '@/stores/wishlist-store';
 import { useUIStore } from '@/stores/ui-store';
-import { products, productCollections, collections } from '@/data/seed';
+import { useProductStore } from '@/stores/product-store';
 import { formatPrice } from '@/lib/format';
 import { cn } from '@/lib/utils';
 import { ARViewModal, ARViewButton } from '@/components/ar-view';
@@ -93,6 +93,9 @@ function ProductDetailContent({ product }: { product: Product }) {
   const addItem = useCartStore((s) => s.addItem);
   const toggleItem = useWishlistStore((s) => s.toggleItem);
   const wishlistItems = useWishlistStore((s) => s.items);
+  const { products: dbProducts, collections: dbCollections, initialize } = useProductStore();
+
+  useEffect(() => { initialize(); }, [initialize]);
 
   // State initialized from product props - resets when component remounts via key
   const [selectedColor, setSelectedColor] = useState(() => product.colors[0] || '');
@@ -109,20 +112,23 @@ function ProductDetailContent({ product }: { product: Product }) {
 
   // Related products from same collection
   const relatedProducts = useMemo(() => {
-    const matchingCollectionId = Object.entries(productCollections).find(([, ids]) =>
-      ids.includes(product.id)
-    )?.[0];
-    if (!matchingCollectionId) return [];
-    const productIds = productCollections[matchingCollectionId];
-    return products.filter((p) => p.id !== product.id && productIds.includes(p.id)).slice(0, 4);
-  }, [product]);
+    const productCols = (product as Record<string, unknown>).collections as Array<{ id: string }> | undefined;
+    if (!productCols || productCols.length === 0) return [];
+    const colIds = new Set(productCols.map((c) => c.id));
+    return dbProducts.filter((p) => {
+      if (p.id === product.id) return false;
+      const pCols = (p as Record<string, unknown>).collections as Array<{ id: string }> | undefined;
+      if (!pCols) return false;
+      return pCols.some((c) => colIds.has(c.id));
+    }).slice(0, 4);
+  }, [product, dbProducts]);
 
   const collectionName = useMemo(() => {
-    const match = Object.entries(productCollections).find(([, ids]) => ids.includes(product.id));
-    if (!match) return '';
-    const col = collections.find((c) => c.id === match[0]);
-    return col?.name || '';
-  }, [product]);
+    const productCols = (product as Record<string, unknown>).collections as Array<{ id: string }> | undefined;
+    if (!productCols || productCols.length === 0) return '';
+    const colId = productCols[0].id;
+    return dbCollections.find((c) => c.id === colId)?.name || '';
+  }, [product, dbCollections]);
 
   const handleAddToCart = () => {
     addItem(product, selectedColor, selectedSize, quantity);
