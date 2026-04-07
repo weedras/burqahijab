@@ -1,20 +1,28 @@
 /**
  * Server-side session-based authentication for admin routes.
  *
- * After a successful login, a session token is stored in a cookie (httpOnly, secure, SameSite=Strict).
- * The session token maps to a server-side session entry stored in memory.
+ * After a successful login, a session token is stored in a cookie (httpOnly, SameSite=Strict).
+ * The session token maps to a server-side session entry stored in memory via globalThis
+ * to ensure a single shared Map across all Turbopack/Next.js route handlers.
  */
 
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
-// ---- In-memory session store ----
+// ---- In-memory session store (shared via globalThis) ----
 interface SessionEntry {
   token: string;
   createdAt: number;
 }
 
-const sessions = new Map<string, SessionEntry>();
+const SESSION_KEY = '__bhq_admin_sessions__';
+
+function getSessions(): Map<string, SessionEntry> {
+  if (!(globalThis as Record<string, unknown>)[SESSION_KEY]) {
+    (globalThis as Record<string, unknown>)[SESSION_KEY] = new Map<string, SessionEntry>();
+  }
+  return (globalThis as Record<string, unknown>)[SESSION_KEY] as Map<string, SessionEntry>;
+}
 
 /** Maximum session duration: 24 hours */
 const SESSION_MAX_AGE_MS = 24 * 60 * 60 * 1000;
@@ -24,6 +32,7 @@ export const SESSION_COOKIE_NAME = 'bhq_admin_session';
 
 /** Clean up expired sessions (call periodically) */
 function cleanExpiredSessions() {
+  const sessions = getSessions();
   const now = Date.now();
   for (const [key, entry] of sessions) {
     if (now - entry.createdAt > SESSION_MAX_AGE_MS) {
@@ -33,25 +42,28 @@ function cleanExpiredSessions() {
 }
 
 // Clean sessions every 10 minutes
-setInterval(cleanExpiredSessions, 10 * 60 * 1000);
+const CLEANUP_KEY = '__bhq_cleanup_interval__';
+if (!(globalThis as Record<string, unknown>)[CLEANUP_KEY]) {
+  (globalThis as Record<string, unknown>)[CLEANUP_KEY] = true;
+  setInterval(cleanExpiredSessions, 10 * 60 * 1000);
+}
 
 /**
  * Create a new session and return the Set-Cookie header value.
  */
 export function createSession(): { token: string; setCookieHeader: string } {
-  // Generate a random session token without relying on node:crypto
-  // which may not be available in Turbopack edge-like runtime
   const token = 'sess_' + Date.now().toString(36) + '_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-  sessions.set(token, { token, createdAt: Date.now() });
+  getSessions().set(token, { token, createdAt: Date.now() });
 
+  const isProduction = process.env.NODE_ENV === 'production';
   const setCookieHeader = [
     `${SESSION_COOKIE_NAME}=${token}`,
     'HttpOnly',
-    'Secure',
+    isProduction ? 'Secure' : '',
     'SameSite=Strict',
     'Path=/',
     `Max-Age=${Math.floor(SESSION_MAX_AGE_MS / 1000)}`,
-  ].join('; ');
+  ].filter(Boolean).join('; ');
 
   return { token, setCookieHeader };
 }
@@ -60,10 +72,10 @@ export function createSession(): { token: string; setCookieHeader: string } {
  * Validate a session token and return whether it is valid.
  */
 export function isValidSession(token: string): boolean {
-  const entry = sessions.get(token);
+  const entry = getSessions().get(token);
   if (!entry) return false;
   if (Date.now() - entry.createdAt > SESSION_MAX_AGE_MS) {
-    sessions.delete(token);
+    getSessions().delete(token);
     return false;
   }
   return true;
@@ -77,17 +89,14 @@ export async function getSessionToken(request?: Request): Promise<string | null>
   let cookieHeader: string | undefined;
 
   if (request) {
-    // Prefer reading from the request directly
     cookieHeader = request.headers.get('cookie') || undefined;
   } else {
-    // Fallback: use next/headers for App Router server components
     const cookieStore = await cookies();
     cookieHeader = cookieStore.get(SESSION_COOKIE_NAME)?.value || undefined;
   }
 
   if (!cookieHeader) return null;
 
-  // Parse cookie string to find our cookie
   const match = cookieHeader
     .split(';')
     .map((c) => c.trim())
@@ -106,7 +115,7 @@ export async function getSessionToken(request?: Request): Promise<string | null>
  * Returns the Set-Cookie header to clear the cookie.
  */
 export function destroySession(token: string): string {
-  sessions.delete(token);
+  getSessions().delete(token);
 
   return [
     `${SESSION_COOKIE_NAME}=`,
@@ -119,10 +128,7 @@ export function destroySession(token: string): string {
 
 /**
  * Auth guard for admin API routes.
- * Call this at the top of every admin handler (except the auth route itself).
- *
- * Returns null if the request is authenticated (continue processing).
- * Returns a 401 Response if authentication fails.
+ * Returns null if authenticated, or a 401 Response if not.
  */
 export async function requireAdmin(request: Request): Promise<NextResponse | null> {
   const token = await getSessionToken(request);
@@ -134,6 +140,5 @@ export async function requireAdmin(request: Request): Promise<NextResponse | nul
     );
   }
 
-  // Session is valid — return null to indicate the request may proceed
   return null;
 }

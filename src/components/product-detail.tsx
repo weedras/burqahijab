@@ -130,6 +130,13 @@ function ProductDetailContent({ product }: { product: Product }) {
     setTimeout(() => setAddedFeedback(false), 2000);
   };
 
+  const handleBuyNow = () => {
+    addItem(product, selectedColor, selectedSize, quantity);
+    setTimeout(() => {
+      useUIStore.getState().navigateToCheckout();
+    }, 100);
+  };
+
   return (
     <div className="mx-auto max-w-7xl px-4 pb-20 pt-2 sm:px-6 lg:px-8">
       {/* Product Grid */}
@@ -364,7 +371,7 @@ function ProductDetailContent({ product }: { product: Product }) {
             </Button>
 
             <Button
-              onClick={handleAddToCart}
+              onClick={handleBuyNow}
               variant="outline"
               className="h-12 w-full rounded-lg border-[#d79c4a] text-sm font-bold uppercase tracking-widest text-[#d79c4a] hover:bg-[#d79c4a]/10 "
             >

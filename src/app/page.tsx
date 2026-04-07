@@ -61,9 +61,37 @@ function ContentPageRenderer({ view }: { view: (typeof contentPages)[number] }) 
   }
 }
 
+const PAGE_TITLES: Record<string, string> = {
+  home: 'BurqaHijab.shop — Where Modesty Meets Luxury',
+  shop: 'Shop All Products | BurqaHijab.shop',
+  wishlist: 'My Wishlist | BurqaHijab.shop',
+  checkout: 'Checkout | BurqaHijab.shop',
+  faq: 'FAQ | BurqaHijab.shop',
+  'size-guide': 'Size Guide | BurqaHijab.shop',
+  shipping: 'Shipping & Delivery | BurqaHijab.shop',
+  returns: 'Returns & Exchanges | BurqaHijab.shop',
+  contact: 'Contact Us | BurqaHijab.shop',
+  about: 'About Us | BurqaHijab.shop',
+  'brand-story-page': 'Brand Story | BurqaHijab.shop',
+  careers: 'Careers | BurqaHijab.shop',
+  admin: 'Admin Panel | BurqaHijab.shop',
+};
+
+const DEFAULT_TITLE = 'BurqaHijab.shop — Where Modesty Meets Luxury';
+
 export default function Home() {
   const viewMode = useUIStore((s) => s.viewMode);
+  const selectedProduct = useUIStore((s) => s.selectedProduct);
   const navigateToAdmin = useUIStore((s) => s.navigateToAdmin);
+
+  // Dynamic page title
+  useEffect(() => {
+    if (viewMode === 'product' && selectedProduct) {
+      document.title = `${selectedProduct.name} | BurqaHijab.shop`;
+    } else {
+      document.title = PAGE_TITLES[viewMode] || DEFAULT_TITLE;
+    }
+  }, [viewMode, selectedProduct]);
 
   // Secret keyboard shortcut to open admin: Ctrl+Shift+A
   useEffect(() => {
