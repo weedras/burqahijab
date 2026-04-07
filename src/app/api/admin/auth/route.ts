@@ -1,5 +1,6 @@
 import { jsonResponse, errorResponse } from '@/lib/api-utils';
 import { createSession, getSessionToken, destroySession, SESSION_COOKIE_NAME } from '@/lib/auth';
+import { getAdminPassword } from '@/lib/password-config';
 
 // POST /api/admin/auth — Verify admin password and create session
 export async function POST(request: Request) {
@@ -11,10 +12,10 @@ export async function POST(request: Request) {
       return errorResponse('Password is required');
     }
 
-    const adminPassword = process.env.ADMIN_PASSWORD;
+    const adminPassword = getAdminPassword();
 
     if (!adminPassword) {
-      console.error('ADMIN_PASSWORD environment variable is not configured');
+      console.error('ADMIN_PASSWORD is not configured in .env file');
       return errorResponse('Server configuration error. Admin password not set.', 500);
     }
 
@@ -54,7 +55,6 @@ export async function DELETE(request: Request) {
     if (token) {
       clearCookieHeader = destroySession(token);
     } else {
-      // Even if no session found, still clear the cookie
       clearCookieHeader = [
         `${SESSION_COOKIE_NAME}=`,
         'HttpOnly',

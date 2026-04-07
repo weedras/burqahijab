@@ -7,7 +7,6 @@
 
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
-import { crypto } from 'node:crypto';
 
 // ---- In-memory session store ----
 interface SessionEntry {
@@ -40,7 +39,9 @@ setInterval(cleanExpiredSessions, 10 * 60 * 1000);
  * Create a new session and return the Set-Cookie header value.
  */
 export function createSession(): { token: string; setCookieHeader: string } {
-  const token = crypto.randomUUID();
+  // Generate a random session token without relying on node:crypto
+  // which may not be available in Turbopack edge-like runtime
+  const token = 'sess_' + Date.now().toString(36) + '_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
   sessions.set(token, { token, createdAt: Date.now() });
 
   const setCookieHeader = [

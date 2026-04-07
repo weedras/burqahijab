@@ -1,6 +1,5 @@
 import { jsonResponse, errorResponse } from '@/lib/api-utils';
-import { readFileSync, writeFileSync } from 'fs';
-import { join } from 'path';
+import { getAdminPassword, getResetCode, setAdminPassword } from '@/lib/password-config';
 
 // POST /api/admin/reset-password — Reset admin password using recovery code (no auth required)
 export async function POST(request: Request) {
@@ -12,10 +11,10 @@ export async function POST(request: Request) {
     if (!newPassword?.trim()) return errorResponse('New password is required', 400);
     if (newPassword.trim().length < 8) return errorResponse('Password must be at least 8 characters', 400);
 
-    const validResetCode = process.env.RESET_CODE;
+    const validResetCode = getResetCode();
 
     if (!validResetCode) {
-      console.error('RESET_CODE environment variable is not configured');
+      console.error('RESET_CODE is not configured in .env file');
       return errorResponse('Password reset is not configured on this server.', 500);
     }
 
@@ -23,30 +22,10 @@ export async function POST(request: Request) {
       return errorResponse('Invalid reset code. Please check and try again.', 401);
     }
 
-    // Read the .env file, update the password, write it back
-    const envPath = join(process.cwd(), '.env');
-    let envContent: string;
-
-    try {
-      envContent = readFileSync(envPath, 'utf-8');
-    } catch {
-      return errorResponse('Could not read server configuration.', 500);
-    }
-
-    // Replace the ADMIN_PASSWORD line
-    const updatedEnv = envContent.replace(
-      /^ADMIN_PASSWORD=.*$/m,
-      `ADMIN_PASSWORD=${newPassword.trim()}`
-    );
-
-    if (updatedEnv === envContent) {
+    const success = setAdminPassword(newPassword.trim());
+    if (!success) {
       return errorResponse('Could not update password in configuration.', 500);
     }
-
-    writeFileSync(envPath, updatedEnv, 'utf-8');
-
-    // Update the in-memory env for current session
-    process.env.ADMIN_PASSWORD = newPassword.trim();
 
     return jsonResponse(
       {
