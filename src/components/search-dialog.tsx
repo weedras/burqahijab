@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, X, ArrowRight } from 'lucide-react';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { products, categories } from '@/data/seed';
 import { useUIStore } from '@/stores/ui-store';
 import { formatPrice } from '@/lib/format';
@@ -82,6 +82,7 @@ export function SearchDialog() {
   return (
     <Dialog open={searchOpen} onOpenChange={handleOpenChange}>
       <DialogContent className="top-[20%] translate-y-0 rounded-2xl border-gray-200 dark:border-gray-700 bg-white dark:bg-[#141414] p-0 sm:max-w-lg">
+        <DialogTitle className="sr-only">Search Products</DialogTitle>
         {/* Search Input */}
         <div className="flex items-center gap-3 border-b border-gray-200 dark:border-gray-700 px-5 py-4">
           <Search className="h-5 w-5 flex-shrink-0 text-[#d79c4a]" />
