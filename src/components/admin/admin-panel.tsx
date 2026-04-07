@@ -14,7 +14,17 @@ import {
   X,
   Store,
   LogOut,
+  KeyRound,
 } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
@@ -48,6 +58,15 @@ export function AdminPanel() {
   });
   const [checking, setChecking] = useState(false);
 
+  // Change password dialog
+  const [changePwOpen, setChangePwOpen] = useState(false);
+  const [currentPw, setCurrentPw] = useState('');
+  const [newPw, setNewPw] = useState('');
+  const [confirmPw, setConfirmPw] = useState('');
+  const [changePwLoading, setChangePwLoading] = useState(false);
+  const [changePwError, setChangePwError] = useState('');
+  const [changePwSuccess, setChangePwSuccess] = useState(false);
+
   // Listen for keyboard shortcut Ctrl+Shift+A to open admin (when on home page)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -63,6 +82,56 @@ export function AdminPanel() {
   const handleLoginSuccess = useCallback(() => {
     setIsAuthenticated(true);
   }, []);
+
+  const handleChangePassword = async () => {
+    setChangePwError('');
+    setChangePwSuccess(false);
+
+    if (!currentPw.trim() || !newPw.trim() || !confirmPw.trim()) {
+      setChangePwError('All fields are required');
+      return;
+    }
+    if (newPw.length < 8) {
+      setChangePwError('New password must be at least 8 characters');
+      return;
+    }
+    if (newPw !== confirmPw) {
+      setChangePwError('New passwords do not match');
+      return;
+    }
+
+    setChangePwLoading(true);
+    try {
+      const res = await fetch('/api/admin/change-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ currentPassword: currentPw, newPassword: newPw }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setChangePwSuccess(true);
+        setCurrentPw('');
+        setNewPw('');
+        setConfirmPw('');
+        setTimeout(() => { setChangePwOpen(false); setChangePwSuccess(false); }, 2000);
+      } else {
+        setChangePwError(data.error || 'Failed to change password.');
+      }
+    } catch {
+      setChangePwError('Connection error.');
+    } finally {
+      setChangePwLoading(false);
+    }
+  };
+
+  const openChangePw = () => {
+    setCurrentPw('');
+    setNewPw('');
+    setConfirmPw('');
+    setChangePwError('');
+    setChangePwSuccess(false);
+    setChangePwOpen(true);
+  };
 
   const handleLogout = async () => {
     sessionStorage.removeItem('bhq-admin-auth');
@@ -198,6 +267,14 @@ export function AdminPanel() {
           </Button>
           <Button
             variant="ghost"
+            className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground"
+            onClick={openChangePw}
+          >
+            <KeyRound className="h-4 w-4" />
+            Change Password
+          </Button>
+          <Button
+            variant="ghost"
             className="w-full justify-start gap-2 text-destructive/70 hover:text-destructive hover:bg-destructive/10"
             onClick={handleLogout}
           >
@@ -255,6 +332,71 @@ export function AdminPanel() {
           </motion.main>
         </AnimatePresence>
       </div>
+
+      {/* Change Password Dialog */}
+      <Dialog open={changePwOpen} onOpenChange={setChangePwOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <KeyRound className="h-5 w-5 text-[#d79c4a]" />
+              Change Admin Password
+            </DialogTitle>
+            <DialogDescription>
+              Enter your current password and choose a new one.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="space-y-2">
+              <Label htmlFor="currentPw">Current Password</Label>
+              <Input
+                id="currentPw"
+                type="password"
+                value={currentPw}
+                onChange={(e) => setCurrentPw(e.target.value)}
+                placeholder="Enter current password"
+                className="border-border bg-background"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="newPw">New Password</Label>
+              <Input
+                id="newPw"
+                type="password"
+                value={newPw}
+                onChange={(e) => setNewPw(e.target.value)}
+                placeholder="Enter new password (min 8 chars)"
+                className="border-border bg-background"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="confirmPw">Confirm New Password</Label>
+              <Input
+                id="confirmPw"
+                type="password"
+                value={confirmPw}
+                onChange={(e) => setConfirmPw(e.target.value)}
+                placeholder="Confirm new password"
+                className="border-border bg-background"
+              />
+            </div>
+
+            {changePwError && (
+              <p className="text-sm text-destructive">{changePwError}</p>
+            )}
+            {changePwSuccess && (
+              <p className="text-sm text-emerald-500 font-medium">Password changed successfully!</p>
+            )}
+
+            <Button
+              onClick={handleChangePassword}
+              disabled={changePwLoading}
+              className="w-full bg-[#d79c4a] text-[#0A0A0A] hover:bg-[#d79c4a]/90 h-11"
+            >
+              {changePwLoading ? 'Updating...' : 'Update Password'}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
