@@ -1,31 +1,117 @@
-'use client'
+'use client';
+
+import { useEffect } from 'react';
+import { AnnouncementBar } from '@/components/announcement-bar';
+import { Header } from '@/components/header';
+import { HeroSection } from '@/components/hero-section';
+import { TrustSignals } from '@/components/trust-signals';
+import { CollectionsGrid } from '@/components/collections-grid';
+import { NewArrivals } from '@/components/new-arrivals';
+import { TestimonialsSection } from '@/components/testimonials-section';
+import { NewsletterSection } from '@/components/newsletter-section';
+import { InstagramFeed } from '@/components/instagram-feed';
+import { Footer } from '@/components/footer';
+import { MobileNav } from '@/components/mobile-nav';
+import { CartDrawer } from '@/components/cart-drawer';
+import { ProductDetail } from '@/components/product-detail';
+import { ShopPage } from '@/components/shop-page';
+import { SearchDialog } from '@/components/search-dialog';
+import { AdminPanel } from '@/components/admin/admin-panel';
+import { FaqPage } from '@/components/pages/faq-page';
+import { SizeGuidePage } from '@/components/pages/size-guide-page';
+import { ShippingPage } from '@/components/pages/shipping-page';
+import { ReturnsPage } from '@/components/pages/returns-page';
+import { ContactPage } from '@/components/pages/contact-page';
+import { AboutPage } from '@/components/pages/about-page';
+import { BrandStoryPage } from '@/components/pages/brand-story-page';
+import { CareersPage } from '@/components/pages/careers-page';
+import { WishlistPage } from '@/components/pages/wishlist-page';
+import { useUIStore } from '@/stores/ui-store';
+
+const contentPages = [
+  'faq',
+  'size-guide',
+  'shipping',
+  'returns',
+  'contact',
+  'about',
+  'brand-story-page',
+  'careers',
+] as const;
+
+function ContentPageRenderer({ view }: { view: (typeof contentPages)[number] }) {
+  switch (view) {
+    case 'faq':
+      return <FaqPage />;
+    case 'size-guide':
+      return <SizeGuidePage />;
+    case 'shipping':
+      return <ShippingPage />;
+    case 'returns':
+      return <ReturnsPage />;
+    case 'contact':
+      return <ContactPage />;
+    case 'about':
+      return <AboutPage />;
+    case 'brand-story-page':
+      return <BrandStoryPage />;
+    case 'careers':
+      return <CareersPage />;
+  }
+}
 
 export default function Home() {
+  const viewMode = useUIStore((s) => s.viewMode);
+  const navigateToAdmin = useUIStore((s) => s.navigateToAdmin);
+
+  // Secret keyboard shortcut to open admin: Ctrl+Shift+A
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.shiftKey && e.key === 'A') {
+        e.preventDefault();
+        navigateToAdmin();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [navigateToAdmin]);
+
+  const isContentPage = contentPages.includes(viewMode as (typeof contentPages)[number]);
+
+  // Admin panel is a full-page takeover — no header/footer/nav
+  if (viewMode === 'admin') {
+    return <AdminPanel />;
+  }
+
+  const isHomePage = viewMode === 'home';
+
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      minHeight: '100vh',
-      gap: '2rem',
-      padding: '1rem'
-    }}>
-      <div style={{
-        position: 'relative',
-        width: '6rem',
-        height: '6rem'
-      }}>
-        <img
-          src="/logo.svg"
-          alt="Z.ai Logo"
-          style={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'contain'
-          }}
-        />
-      </div>
+    <div className="min-h-screen flex flex-col bg-white dark:bg-[#0A0A0A]">
+      <AnnouncementBar />
+      <Header />
+      <main className="flex-1 pb-20 md:pb-0">
+        {isHomePage && (
+          <>
+            <HeroSection />
+            <TrustSignals />
+            <CollectionsGrid />
+            <NewArrivals />
+            <TestimonialsSection />
+            <NewsletterSection />
+            <InstagramFeed />
+          </>
+        )}
+        {viewMode === 'shop' && <ShopPage />}
+        {viewMode === 'product' && <ProductDetail />}
+        {viewMode === 'wishlist' && <WishlistPage />}
+        {isContentPage && (
+          <ContentPageRenderer view={viewMode as (typeof contentPages)[number]} />
+        )}
+      </main>
+      {viewMode !== 'product' && <Footer />}
+      <MobileNav />
+      <CartDrawer />
+      <SearchDialog />
     </div>
-  )
+  );
 }

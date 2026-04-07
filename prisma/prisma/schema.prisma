@@ -1,0 +1,133 @@
+// BurqaHijab.shop Database Schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id          String     @id @default(cuid())
+  name        String
+  slug        String     @unique
+  description String?
+  parentId    String?
+  order       Int        @default(0)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  products    ProductCategory[]
+  parent      Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children    Category[] @relation("CategoryHierarchy")
+}
+
+model Collection {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?
+  image       String?
+  featured    Boolean  @default(false)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  products    ProductCollection[]
+}
+
+model Product {
+  id            String   @id @default(cuid())
+  name          String
+  slug          String   @unique
+  description   String
+  fabricCare    String?
+  shipReturn    String?
+  price         Float
+  salePrice     Float?
+  currency      String   @default("PKR")
+  images        String
+  videoUrl      String?
+  isNew         Boolean  @default(false)
+  isBestSeller  Boolean  @default(false)
+  isFeatured    Boolean  @default(false)
+  occasion      String?
+  fabric        String?
+  colors        String
+  sizes         String
+  rating        Float    @default(0)
+  reviewCount   Int      @default(0)
+  stockCount    Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  categories    ProductCategory[]
+  collections   ProductCollection[]
+  reviews       Review[]
+}
+
+model ProductCategory {
+  productId  String
+  categoryId String
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([productId, categoryId])
+}
+
+model ProductCollection {
+  productId    String
+  collectionId String
+  product      Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+
+  @@id([productId, collectionId])
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  author    String
+  location  String?
+  rating    Int
+  text      String
+  photoUrl  String?
+  createdAt DateTime @default(now())
+}
+
+model Testimonial {
+  id        String   @id @default(cuid())
+  author    String
+  location  String
+  text      String
+  rating    Int      @default(5)
+  photoUrl  String?
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
+model NewsletterSubscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+}
+
+model Order {
+  id             String   @id @default(cuid())
+  orderNumber    String   @unique
+  customerName   String
+  customerEmail  String
+  customerPhone  String?
+  address        String
+  city           String
+  items          String
+  totalAmount    Float
+  currency       String   @default("PKR")
+  status         String   @default("pending")
+  paymentMethod  String   @default("cod")
+  paymentStatus  String   @default("pending")
+  notes          String?
+  trackingNumber String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
