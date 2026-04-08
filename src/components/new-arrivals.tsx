@@ -40,32 +40,30 @@ function FeaturedProductCard({ product, index }: { product: Product; index: numb
   const toggleItem = useWishlistStore((s) => s.toggleItem);
   const wishlistItems = useWishlistStore((s) => s.items);
   const { navigateToProduct } = useUIStore();
-  const [hovered, setHovered] = useState(false);
   const hasImage = product.images.length > 0 && product.images[0];
 
   return (
     <motion.div
-      initial={{ y: 50, opacity: 0 }}
+      initial={{ y: 40, opacity: 0 }}
       whileInView={{ y: 0, opacity: 1 }}
       viewport={{ once: true, margin: '-30px' }}
-      transition={{ duration: 0.5, delay: index * 0.1 }}
-      className="group cursor-pointer"
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      transition={{ duration: 0.5, delay: index * 0.1, ease: 'easeOut' }}
+      className="group cursor-pointer h-full"
       onClick={() => navigateToProduct(product)}
       role="button"
       tabIndex={0}
       onKeyDown={(e) => { if (e.key === 'Enter') navigateToProduct(product); }}
     >
-      {/* Card Container */}
-      <div className="relative flex flex-col h-full overflow-hidden rounded-2xl bg-white dark:bg-[#141414] border border-gray-100 dark:border-gray-800/50 shadow-sm hover:shadow-xl hover:shadow-black/5 dark:hover:shadow-black/20 transition-all duration-500">
-        {/* Image Container - Fixed aspect ratio */}
-        <div className="relative aspect-[3/4] overflow-hidden bg-gray-50 dark:bg-[#111]">
+      {/* Card Container — flex column stretches to full grid height */}
+      <div className="relative flex flex-col h-full overflow-hidden rounded-2xl bg-white dark:bg-[#141414] border border-gray-200/80 dark:border-gray-800/60 shadow-none hover:shadow-lg hover:shadow-black/[0.06] dark:hover:shadow-black/30 transition-all duration-500 ease-out">
+
+        {/* ── Image Container ── */}
+        <div className="relative aspect-[3/4] overflow-hidden bg-gray-100 dark:bg-[#111]">
           {hasImage ? (
             <img
               src={product.images[0]}
               alt={product.name}
-              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
               loading="lazy"
             />
           ) : product.videoUrl ? (
@@ -78,63 +76,63 @@ function FeaturedProductCard({ product, index }: { product: Product; index: numb
               </div>
             </div>
           ) : (
-            <div className="absolute inset-0 flex items-center justify-center bg-gray-50 dark:bg-[#111]">
+            <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-[#111]">
               <div className="text-center">
-                <div className="mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800">
-                  <Package className="h-6 w-6 text-gray-300 dark:text-gray-600" />
+                <div className="mx-auto mb-2 flex h-14 w-14 items-center justify-center rounded-full bg-gray-200/60 dark:bg-gray-800/60">
+                  <Package className="h-5 w-5 text-gray-300 dark:text-gray-600" />
                 </div>
                 <p className="text-[10px] text-gray-400 dark:text-gray-600">No Image</p>
               </div>
             </div>
           )}
 
-          {/* Badges - Top Left */}
+          {/* Badges */}
           <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
             {product.isNew && (
-              <span className="inline-flex items-center rounded-full bg-[#d79c4a] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-[#0A0A0A] shadow-sm">
+              <span className="inline-flex items-center rounded-full bg-[#d79c4a] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#0A0A0A]">
                 New
               </span>
             )}
             {product.salePrice && (
-              <span className="inline-flex items-center rounded-full bg-red-500 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white shadow-sm">
+              <span className="inline-flex items-center rounded-full bg-red-500 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white">
                 Sale
               </span>
             )}
             {product.isBestSeller && !product.isNew && (
-              <span className="inline-flex items-center rounded-full bg-[#1A4B5C] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white shadow-sm">
+              <span className="inline-flex items-center rounded-full bg-[#1A4B5C] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white">
                 Best Seller
               </span>
             )}
           </div>
 
-          {/* Wishlist - Top Right */}
+          {/* Wishlist button */}
           <button
             onClick={(e) => {
               e.stopPropagation();
               toggleItem(product.id);
             }}
             className={cn(
-              'absolute top-3 right-3 z-10 flex h-9 w-9 items-center justify-center rounded-full backdrop-blur-md shadow-sm transition-all duration-300',
+              'absolute top-3 right-3 z-10 flex h-8 w-8 items-center justify-center rounded-full backdrop-blur-md transition-all duration-300',
               isProductWishlisted(wishlistItems, product.id)
-                ? 'bg-red-500/90 text-white'
-                : 'bg-white/70 dark:bg-black/40 text-gray-600 dark:text-gray-300 opacity-0 group-hover:opacity-100 hover:bg-white dark:hover:bg-black/60'
+                ? 'bg-red-500/90 text-white shadow-sm'
+                : 'bg-white/70 dark:bg-black/40 text-gray-500 dark:text-gray-400 opacity-0 group-hover:opacity-100 hover:bg-white dark:hover:bg-black/60 hover:text-red-500'
             )}
             aria-label="Toggle wishlist"
           >
-            <Heart className={cn('h-4 w-4', isProductWishlisted(wishlistItems, product.id) ? 'fill-white' : '')} />
+            <Heart className={cn('h-3.5 w-3.5 transition-colors', isProductWishlisted(wishlistItems, product.id) ? 'fill-white' : '')} />
           </button>
 
-          {/* Hover Overlay - Desktop */}
-          <div className="hidden sm:block absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          {/* Hover gradient overlay — desktop only */}
+          <div className="hidden sm:block absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-          {/* Quick Add - Desktop hover */}
+          {/* Quick Add — slides up on desktop hover */}
           <div className="hidden sm:flex absolute bottom-0 left-0 right-0 p-3 translate-y-full group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300 ease-out z-10">
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 addItem(product, product.colors[0] || 'Default', product.sizes[0] || 'One Size');
               }}
-              className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-white/95 dark:bg-[#0A0A0A]/95 backdrop-blur-md py-3 text-xs font-semibold uppercase tracking-wider text-gray-900 dark:text-white shadow-lg hover:bg-white dark:hover:bg-[#0A0A0A] transition-colors"
+              className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-white/95 dark:bg-[#0A0A0A]/95 backdrop-blur-md py-2.5 text-[11px] font-semibold uppercase tracking-wider text-gray-900 dark:text-white shadow-lg hover:bg-white dark:hover:bg-[#0A0A0A] transition-colors"
             >
               <ShoppingCart className="h-3.5 w-3.5" />
               Add to Cart
@@ -142,18 +140,18 @@ function FeaturedProductCard({ product, index }: { product: Product; index: numb
           </div>
         </div>
 
-        {/* Info Section - Consistent height with flex column */}
-        <div className="flex flex-col flex-1 p-4 pb-5">
-          {/* Product Name - fixed height for consistency */}
+        {/* ── Info Section — consistent height with flex ── */}
+        <div className="flex flex-col flex-1 px-4 pt-3.5 pb-4">
+          {/* Product name — clamp to 2 lines */}
           <h3 className="text-[13px] font-semibold leading-snug text-gray-900 dark:text-white line-clamp-2 min-h-[2.5rem] group-hover:text-[#d79c4a] transition-colors duration-300">
             {product.name}
           </h3>
 
-          {/* Spacer pushes price to consistent position */}
-          <div className="flex-1 min-h-[2.75rem]" />
+          {/* Flexible spacer pushes price to bottom */}
+          <div className="flex-1 min-h-[0.5rem]" />
 
-          {/* Price - Always at bottom, consistent positioning */}
-          <div className="flex items-baseline gap-2">
+          {/* Price — always at consistent position */}
+          <div className="flex items-baseline gap-2 pt-1">
             {product.salePrice ? (
               <>
                 <span className="text-sm font-bold text-[#d79c4a]">
@@ -176,7 +174,7 @@ function FeaturedProductCard({ product, index }: { product: Product; index: numb
               e.stopPropagation();
               addItem(product, product.colors[0] || 'Default', product.sizes[0] || 'One Size');
             }}
-            className="sm:hidden mt-3 flex w-full items-center justify-center gap-1.5 rounded-xl bg-[#d79c4a] py-2.5 text-[11px] font-bold uppercase tracking-wider text-[#0A0A0A] hover:bg-[#c48a35] active:scale-[0.98] transition-all shadow-sm"
+            className="sm:hidden mt-3 flex w-full items-center justify-center gap-1.5 rounded-lg bg-[#d79c4a] py-2 text-[11px] font-bold uppercase tracking-wider text-[#0A0A0A] hover:bg-[#c48a35] active:scale-[0.98] transition-all"
           >
             <ShoppingCart className="h-3 w-3" />
             Add to Cart
@@ -200,35 +198,39 @@ export function NewArrivals() {
 
   return (
     <>
-      {/* Featured Products Section */}
-      <section id="products" className="py-12 sm:py-20 md:py-28 bg-[#f5f5f5] dark:bg-[#111]">
+      {/* ═══════ Featured Products Section ═══════ */}
+      <section id="products" className="py-16 sm:py-24 md:py-28 bg-[#f7f6f4] dark:bg-[#111]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Section Header */}
           <motion.div
             initial={{ y: 30, opacity: 0 }}
             whileInView={{ y: 0, opacity: 1 }}
             viewport={{ once: true, margin: '-50px' }}
             transition={{ duration: 0.6 }}
-            className="text-center mb-12 sm:mb-16"
+            className="text-center mb-10 sm:mb-14"
           >
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#d79c4a] mb-3">Curated for you</p>
             <h2 className="section-title text-gray-900 dark:text-white">
               Featured Products
             </h2>
             <div className="section-line" />
-            <p className="section-subtitle">Handpicked favorites just for you</p>
+            <p className="section-subtitle mt-4">Handpicked favorites just for you</p>
           </motion.div>
 
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 lg:gap-6 [grid-auto-rows:1fr]">
+          {/* Product Grid — aligned with equal-height cards */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 lg:gap-5 items-start">
             {displayProducts.map((product, index) => (
               <FeaturedProductCard key={product.id} product={product} index={index} />
             ))}
           </div>
 
+          {/* View All CTA */}
           <motion.div
             initial={{ y: 20, opacity: 0 }}
             whileInView={{ y: 0, opacity: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            className="text-center mt-10 sm:mt-12"
+            className="text-center mt-10 sm:mt-14"
           >
             <button
               onClick={() => navigateToShop()}

@@ -91,3 +91,44 @@ Stage Summary:
 - All 4 frontend components now read from database via Zustand store
 - Seed file (`@/data/seed`) no longer used by frontend (kept for reference/seeding)
 - ESLint: 0 errors, 0 warnings
+
+---
+Task ID: 4
+Agent: Main Agent
+Task: Fix video player (remove Instagram link/branding) + make featured products professional
+
+Work Log:
+- **Video Player Fix**: Removed InstagramPlayer component that used iframe embeds showing Instagram branding/links
+- Created `/api/resolve-video/route.ts` — backend API that:
+  - Detects video type (YouTube, Instagram, direct .mp4, TikTok)
+  - For Instagram: fetches reel page + embed page, extracts direct video URL from og:video meta tags, video_url JSON fields, and <video src> elements
+  - Returns resolved direct URL for native playback or "unresolvable" for graceful fallback
+- Updated `product-detail.tsx`:
+  - Removed entire InstagramPlayer component (iframe-based, showed links)
+  - Added video resolution logic: useState for resolvedVideoUrl/resolvedThumbnail/videoResolving
+  - useEffect calls `/api/resolve-video` for non-direct/non-YouTube URLs (Instagram, TikTok)
+  - If resolved: plays via NativeVideoPlayer (native <video> element, no links/branding)
+  - If resolving: shows branded loading spinner
+  - If unresolvable: shows VideoUnavailableFallback with thumbnail + helpful message
+  - Gallery strip thumbnail uses resolved thumbnail when available
+  - Fixed react-hooks lint error by deferring setState to microtask
+- **Featured Products Professional Redesign** in `new-arrivals.tsx`:
+  - Changed grid from `grid-cols-2 lg:grid-cols-4` to `grid-cols-2 md:grid-cols-4` (4 cols at medium+ screens)
+  - Added `h-full` to motion.div grid item for proper height stretching
+  - Removed unused `hovered` state
+  - Improved card border: `border-gray-200/80` (subtle), no shadow default, `hover:shadow-lg` on hover
+  - Refined spacing: smaller gaps, tighter padding, consistent info section
+  - Better badge design: tighter padding (`py-0.5`)
+  - Smaller wishlist button: `h-8 w-8` with `h-3.5 w-3.5` heart icon
+  - Added "Curated for you" subtitle above section title
+  - Warmer background: `bg-[#f7f6f4]` instead of `bg-[#f5f5f5]`
+  - Removed `[grid-auto-rows:1fr]` arbitrary value, using `items-start` for clean alignment
+  - Reduced image hover scale from `scale-105` to `scale-[1.04]` for subtlety
+
+Stage Summary:
+- Video player no longer shows Instagram links/branding — uses native <video> for resolved URLs
+- Backend video resolver API handles Instagram, YouTube, direct URLs, and TikTok
+- Graceful fallback when video can't be resolved (shows thumbnail + message)
+- Featured products grid now professionally aligned with consistent card heights
+- ESLint: 0 errors, 0 warnings
+- Dev server compiles successfully

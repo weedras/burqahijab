@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Minus, Plus, Heart, ShoppingBag, Star, Truck, Shield, RotateCcw, Play, Film, Volume2, VolumeX, X } from 'lucide-react';
+import { ArrowLeft, Minus, Plus, Heart, ShoppingBag, Star, Truck, Shield, RotateCcw, Play, Film, Volume2, VolumeX, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
@@ -215,62 +215,24 @@ function YouTubePlayer({ videoId, thumbnailUrl }: { videoId: string; thumbnailUr
   );
 }
 
-/** Instagram video player — shows a clean thumbnail + play button, opens embed on tap */
-function InstagramPlayer({ videoId }: { videoId: string }) {
-  const [playing, setPlaying] = useState(false);
-  const [thumbnail, setThumbnail] = useState<string | null>(null);
-
-  // Try to get a thumbnail from Instagram oEmbed
-  useEffect(() => {
-    fetch(`/api/video-thumbnail?url=${encodeURIComponent(`https://www.instagram.com/reel/${videoId}/`)}`)
-      .then(r => r.json())
-      .then(data => { if (data.thumbnail) setThumbnail(data.thumbnail); })
-      .catch(() => {});
-  }, [videoId]);
-
+/** Clean fallback for videos that cannot be resolved to a direct URL */
+function VideoUnavailableFallback({ thumbnail }: { thumbnail?: string | null }) {
   return (
-    <div className="relative w-full h-full bg-gradient-to-br from-purple-900/40 via-gray-900/60 to-pink-900/40">
-      {playing ? (
-        <div className="relative w-full h-full">
-          <iframe
-            src={`https://www.instagram.com/reel/${videoId}/embed/`}
-            className="absolute inset-0 w-full h-full scale-125 origin-center"
-            allow="autoplay; clipboard-write; encrypted-media"
-            allowFullScreen
-            title="Product video"
-            style={{ border: 0, pointerEvents: 'auto' }}
-          />
-          <button
-            className="absolute top-2 right-2 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-black/60 text-white backdrop-blur-sm hover:bg-black/80 transition-colors"
-            onClick={() => setPlaying(false)}
-          >
-            <X className="h-3.5 w-3.5" />
-          </button>
-        </div>
-      ) : (
-        <button
-          className="relative w-full h-full flex items-center justify-center cursor-pointer group/vid"
-          onClick={() => setPlaying(true)}
-        >
-          {thumbnail && (
-            <img
-              src={thumbnail}
-              alt="Video thumbnail"
-              className="absolute inset-0 w-full h-full object-cover"
-            />
-          )}
-          <div className={cn(
-            "absolute inset-0 transition-colors",
-            thumbnail ? "bg-black/25 group-hover/vid:bg-black/40" : ""
-          )} />
-          <div className="relative z-10 flex flex-col items-center gap-3">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-pink-500 shadow-lg shadow-purple-500/30 transition-transform group-hover/vid:scale-110">
-              <Play className="h-7 w-7 fill-white text-white ml-1" />
-            </div>
-            <span className="text-xs font-medium text-white/90 uppercase tracking-widest">Tap to Play</span>
-          </div>
-        </button>
+    <div className="relative w-full h-full flex flex-col items-center justify-center bg-[#1A1A1A]">
+      {thumbnail && (
+        <img src={thumbnail} alt="" className="absolute inset-0 w-full h-full object-cover opacity-20 blur-sm" />
       )}
+      <div className="relative z-10 flex flex-col items-center gap-4 text-center px-8">
+        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/5 border border-white/10">
+          <Film className="h-7 w-7 text-white/25" />
+        </div>
+        <div>
+          <p className="text-sm font-medium text-white/40 mb-1">Video unavailable</p>
+          <p className="text-xs text-white/20 leading-relaxed max-w-[200px]">
+            Direct playback not available for this source. Use a direct .mp4 video URL for best results.
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
@@ -296,6 +258,48 @@ function ProductDetailContent({ product }: { product: Product }) {
 
   // Parse video URL
   const videoInfo = useMemo(() => product.videoUrl ? parseVideoUrl(product.videoUrl) : null, [product.videoUrl]);
+
+  // Resolve video (especially Instagram) to a direct playable URL
+  const [resolvedVideoUrl, setResolvedVideoUrl] = useState<string | null>(null);
+  const [resolvedThumbnail, setResolvedThumbnail] = useState<string | null>(null);
+  const [videoResolving, setVideoResolving] = useState(false);
+
+  useEffect(() => {
+    if (!product.videoUrl) return;
+    // Only resolve URLs that aren't already direct or YouTube
+    if (videoInfo?.type === 'direct' || videoInfo?.type === 'youtube') return;
+
+    let active = true;
+
+    // Defer synchronous setState to microtask to satisfy react-hooks rule
+    Promise.resolve().then(() => {
+      if (!active) return;
+      setVideoResolving(true);
+    });
+
+    // Try to resolve the video URL to a direct .mp4
+    fetch(`/api/resolve-video?url=${encodeURIComponent(product.videoUrl)}`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (!active) return;
+        if (data.videoUrl) setResolvedVideoUrl(data.videoUrl);
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (active) setVideoResolving(false);
+      });
+
+    // Also try to get a thumbnail
+    fetch(`/api/video-thumbnail?url=${encodeURIComponent(product.videoUrl)}`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (!active) return;
+        if (data.thumbnail) setResolvedThumbnail(data.thumbnail);
+      })
+      .catch(() => {});
+
+    return () => { active = false; };
+  }, [product.videoUrl, videoInfo?.type]);
   const totalSlides = product.images.length + (videoInfo ? 1 : 0);
   const isVideoSlide = videoInfo ? selectedSlide === product.images.length : false;
   const hasGallery = totalSlides > 1 || videoInfo ? true : false;
@@ -367,14 +371,28 @@ function ProductDetailContent({ product }: { product: Product }) {
             {/* Video slide — native player, no links */}
             {isVideoSlide && videoInfo && (
               <div className="aspect-[3/4] w-full overflow-hidden">
+                {/* Direct video — native player */}
                 {videoInfo.type === 'direct' && (
                   <NativeVideoPlayer src={videoInfo.embedUrl} />
                 )}
+                {/* YouTube — clean embed player */}
                 {videoInfo.type === 'youtube' && (
                   <YouTubePlayer videoId={videoInfo.videoId} thumbnailUrl={videoInfo.thumbnailUrl} />
                 )}
+                {/* Instagram / other — resolve to direct URL or show fallback */}
                 {videoInfo.type === 'instagram' && (
-                  <InstagramPlayer videoId={videoInfo.videoId} />
+                  videoResolving ? (
+                    <div className="w-full h-full flex items-center justify-center bg-[#1A1A1A]">
+                      <div className="flex flex-col items-center gap-3">
+                        <Loader2 className="h-8 w-8 text-[#d79c4a] animate-spin" />
+                        <span className="text-xs text-gray-500">Loading video…</span>
+                      </div>
+                    </div>
+                  ) : resolvedVideoUrl ? (
+                    <NativeVideoPlayer src={resolvedVideoUrl} poster={resolvedThumbnail || undefined} />
+                  ) : (
+                    <VideoUnavailableFallback thumbnail={resolvedThumbnail} />
+                  )
                 )}
               </div>
             )}
@@ -434,8 +452,8 @@ function ProductDetailContent({ product }: { product: Product }) {
                       : 'ring-1 ring-border opacity-60 hover:opacity-100 hover:ring-2 hover:ring-[#d79c4a]'
                   )}
                 >
-                  {videoInfo.thumbnailUrl ? (
-                    <img src={videoInfo.thumbnailUrl} alt="Video" className="h-full w-full object-cover" />
+                  {(resolvedThumbnail || videoInfo.thumbnailUrl) ? (
+                    <img src={resolvedThumbnail || videoInfo.thumbnailUrl} alt="Video" className="h-full w-full object-cover" />
                   ) : (
                     <div className="h-full w-full bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">
                       <Play className="h-4 w-4 fill-white text-white" />
