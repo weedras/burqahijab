@@ -307,10 +307,10 @@ export function ARViewModal({
                 className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-4 bg-[#0A0A0A]/95"
               >
                 <Loader2 className="h-10 w-10 animate-spin text-[#d79c4a]" />
-                <p className="text-sm font-medium text-white/80 font-[family-name:var(--font-inter)]">
+                <p className="text-sm font-medium text-white/80">
                   Initializing camera…
                 </p>
-                <p className="text-xs text-white/40 font-[family-name:var(--font-inter)] max-w-[260px] text-center">
+                <p className="text-xs text-white/40 max-w-[260px] text-center">
                   Please allow camera access when prompted. We need your camera to show the AR preview.
                 </p>
               </motion.div>
@@ -328,16 +328,16 @@ export function ARViewModal({
                   <ShieldAlert className="h-8 w-8 text-red-400" />
                 </div>
                 <div className="text-center">
-                  <h3 className="text-lg font-semibold text-white font-[family-name:var(--font-inter)]">
+                  <h3 className="text-lg font-semibold text-white">
                     Camera Access Denied
                   </h3>
-                  <p className="mt-2 text-sm text-white/50 font-[family-name:var(--font-inter)] max-w-[300px]">
+                  <p className="mt-2 text-sm text-white/50 max-w-[300px]">
                     Please enable camera permissions in your browser settings to use the AR View feature.
                   </p>
                 </div>
                 <Button
                   onClick={retryCamera}
-                  className="rounded-lg bg-[#d79c4a] px-6 text-sm font-semibold text-[#0A0A0A] hover:bg-[#c48a35] font-[family-name:var(--font-inter)]"
+                  className="rounded-lg bg-[#d79c4a] px-6 text-sm font-semibold text-[#0A0A0A] hover:bg-[#c48a35]"
                 >
                   <RotateCcw className="mr-2 h-4 w-4" />
                   Try Again
@@ -357,17 +357,17 @@ export function ARViewModal({
                   <Camera className="h-8 w-8 text-amber-400" />
                 </div>
                 <div className="text-center">
-                  <h3 className="text-lg font-semibold text-white font-[family-name:var(--font-inter)]">
+                  <h3 className="text-lg font-semibold text-white">
                     Camera Not Available
                   </h3>
-                  <p className="mt-2 text-sm text-white/50 font-[family-name:var(--font-inter)] max-w-[300px]">
+                  <p className="mt-2 text-sm text-white/50 max-w-[300px]">
                     No camera was detected on this device. The AR View requires a camera to function.
                   </p>
                 </div>
                 <Button
                   variant="outline"
                   onClick={handleClose}
-                  className="rounded-lg border-white/20 px-6 text-sm font-semibold text-white hover:bg-white/10 font-[family-name:var(--font-inter)]"
+                  className="rounded-lg border-white/20 px-6 text-sm font-semibold text-white hover:bg-white/10"
                 >
                   Go Back
                 </Button>
@@ -386,16 +386,16 @@ export function ARViewModal({
                   <ShieldAlert className="h-8 w-8 text-red-400" />
                 </div>
                 <div className="text-center">
-                  <h3 className="text-lg font-semibold text-white font-[family-name:var(--font-inter)]">
+                  <h3 className="text-lg font-semibold text-white">
                     Camera Error
                   </h3>
-                  <p className="mt-2 text-sm text-white/50 font-[family-name:var(--font-inter)] max-w-[300px]">
+                  <p className="mt-2 text-sm text-white/50 max-w-[300px]">
                     An unexpected error occurred while accessing the camera. Please try again.
                   </p>
                 </div>
                 <Button
                   onClick={retryCamera}
-                  className="rounded-lg bg-[#d79c4a] px-6 text-sm font-semibold text-[#0A0A0A] hover:bg-[#c48a35] font-[family-name:var(--font-inter)]"
+                  className="rounded-lg bg-[#d79c4a] px-6 text-sm font-semibold text-[#0A0A0A] hover:bg-[#c48a35]"
                 >
                   <RotateCcw className="mr-2 h-4 w-4" />
                   Retry
@@ -455,10 +455,10 @@ export function ARViewModal({
                     transition={{ delay: 0.3, duration: 0.3 }}
                     className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent px-4 py-5 pt-10"
                   >
-                    <p className="text-xs font-semibold uppercase tracking-widest text-[#d79c4a] font-[family-name:var(--font-inter)]">
+                    <p className="text-xs font-semibold uppercase tracking-widest text-[#d79c4a]">
                       AR Preview
                     </p>
-                    <p className="mt-1 text-sm font-medium text-white font-[family-name:var(--font-inter)]">
+                    <p className="mt-1 text-sm font-medium text-white">
                       {product.name}
                     </p>
                   </motion.div>
@@ -473,7 +473,7 @@ export function ARViewModal({
                       key={idx}
                       onClick={() => setSelectedImageIndex(idx)}
                       className={cn(
-                        'h-2 rounded-full transition-all duration-300 font-[family-name:var(--font-inter)]',
+                        'h-2 rounded-full transition-all duration-300',
                         selectedImageIndex === idx
                           ? 'w-6 bg-[#d79c4a]'
                           : 'w-2 bg-white/40 hover:bg-white/60'
@@ -495,7 +495,7 @@ export function ARViewModal({
                 {/* Branding */}
                 <div className="flex items-center gap-3 rounded-full bg-black/50 px-4 py-2.5 backdrop-blur-md">
                   <Camera className="h-4 w-4 text-[#d79c4a]" />
-                  <span className="text-xs font-semibold uppercase tracking-widest text-white/90 font-[family-name:var(--font-inter)]">
+                  <span className="text-xs font-semibold uppercase tracking-widest text-white/90">
                     AR View
                   </span>
                 </div>
@@ -735,10 +735,10 @@ export function ARViewButton({ onClick, className, productName }: ARViewButtonPr
         <Camera className="h-4 w-4 text-[#0A0A0A]" />
       </div>
       <div className="flex flex-col items-start">
-        <span className="text-xs font-bold uppercase tracking-widest text-white font-[family-name:var(--font-inter)]">
+        <span className="text-xs font-bold uppercase tracking-widest text-white">
           View in AR
         </span>
-        <span className="text-[10px] text-white/50 font-[family-name:var(--font-inter)]">
+        <span className="text-[10px] text-white/50">
           Try it on your space
         </span>
       </div>

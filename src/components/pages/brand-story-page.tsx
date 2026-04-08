@@ -124,7 +124,7 @@ export function BrandStoryPage() {
             <Badge variant="secondary" className="mb-4 bg-[#d79c4a]/10 text-[#d79c4a] border-[#d79c4a]/20">
               Our Journey
             </Badge>
-            <h1 className="mb-4 text-4xl font-bold tracking-tight text-gray-900 dark:text-white md:text-6xl ">
+            <h1 className="page-title mb-4 text-4xl tracking-tight text-gray-900 dark:text-white md:text-6xl ">
               The BurqaHijab Story
             </h1>
             <p className="mx-auto max-w-2xl text-lg text-gray-500 dark:text-gray-400 ">

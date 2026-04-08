@@ -42,7 +42,7 @@ export function AIStylingSection() {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
             <div className="absolute bottom-6 left-6">
-              <span className="rounded-full bg-[#d79c4a]/20 px-3 py-1 text-xs font-medium text-[#d79c4a] backdrop-blur-sm font-[family-name:var(--font-inter)]">
+              <span className="rounded-full bg-[#d79c4a]/20 px-3 py-1 text-xs font-medium text-[#d79c4a] backdrop-blur-sm">
                 AI-Powered Styling
               </span>
             </div>
@@ -56,10 +56,10 @@ export function AIStylingSection() {
             transition={{ duration: 0.7 }}
             className="flex flex-col justify-center"
           >
-            <h2 className="text-3xl font-normal tracking-tight sm:text-4xl font-[family-name:var(--font-playfair)] text-foreground">
+            <h2 className="page-title text-3xl tracking-tight sm:text-4xl text-foreground">
               AI-Curated Styling
             </h2>
-            <p className="mt-4 text-base leading-relaxed text-muted-foreground font-[family-name:var(--font-inter)]">
+            <p className="mt-4 text-base leading-relaxed text-muted-foreground">
               Let our AI fashion advisor create the perfect look for you. Our
               intelligent styling engine considers your preferences, occasion, and
               the latest trends to curate personalized outfit suggestions.
@@ -90,10 +90,10 @@ export function AIStylingSection() {
 
                   {/* Info */}
                   <div className="flex-1 min-w-0">
-                    <h4 className="truncate text-sm font-medium text-foreground font-[family-name:var(--font-inter)]">
+                    <h4 className="truncate text-sm font-medium text-foreground">
                       {product.name}
                     </h4>
-                    <p className="text-sm text-[#d79c4a] font-[family-name:var(--font-inter)]">
+                    <p className="text-sm text-[#d79c4a]">
                       {formatPrice(product.salePrice ?? product.price)}
                     </p>
                   </div>
@@ -111,7 +111,7 @@ export function AIStylingSection() {
                         product.sizes[0] || 'One Size'
                       );
                     }}
-                    className="h-8 flex-shrink-0 rounded-lg border-[#d79c4a]/30 text-xs text-[#d79c4a] hover:bg-[#d79c4a]/10 hover:border-[#d79c4a] active:scale-95 font-[family-name:var(--font-inter)]"
+                    className="h-8 flex-shrink-0 rounded-lg border-[#d79c4a]/30 text-xs text-[#d79c4a] hover:bg-[#d79c4a]/10 hover:border-[#d79c4a] active:scale-95"
                   >
                     <ShoppingCart className="h-3.5 w-3.5" />
                   </Button>

@@ -490,7 +490,7 @@ function ProductDetailContent({ product }: { product: Product }) {
                 {collectionName}
               </p>
             )}
-            <h1 className=" text-3xl font-normal leading-tight text-gray-900 dark:text-white lg:text-[2.5rem]">
+            <h1 className="page-title text-3xl leading-tight text-gray-900 dark:text-white lg:text-[2.5rem]">
               {product.name}
             </h1>
           </div>

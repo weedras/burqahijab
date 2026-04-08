@@ -79,7 +79,7 @@ export function AboutPage() {
             transition={{ duration: 0.6 }}
           >
             <Sparkles className="mx-auto mb-4 h-12 w-12 text-[#d79c4a]" />
-            <h1 className="mb-3 text-4xl font-bold tracking-tight text-gray-900 dark:text-white md:text-5xl ">
+            <h1 className="page-title mb-3 text-4xl tracking-tight text-gray-900 dark:text-white md:text-5xl ">
               About BurqaHijab
             </h1>
             <p className="mx-auto max-w-2xl text-base text-gray-500 dark:text-gray-400 ">

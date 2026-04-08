@@ -187,7 +187,7 @@ export function CheckoutPage() {
             <ArrowLeft className="h-4 w-4" />
             <span>{step === 'information' ? 'Back to Shop' : 'Back'}</span>
           </button>
-          <h1 className="mt-3 text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+          <h1 className="page-title mt-3 text-2xl sm:text-3xl text-gray-900 dark:text-white">
             Checkout
           </h1>
           {/* Step indicator */}

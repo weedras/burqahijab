@@ -44,7 +44,7 @@ export function WishlistPage() {
             <div className="h-5 w-px bg-gray-200 dark:bg-gray-700" />
             <div className="flex items-center gap-2">
               <Heart className="h-4 w-4 text-red-400 fill-red-400" />
-              <h1 className=" text-xl text-gray-900 dark:text-white">
+              <h1 className="page-title text-xl text-gray-900 dark:text-white">
                 My Wishlist
               </h1>
             </div>

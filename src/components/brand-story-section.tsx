@@ -36,17 +36,17 @@ export function BrandStorySection() {
           viewport={{ once: true, margin: '-50px' }}
           transition={{ duration: 0.8 }}
         >
-          <h2 className="mb-6 text-4xl font-light leading-tight tracking-tight sm:text-5xl lg:text-6xl font-[family-name:var(--font-playfair)] text-white">
+          <h2 className="page-title mb-6 text-4xl font-light leading-tight tracking-tight sm:text-5xl lg:text-6xl text-white">
             Crafted with Purpose
           </h2>
 
-          <p className="mx-auto mb-4 max-w-2xl text-sm leading-relaxed text-white/80 font-[family-name:var(--font-inter)]">
+          <p className="mx-auto mb-4 max-w-2xl text-sm leading-relaxed text-white/80">
             Every stitch tells a story. At BurqaHijab, we believe that
             modesty and luxury are not opposites — they are companions. Our
             abayas and hijabs are crafted by skilled artisans in Pakistan using
             the finest fabrics sourced from around the world.
           </p>
-          <p className="mx-auto mb-10 max-w-2xl text-sm leading-relaxed text-white/80 font-[family-name:var(--font-inter)]">
+          <p className="mx-auto mb-10 max-w-2xl text-sm leading-relaxed text-white/80">
             From the flowing drape of our chiffon abayas to the soft touch of
             our silk hijabs, every piece is designed to make you feel confident,
             beautiful, and true to yourself.
@@ -54,7 +54,7 @@ export function BrandStorySection() {
 
           <Button
             onClick={scrollToStory}
-            className="h-12 rounded-full bg-[#d79c4a] px-8 text-sm font-bold uppercase tracking-widest text-[#1A1A1A] transition-all hover:bg-[#c48a35] hover:shadow-[0_0_30px_rgba(215,156,74,0.3)] font-[family-name:var(--font-inter)]"
+            className="h-12 rounded-full bg-[#d79c4a] px-8 text-sm font-bold uppercase tracking-widest text-[#1A1A1A] transition-all hover:bg-[#c48a35] hover:shadow-[0_0_30px_rgba(215,156,74,0.3)]"
           >
             Discover Our Story
           </Button>

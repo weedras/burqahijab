@@ -336,8 +336,7 @@ export function NewArrivals() {
                       <feature.icon className="w-6 h-6 text-[#d79c4a]" />
                     </div>
                     <h4
-                      className="text-base font-bold text-gray-900 dark:text-white mb-2"
-                      style={{ fontFamily: 'Playfair Display, serif' }}
+                      className="page-title text-base text-gray-900 dark:text-white mb-2"
                     >
                       {feature.title}
                     </h4>

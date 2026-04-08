@@ -540,7 +540,7 @@ export function ShopPage() {
               <span className="hidden sm:inline">Home</span>
             </button>
             <Separator orientation="vertical" className="h-5 bg-gray-200 dark:bg-gray-700" />
-            <h1 className=" text-2xl sm:text-3xl font-semibold text-gray-900 dark:text-white">
+            <h1 className="page-title text-2xl sm:text-3xl text-gray-900 dark:text-white">
               {headerTitle}
             </h1>
             <span className="text-sm text-gray-500 dark:text-gray-400 ">
