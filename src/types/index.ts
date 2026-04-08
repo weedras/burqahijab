@@ -68,4 +68,4 @@ export interface Testimonial {
 
 export type ViewMode = 'home' | 'shop' | 'product' | 'cart' | 'checkout' | 'admin' | 'faq' | 'size-guide' | 'shipping' | 'returns' | 'contact' | 'about' | 'brand-story-page' | 'careers' | 'wishlist';
 
-export type AdminSection = 'dashboard' | 'orders' | 'products' | 'collections' | 'categories' | 'testimonials';
+export type AdminSection = 'dashboard' | 'orders' | 'products' | 'collections' | 'categories' | 'testimonials' | 'storefront';

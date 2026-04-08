@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Minus, Plus, Heart, ShoppingBag, Star, Truck, Shield, RotateCcw } from 'lucide-react';
+import { ArrowLeft, Minus, Plus, Heart, ShoppingBag, Star, Truck, Shield, RotateCcw, Play, Film, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
@@ -15,6 +15,23 @@ import { formatPrice } from '@/lib/format';
 import { cn } from '@/lib/utils';
 import { ARViewModal, ARViewButton } from '@/components/ar-view';
 import type { Product } from '@/types';
+
+/** Convert a video URL into an embeddable URL */
+function getEmbedUrl(url: string): { type: 'iframe' | 'video'; src: string } | null {
+  if (!url) return null;
+  // YouTube watch URL
+  const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/);
+  if (ytMatch) return { type: 'iframe', src: `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=0&rel=0` };
+  // YouTube Shorts
+  const ytShortMatch = url.match(/youtube\.com\/shorts\/([\w-]+)/);
+  if (ytShortMatch) return { type: 'iframe', src: `https://www.youtube.com/embed/${ytShortMatch[1]}?autoplay=0&rel=0` };
+  // Instagram Reel
+  const igMatch = url.match(/instagram\.com\/(?:reel|p)\/([\w-]+)/);
+  if (igMatch) return { type: 'iframe', src: `https://www.instagram.com/reel/${igMatch[1]}/embed/` };
+  // Direct video file
+  if (url.match(/\.(mp4|webm|ogg)(\?|$)/i)) return { type: 'video', src: url };
+  return null;
+}
 
 function StarRating({ rating, count }: { rating: number; count: number }) {
   return (
@@ -106,6 +123,7 @@ function ProductDetailContent({ product }: { product: Product }) {
   const [quantity, setQuantity] = useState(1);
   const [addedFeedback, setAddedFeedback] = useState(false);
   const [arOpen, setArOpen] = useState(false);
+  const [videoOpen, setVideoOpen] = useState(false);
 
   const displayPrice = product.salePrice ?? product.price;
   const hasMultipleColors = product.colors.length > 1;
@@ -186,9 +204,70 @@ function ProductDetailContent({ product }: { product: Product }) {
             </div>
           </motion.div>
 
-          {/* Thumbnails */}
-          {product.images.length > 1 && (
+          {/* Video play button on main image */}
+          {product.videoUrl && getEmbedUrl(product.videoUrl) && (
+            <button
+              onClick={() => setVideoOpen(true)}
+              className="absolute bottom-4 left-4 flex items-center gap-2 rounded-full bg-black/70 px-4 py-2 text-white backdrop-blur-sm transition-all hover:bg-black/90 hover:scale-105 z-10"
+              aria-label="Play video"
+            >
+              <Play className="h-4 w-4 fill-white" />
+              <span className="text-xs font-medium">Watch Video</span>
+            </button>
+          )}
+
+          {/* Video Modal */}
+          {videoOpen && product.videoUrl && (() => {
+            const embed = getEmbedUrl(product.videoUrl);
+            if (!embed) return null;
+            return (
+              <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-4" onClick={() => setVideoOpen(false)}>
+                <div className="relative w-full max-w-3xl" onClick={(e) => e.stopPropagation()}>
+                  <button
+                    onClick={() => setVideoOpen(false)}
+                    className="absolute -top-10 right-0 flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
+                    aria-label="Close video"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                  <div className="overflow-hidden rounded-xl bg-black">
+                    {embed.type === 'iframe' ? (
+                      <iframe
+                        src={embed.src}
+                        className="aspect-video w-full"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                        title="Product video"
+                      />
+                    ) : (
+                      <video
+                        src={embed.src}
+                        controls
+                        autoPlay
+                        className="aspect-video w-full"
+                      />
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
+
+          {/* Gallery: thumbnails + video button */}
+          {(product.videoUrl && getEmbedUrl(product.videoUrl) ? true : false) || product.images.length > 1 ? (
             <div className="flex gap-3">
+              {/* Video thumbnail in gallery */}
+              {product.videoUrl && getEmbedUrl(product.videoUrl) && (
+                <button
+                  onClick={() => setVideoOpen(true)}
+                  className="relative h-20 w-16 flex-shrink-0 overflow-hidden rounded-lg ring-1 ring-border transition-all hover:ring-2 hover:ring-[#d79c4a] flex flex-col items-center justify-center gap-0.5 bg-gray-100 dark:bg-[#1A1A1A]"
+                >
+                  <Film className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-[7px] text-muted-foreground font-medium leading-none">Video</span>
+                </button>
+              )}
+
+              {/* Image thumbnails */}
               {product.images.map((_, idx) => (
                 <button
                   key={idx}
@@ -210,7 +289,7 @@ function ProductDetailContent({ product }: { product: Product }) {
                 </button>
               ))}
             </div>
-          )}
+          ) : null}
         </div>
 
         {/* Right Column - Product Info */}
