@@ -210,3 +210,28 @@ Stage Summary:
 - Consistent hierarchy now enforced: h1 (3xl+) > h2 (2xl+) > h3 (base/sm) > body (sm/base) > caption (xs)
 - Zero lint errors after all changes
 
+---
+Task ID: 5
+Agent: main
+Task: Fix product photos missing — root cause diagnosis and fix
+
+Work Log:
+- Investigated the complete image pipeline: upload API → DB storage → API response → frontend rendering
+- Confirmed all images exist on disk (29 seed images + 1 uploaded)
+- Confirmed dev server serves images correctly (curl returns 200 OK with correct Content-Type)
+- Confirmed API returns correct image data (JSON arrays with valid URL strings)
+- Used agent-browser to visually inspect the site — discovered product images were NOT rendering despite being loaded
+- Browser DOM inspection revealed: product `<img>` elements have `naturalWidth > 0` and `complete: true` but `offsetHeight: 0`
+- ROOT CAUSE: `ProductImage` component wraps `<img>` in `<div className="relative">`. When the image uses `absolute inset-0` positioning (e.g., in featured products grid), the wrapper div collapses to 0 height because absolutely-positioned children don't contribute to parent dimensions
+- FIX: Updated `ProductImage` wrapper to use `absolute inset-0` when the passed className includes `absolute`, otherwise `relative`. This makes the wrapper fill its parent container when the image is absolutely positioned
+- Verified fix with browser agent: product images now render correctly on home page (Featured Products), shop page (product grid), and product detail page
+- Verified footer: phone number visible, social icons present, all content displaying correctly
+- Verified no console errors in browser
+- Font size re-audit: fixed 4 remaining issues (new-arrivals text-[13px]→text-sm, product-detail price text-lg→text-base, brand-story-section body text-base→text-sm x2)
+
+Stage Summary:
+- ROOT CAUSE: ProductImage wrapper `<div className="relative">` had zero height when images used absolute positioning, causing all product photos to be invisible despite being loaded
+- Fix: Conditional wrapper class — `absolute inset-0` when className contains 'absolute', `relative` otherwise
+- Impact: Fixed product photos across ALL pages — home (Featured Products), shop (product grid), product detail (gallery)
+- Additional: 4 font size consistency fixes across new-arrivals.tsx, product-detail.tsx, brand-story-section.tsx
+

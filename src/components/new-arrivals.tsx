@@ -145,7 +145,7 @@ function FeaturedProductCard({ product, index }: { product: Product; index: numb
         {/* ── Info Section — consistent height with flex ── */}
         <div className="flex flex-col flex-1 px-4 pt-3.5 pb-4">
           {/* Product name — clamp to 2 lines */}
-          <h3 className="text-[13px] font-semibold leading-snug text-gray-900 dark:text-white line-clamp-2 min-h-[2.5rem] group-hover:text-[#d79c4a] transition-colors duration-300">
+          <h3 className="text-sm font-semibold leading-snug text-gray-900 dark:text-white line-clamp-2 min-h-[2.5rem] group-hover:text-[#d79c4a] transition-colors duration-300">
             {product.name}
           </h3>
 

@@ -71,8 +71,16 @@ export function ProductImage({
     );
   }
 
+  // When className uses absolute positioning (e.g. "absolute inset-0 w-full h-full"),
+  // the wrapper must also fill its parent — otherwise it collapses to 0 height
+  // because absolute children don't contribute to parent dimensions.
+  const usesAbsolute = className?.includes('absolute');
+  const wrapperClassName = usesAbsolute
+    ? 'absolute inset-0'
+    : 'relative';
+
   return (
-    <div className="relative" key={retryGeneration}>
+    <div className={wrapperClassName} key={retryGeneration}>
       {status === 'loading' && (
         <div className={cn('absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-[#141414] z-10', fallbackClassName)}>
           <Loader2 className="h-5 w-5 text-[#d79c4a] animate-spin" />

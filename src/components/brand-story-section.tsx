@@ -40,13 +40,13 @@ export function BrandStorySection() {
             Crafted with Purpose
           </h2>
 
-          <p className="mx-auto mb-4 max-w-2xl text-base leading-relaxed text-white/80 font-[family-name:var(--font-inter)]">
+          <p className="mx-auto mb-4 max-w-2xl text-sm leading-relaxed text-white/80 font-[family-name:var(--font-inter)]">
             Every stitch tells a story. At BurqaHijab.shop, we believe that
             modesty and luxury are not opposites — they are companions. Our
             abayas and hijabs are crafted by skilled artisans in Pakistan using
             the finest fabrics sourced from around the world.
           </p>
-          <p className="mx-auto mb-10 max-w-2xl text-base leading-relaxed text-white/80 font-[family-name:var(--font-inter)]">
+          <p className="mx-auto mb-10 max-w-2xl text-sm leading-relaxed text-white/80 font-[family-name:var(--font-inter)]">
             From the flowing drape of our chiffon abayas to the soft touch of
             our silk hijabs, every piece is designed to make you feel confident,
             beautiful, and true to yourself.

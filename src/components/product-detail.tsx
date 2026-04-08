@@ -505,7 +505,7 @@ function ProductDetailContent({ product }: { product: Product }) {
                 <span className="text-2xl font-semibold text-[#d79c4a] ">
                   {formatPrice(product.salePrice)}
                 </span>
-                <span className="text-lg text-gray-500 dark:text-gray-400 line-through ">
+                <span className="text-base text-gray-500 dark:text-gray-400 line-through ">
                   {formatPrice(product.price)}
                 </span>
                 <Badge className="rounded-md bg-red-500/10 px-2 py-0.5 text-xs font-semibold text-red-500 border-0 ">
