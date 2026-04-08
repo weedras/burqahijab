@@ -51,7 +51,7 @@ export function AIStylingSection() {
             transition={{ duration: 0.7 }}
             className="flex flex-col justify-center"
           >
-            <h2 className="text-3xl font-normal tracking-tight sm:text-4xl font-[family-name:var(--font-dm-serif)] text-foreground">
+            <h2 className="text-3xl font-normal tracking-tight sm:text-4xl font-[family-name:var(--font-playfair)] text-foreground">
               AI-Curated Styling
             </h2>
             <p className="mt-4 text-base leading-relaxed text-muted-foreground font-[family-name:var(--font-inter)]">

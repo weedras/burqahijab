@@ -39,7 +39,7 @@ export function BrandStorySection() {
           viewport={{ once: true, margin: '-50px' }}
           transition={{ duration: 0.8 }}
         >
-          <h2 className="mb-6 text-4xl font-light leading-tight tracking-tight sm:text-5xl lg:text-6xl font-[family-name:var(--font-cormorant)] text-white">
+          <h2 className="mb-6 text-4xl font-light leading-tight tracking-tight sm:text-5xl lg:text-6xl font-[family-name:var(--font-playfair)] text-white">
             Crafted with Purpose
           </h2>
 

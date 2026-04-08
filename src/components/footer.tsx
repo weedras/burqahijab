@@ -262,7 +262,7 @@ export function Footer() {
 
           {/* Column 2: Quick Links */}
           <div>
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-white mb-5" style={{ fontFamily: 'Cormorant Garamond, serif' }}>
+            <h3 className="text-sm font-semibold uppercase tracking-wider text-white mb-5" style={{ fontFamily: 'Playfair Display, serif' }}>
               Quick Links
             </h3>
             <ul className="space-y-3">
@@ -281,7 +281,7 @@ export function Footer() {
 
           {/* Column 3: Categories */}
           <div>
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-white mb-5" style={{ fontFamily: 'Cormorant Garamond, serif' }}>
+            <h3 className="text-sm font-semibold uppercase tracking-wider text-white mb-5" style={{ fontFamily: 'Playfair Display, serif' }}>
               Categories
             </h3>
             <ul className="space-y-3">
@@ -300,7 +300,7 @@ export function Footer() {
 
           {/* Column 4: Customer Service */}
           <div>
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-white mb-5" style={{ fontFamily: 'Cormorant Garamond, serif' }}>
+            <h3 className="text-sm font-semibold uppercase tracking-wider text-white mb-5" style={{ fontFamily: 'Playfair Display, serif' }}>
               Customer Service
             </h3>
             <ul className="space-y-3">

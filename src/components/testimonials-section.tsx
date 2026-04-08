@@ -117,7 +117,7 @@ export function TestimonialsSection() {
               {/* Author */}
               <h4
                 className="text-lg font-bold text-gray-900 dark:text-white"
-                style={{ fontFamily: 'Cormorant Garamond, serif' }}
+                style={{ fontFamily: 'Playfair Display, serif' }}
               >
                 {current.author}
               </h4>

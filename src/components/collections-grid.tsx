@@ -78,7 +78,7 @@ export function CollectionsGrid() {
               <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 text-white">
                 <h3
                   className="text-xl sm:text-2xl font-bold mb-1 sm:mb-2 transition-transform duration-300 group-hover:-translate-y-1"
-                  style={{ fontFamily: 'Cormorant Garamond, serif' }}
+                  style={{ fontFamily: 'Playfair Display, serif' }}
                 >
                   {category.name}
                 </h3>

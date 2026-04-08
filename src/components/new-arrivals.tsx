@@ -288,7 +288,7 @@ export function NewArrivals() {
                     </div>
                     <h4
                       className="text-base font-bold text-gray-900 dark:text-white mb-2"
-                      style={{ fontFamily: 'Cormorant Garamond, serif' }}
+                      style={{ fontFamily: 'Playfair Display, serif' }}
                     >
                       {feature.title}
                     </h4>

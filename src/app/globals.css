@@ -11,8 +11,8 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-inter);
-  --font-serif: var(--font-cormorant);
-  --font-display: var(--font-dm-serif);
+  --font-serif: var(--font-playfair);
+  --font-display: var(--font-playfair);
   --font-mono: var(--font-geist-mono);
 
   /* Brand accent colors */
@@ -180,7 +180,7 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-family: var(--font-inter), system-ui, sans-serif;
+    font-family: var(--font-playfair), Georgia, serif;
   }
 }
 
@@ -256,7 +256,7 @@
 
 /* ========== SECTION TITLES (Reference style) ========== */
 .section-title {
-  font-family: var(--font-cormorant), serif;
+  font-family: var(--font-playfair), serif;
   font-size: 1.75rem;
   font-weight: 400;
   letter-spacing: 0.02em;

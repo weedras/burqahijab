@@ -153,3 +153,30 @@ Stage Summary:
 - Added `RESET_CODE` for password recovery flow
 - Login page now has a "Back to Store" button in the top-right corner
 - ESLint: 0 errors, 0 warnings
+
+---
+Task ID: 6
+Agent: Main Agent
+Task: Replace all fonts site-wide with Playfair Display
+
+Work Log:
+- Analyzed uploaded image using VLM — identified font as **Playfair Display** (elegant serif)
+- Updated `layout.tsx`: Replaced `Cormorant_Garamond` and `DM_Serif_Display` imports with `Playfair_Display` (weights 400-900)
+- Updated `globals.css`:
+  - `--font-serif` → `var(--font-playfair)`
+  - `--font-display` → `var(--font-playfair)`
+  - `body { font-family }` → `var(--font-playfair), Georgia, serif`
+  - `.section-title { font-family }` → `var(--font-playfair), serif`
+- Replaced all inline `fontFamily: 'Cormorant Garamond, serif'` with `'Playfair Display, serif'` in 8 files:
+  - `not-found.tsx`, `error.tsx`, `global-error.tsx` (error pages)
+  - `hero-section.tsx`, `collections-grid.tsx`, `testimonials-section.tsx` (homepage sections)
+  - `new-arrivals.tsx`, `footer.tsx` (storefront components)
+- Replaced Tailwind `font-[family-name:var(--font-cormorant)]` → `var(--font-playfair)` in 2 files:
+  - `brand-story-section.tsx`, `ai-styling-section.tsx`
+- Verified zero remaining Cormorant/DM Serif references across entire `src/`
+- ESLint: 0 errors, 0 warnings
+
+Stage Summary:
+- Playfair Display is now the site-wide default font (body, headings, sections, all pages)
+- All 10+ files with font references updated consistently
+- Elegant serif look applied across homepage, shop, product detail, error pages, footer, and all content pages
