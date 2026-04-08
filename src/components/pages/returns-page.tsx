@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import {
   ArrowLeft,
@@ -14,6 +15,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { useUIStore } from '@/stores/ui-store';
+import { useStoreSettings } from '@/stores/store-settings-store';
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 20 },
@@ -24,76 +26,79 @@ const fadeInUp = {
   }),
 };
 
-const returnSteps = [
-  {
-    step: 1,
-    title: 'Contact Us',
-    description:
-      'Send an email to hello@burqahijab.shop or WhatsApp us at +92 300 1234567 within 14 days of receiving your order. Include your order number and the reason for the return. Our team will respond within 24 hours with a return authorization and shipping instructions.',
-  },
-  {
-    step: 2,
-    title: 'Prepare Your Package',
-    description:
-      'Carefully pack the item in its original packaging with all tags still attached. Include the return authorization slip (provided by our team) inside the package. Seal the package securely and affix the return shipping label provided by our customer service team.',
-  },
-  {
-    step: 3,
-    title: 'Ship the Item Back',
-    description:
-      'Drop off the package at the nearest courier service location specified in your return instructions. For domestic returns in Karachi, Lahore, Islamabad, and Rawalpindi, we offer complimentary return pickup. For other locations, you will need to ship the item at your own cost, which will be reimbursed once the return is approved.',
-  },
-  {
-    step: 4,
-    title: 'Inspection & Processing',
-    description:
-      'Once we receive your returned item, our quality team will inspect it to ensure it meets our return conditions. This process typically takes 1–2 business days. You will receive a confirmation email once the inspection is complete.',
-  },
-  {
-    step: 5,
-    title: 'Refund or Exchange',
-    description:
-      'If your return is approved, your refund will be processed within 5–7 business days. Refunds are issued to the original payment method. For exchanges, the replacement item will be dispatched within 2–3 business days after the return is approved.',
-  },
-];
-
-const nonReturnableItems = [
-  {
-    item: 'Sale & Discounted Items',
-    reason: 'Products purchased during promotional sales, clearance events, or at any discounted price are final sale and cannot be returned or exchanged.',
-  },
-  {
-    item: 'Accessories',
-    reason: 'Pins, brooches, underscarves, and other small accessories are non-returnable for hygiene reasons. Please choose carefully when ordering accessories.',
-  },
-  {
-    item: 'Custom & Made-to-Order',
-    reason: 'Items that have been customized to your specifications or made-to-order specifically for you cannot be returned, as they cannot be resold.',
-  },
-  {
-    item: 'Worn or Washed Items',
-    reason: 'Items that show signs of wear, washing, alteration, perfume, or any damage caused by the customer are not eligible for return. All returned items must be in their original, unworn condition.',
-  },
-  {
-    item: 'Items Without Original Packaging',
-    reason: 'Returns must include all original packaging, tags, labels, and any complimentary items that came with the order. Items returned without these cannot be accepted.',
-  },
-];
-
-const returnConditions = [
-  'Items must be unworn, unwashed, and in their original condition',
-  'All original tags must still be attached to the garment',
-  'Items must be returned in their original packaging',
-  'Returns must be initiated within 14 days of delivery date',
-  'A valid proof of purchase (order number) is required',
-  'Items must not have any perfume, makeup, or deodorant marks',
-  'Items must not have been altered or tailored in any way',
-];
-
 export function ReturnsPage() {
   const navigateHome = useUIStore((s) => s.navigateHome);
   const navigateToContact = useUIStore((s) => s.navigateToContact);
   const navigateToShipping = useUIStore((s) => s.navigateToShipping);
+  const { settings, fetch } = useStoreSettings();
+
+  useEffect(() => { fetch(); }, [fetch]);
+
+  const returnSteps = useMemo(() => [
+    {
+      step: 1,
+      title: 'Contact Us',
+      description:
+        `Send an email to ${settings.contactEmail} or WhatsApp us at ${settings.phoneNumber} within ${settings.returnWindowDays} days of receiving your order. Include your order number and the reason for the return. Our team will respond within 24 hours with a return authorization and shipping instructions.`,
+    },
+    {
+      step: 2,
+      title: 'Prepare Your Package',
+      description:
+        'Carefully pack the item in its original packaging with all tags still attached. Include the return authorization slip (provided by our team) inside the package. Seal the package securely and affix the return shipping label provided by our customer service team.',
+    },
+    {
+      step: 3,
+      title: 'Ship the Item Back',
+      description:
+        'Drop off the package at the nearest courier service location specified in your return instructions. For domestic returns in Karachi, Lahore, Islamabad, and Rawalpindi, we offer complimentary return pickup. For other locations, you will need to ship the item at your own cost, which will be reimbursed once the return is approved.',
+    },
+    {
+      step: 4,
+      title: 'Inspection & Processing',
+      description:
+        'Once we receive your returned item, our quality team will inspect it to ensure it meets our return conditions. This process typically takes 1–2 business days. You will receive a confirmation email once the inspection is complete.',
+    },
+    {
+      step: 5,
+      title: 'Refund or Exchange',
+      description:
+        'If your return is approved, your refund will be processed within 5–7 business days. Refunds are issued to the original payment method. For exchanges, the replacement item will be dispatched within 2–3 business days after the return is approved.',
+    },
+  ], [settings.contactEmail, settings.phoneNumber, settings.returnWindowDays]);
+
+  const nonReturnableItems = [
+    {
+      item: 'Sale & Discounted Items',
+      reason: 'Products purchased during promotional sales, clearance events, or at any discounted price are final sale and cannot be returned or exchanged.',
+    },
+    {
+      item: 'Accessories',
+      reason: 'Pins, brooches, underscarves, and other small accessories are non-returnable for hygiene reasons. Please choose carefully when ordering accessories.',
+    },
+    {
+      item: 'Custom & Made-to-Order',
+      reason: 'Items that have been customized to your specifications or made-to-order specifically for you cannot be returned, as they cannot be resold.',
+    },
+    {
+      item: 'Worn or Washed Items',
+      reason: 'Items that show signs of wear, washing, alteration, perfume, or any damage caused by the customer are not eligible for return. All returned items must be in their original, unworn condition.',
+    },
+    {
+      item: 'Items Without Original Packaging',
+      reason: 'Returns must include all original packaging, tags, labels, and any complimentary items that came with the order. Items returned without these cannot be accepted.',
+    },
+  ];
+
+  const returnConditions = [
+    'Items must be unworn, unwashed, and in their original condition',
+    'All original tags must still be attached to the garment',
+    'Items must be returned in their original packaging',
+    `Returns must be initiated within ${settings.returnWindowDays} days of delivery date`,
+    'A valid proof of purchase (order number) is required',
+    'Items must not have any perfume, makeup, or deodorant marks',
+    'Items must not have been altered or tailored in any way',
+  ];
 
   return (
     <div className="min-h-screen bg-white dark:bg-[#0A0A0A]">
@@ -110,7 +115,7 @@ export function ReturnsPage() {
               Returns & Exchanges
             </h1>
             <p className="mx-auto max-w-2xl text-base text-gray-500 dark:text-gray-400 ">
-              Your satisfaction is our priority. We offer a hassle-free 14-day return
+              Your satisfaction is our priority. We offer a hassle-free {settings.returnWindowDays}-day return
               and exchange policy so you can shop with complete confidence. If you are not
               entirely happy with your purchase, we are here to make it right.
             </p>
@@ -143,10 +148,10 @@ export function ReturnsPage() {
                 <CheckCircle className="mt-1 h-6 w-6 shrink-0 text-[#d79c4a]" />
                 <div>
                   <h2 className="mb-2 text-xl font-semibold text-gray-900 dark:text-white ">
-                    14-Day Return Policy
+                    {settings.returnWindowDays}-Day Return Policy
                   </h2>
                   <p className="text-sm leading-relaxed text-gray-500 dark:text-gray-400 ">
-                    We offer a generous 14-day return window from the date your order
+                    We offer a generous {settings.returnWindowDays}-day return window from the date your order
                     is delivered. During this period, you can return any eligible item
                     that does not meet your expectations for a full refund or exchange.
                     We want you to love every purchase from BurqaHijab.shop, and if
@@ -279,7 +284,7 @@ export function ReturnsPage() {
                 <div className="grid gap-3 sm:grid-cols-2">
                   {[
                     { method: 'Credit/Debit Card', time: '5–7 business days' },
-                    { method: 'JazzCash / EasyPaisa', time: '3–5 business days' },
+                    { method: 'JazzCash / EasyPaisa', time: `${settings.refundDaysJazzCash} business days` },
                     { method: 'Bank Transfer', time: '3–5 business days' },
                     { method: 'Apple Pay / Google Pay', time: '5–10 business days' },
                   ].map((item) => (
@@ -321,7 +326,7 @@ export function ReturnsPage() {
               <div className="space-y-4 text-sm text-gray-500 dark:text-gray-400 ">
                 <p className="leading-relaxed">
                   We are happy to exchange your item for a different size or color
-                  within our 14-day return window. Exchanges are processed quickly
+                  within our {settings.returnWindowDays}-day return window. Exchanges are processed quickly
                   and efficiently to minimize any inconvenience.
                 </p>
                 <ul className="space-y-2">
@@ -376,7 +381,7 @@ export function ReturnsPage() {
                 <ul className="space-y-2">
                   {[
                     'Take clear photos of the damage or defect from multiple angles',
-                    'Email the photos along with your order number to hello@burqahijab.shop',
+                    'Email the photos along with your order number to ' + settings.contactEmail,
                     'We will arrange a free return pickup at your earliest convenience',
                     'Choose between a full refund or a replacement at no additional cost',
                     'Replacements are given priority and shipped within 24 hours of return approval',

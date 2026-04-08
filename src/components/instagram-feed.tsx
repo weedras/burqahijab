@@ -1,8 +1,10 @@
 'use client';
 
+import { useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { Instagram } from 'lucide-react';
+import { useStoreSettings } from '@/stores/store-settings-store';
 
 const instagramPosts = [
   { image: '/images/instagram/insta-1.jpg', alt: 'Instagram post 1' },
@@ -12,7 +14,23 @@ const instagramPosts = [
   { image: '/images/instagram/insta-5.jpg', alt: 'Instagram post 5' },
 ];
 
+function getInstagramHandle(url: string): string {
+  try {
+    const pathname = new URL(url).pathname.replace(/^\//, '');
+    return pathname ? `@${pathname}` : '@burqahijab';
+  } catch {
+    return '@burqahijab';
+  }
+}
+
 export function InstagramFeed() {
+  const { settings, fetch } = useStoreSettings();
+
+  useEffect(() => { fetch(); }, [fetch]);
+
+  const instagramUrl = settings.instagramUrl;
+  const instagramHandle = useMemo(() => getInstagramHandle(instagramUrl), [instagramUrl]);
+
   return (
     <section className="py-20 md:py-28 bg-white dark:bg-[#0A0A0A]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -28,13 +46,13 @@ export function InstagramFeed() {
           </h2>
           <div className="section-line" />
           <a
-            href="https://instagram.com/burqahijab"
+            href={instagramUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 mt-3 text-[#d79c4a] font-medium hover:text-[#c48a35] transition-colors"
           >
             <Instagram className="w-5 h-5" />
-            @burqahijab
+            {instagramHandle}
           </a>
         </motion.div>
 
@@ -42,7 +60,7 @@ export function InstagramFeed() {
           {instagramPosts.map((post, index) => (
             <motion.a
               key={post.alt}
-              href="https://instagram.com/burqahijab"
+              href={instagramUrl}
               target="_blank"
               rel="noopener noreferrer"
               initial={{ y: 40, opacity: 0 }}

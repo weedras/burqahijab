@@ -180,3 +180,45 @@ Stage Summary:
 - Playfair Display is now the site-wide default font (body, headings, sections, all pages)
 - All 10+ files with font references updated consistently
 - Elegant serif look applied across homepage, shop, product detail, error pages, footer, and all content pages
+
+---
+Task ID: 7
+Agent: Main Agent
+Task: Make all store info editable from admin + fix inconsistencies
+
+Work Log:
+- **Comprehensive audit** of all store info across 12+ files found massive hardcoded data:
+  - Phone numbers in 5 files, emails in 6 files, address in 2 files
+  - Business hours, social handles, shipping costs, return policy all hardcoded
+  - Shipping cost inconsistency: checkout used PKR 250, shipping page said PKR 200
+  - Instagram handle inconsistency: `burqahijab` vs `burqahijab.shop` across files
+  - Admin whatsappNumber field existed but zero storefront components read it
+- **Expanded Prisma SiteSettings model** from 7 fields to 27 fields:
+  - Social: facebookUrl, instagramUrl, tiktokUrl, twitterUrl, youtubeUrl
+  - Contact: whatsappNumber, whatsappMessage, phoneNumber, supportEmail, contactEmail, careersEmail
+  - Store: storeName, storeTagline, storeAddress, storeAddressShort, businessHours, copyrightText, announcementMessage
+  - Shipping: freeShippingThreshold, shippingCostDomestic, shippingCostExpress, domesticDeliveryDays, internationalDeliveryDays, freeShippingInternational
+  - Returns: returnWindowDays, refundDaysJazzCash, refundDaysBank
+- **Updated both settings APIs** (public + admin) to handle all 27 fields
+- **Created `useStoreSettings` Zustand hook** at `src/stores/store-settings-store.ts`:
+  - Centralized store with DEFAULT_SETTINGS fallbacks
+  - `fetch()` method that calls GET /api/settings
+  - Shared across all storefront components
+- **Rebuilt admin-settings.tsx** (640 lines) with 7 organized sections:
+  - Store Identity, Contact Information, Location & Hours, Social Media, WhatsApp, Shipping Settings, Return Policy
+  - Each field has icon, label, input, description hint
+  - Styled cards with hover effects
+- **Updated 8 storefront components** to use dynamic settings:
+  - announcement-bar.tsx, footer.tsx, contact-page.tsx, shipping-page.tsx
+  - returns-page.tsx, faq-page.tsx, instagram-feed.tsx, trust-signals.tsx
+  - All moved hardcoded arrays into useMemo with settings-derived values
+- **Seeded default values** into existing DB row (Prisma doesn't auto-fill existing rows with new column defaults)
+- **Fixed inconsistencies**: shipping cost now consistently 250 across checkout and shipping page
+- ESLint: 0 errors, 0 warnings
+
+Stage Summary:
+- All store info (phone, email, address, hours, social links, shipping, returns) now editable from admin Settings panel
+- Changes made in admin reflect instantly on storefront via shared Zustand hook
+- 27 configurable fields organized into 7 logical sections
+- Shipping cost inconsistency fixed (both checkout and shipping page now use same values)
+- Social handles standardized (derived from settings URLs)

@@ -1,20 +1,20 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 import { useUIStore } from '@/stores/ui-store';
-
-const messages = [
-  'Assalamu Alaikum — Welcome to BurqaHijab.shop',
-  'Free Shipping on Orders Over PKR 3,000',
-  'New Ramadan Collection 2026 — Shop Now',
-];
+import { useStoreSettings } from '@/stores/store-settings-store';
 
 export function AnnouncementBar() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [visible, setVisible] = useState(true);
   const { announcementDismissed, dismissAnnouncement } = useUIStore();
+  const { settings, fetch } = useStoreSettings();
+
+  const messages = useMemo(() => [settings.announcementMessage], [settings.announcementMessage]);
+
+  useEffect(() => { fetch(); }, [fetch]);
 
   const handleDismiss = useCallback(() => {
     setVisible(false);
@@ -49,7 +49,7 @@ export function AnnouncementBar() {
       setCurrentIndex((prev) => (prev + 1) % messages.length);
     }, 4000);
     return () => clearInterval(interval);
-  }, []);
+  }, [messages.length]);
 
   if (announcementDismissed) return null;
 

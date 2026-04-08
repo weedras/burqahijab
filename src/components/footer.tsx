@@ -13,6 +13,7 @@ import {
   Globe,
 } from 'lucide-react';
 import { useUIStore } from '@/stores/ui-store';
+import { useStoreSettings } from '@/stores/store-settings-store';
 
 /* ------------------------------------------------------------------ */
 /*  Data                                                               */
@@ -146,6 +147,15 @@ const paymentIcons = [
 /*  Footer Component                                                   */
 /* ------------------------------------------------------------------ */
 
+function getInstagramHandle(url: string): string {
+  try {
+    const pathname = new URL(url).pathname.replace(/^\//, '');
+    return pathname ? `@${pathname}` : '@burqahijab';
+  } catch {
+    return '@burqahijab';
+  }
+}
+
 export function Footer() {
   const {
     navigateToShop,
@@ -157,6 +167,9 @@ export function Footer() {
     navigateHome,
     navigateToAbout,
   } = useUIStore();
+  const { settings, fetch } = useStoreSettings();
+
+  useEffect(() => { fetch(); }, [fetch]);
 
   const [socialLinks, setSocialLinks] = useState<Array<{ label: string; icon: React.ComponentType<{ className?: string }>; href: string }>>([
     { label: 'Instagram', icon: Instagram, href: 'https://instagram.com/burqahijab' },
@@ -239,9 +252,9 @@ export function Footer() {
               Empowering women through elegant modest fashion. Discover our curated collection of hijabs, abayas, and accessories.
             </p>
             <div className="space-y-2 text-sm text-gray-400">
-              <p>support@burqahijab.shop</p>
-              <p>+92 300 1234567</p>
-              <p>Karachi, Pakistan</p>
+              <p>{settings.supportEmail}</p>
+              <p>{settings.phoneNumber}</p>
+              <p>{settings.storeAddressShort}</p>
             </div>
             {/* Social Icons */}
             <div className="flex items-center gap-3 mt-6">
@@ -339,7 +352,7 @@ export function Footer() {
 
             {/* Copyright */}
             <p className="text-xs text-gray-500 dark:text-gray-400">
-              &copy; 2026 BurqaHijab. All rights reserved. Designed with &#10084; for modest fashion.
+              {settings.copyrightText} Designed with &#10084; for modest fashion.
             </p>
           </div>
         </div>

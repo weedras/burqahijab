@@ -12,6 +12,7 @@ import {
   Send,
   CheckCircle,
 } from 'lucide-react';
+import { useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -20,6 +21,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { useUIStore } from '@/stores/ui-store';
+import { useStoreSettings } from '@/stores/store-settings-store';
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 20 },
@@ -30,61 +32,85 @@ const fadeInUp = {
   }),
 };
 
-const contactInfo = [
-  {
-    icon: Phone,
-    label: 'WhatsApp',
-    value: '+92 300 1234567',
-    description: 'Chat with us anytime for quick assistance',
-    highlight: true,
-  },
-  {
-    icon: Mail,
-    label: 'Email',
-    value: 'hello@burqahijab.shop',
-    description: 'We respond within 24 hours on business days',
-    highlight: false,
-  },
-  {
-    icon: MapPin,
-    label: 'Store Address',
-    value: 'Block 9, Clifton, Karachi, Pakistan',
-    description: 'Visit us by appointment for a personalized shopping experience',
-    highlight: false,
-  },
-  {
-    icon: Clock,
-    label: 'Business Hours',
-    value: 'Monday – Saturday, 10:00 AM – 8:00 PM PKT',
-    description: 'Closed on Sundays and public holidays',
-    highlight: false,
-  },
-];
-
-const socialLinks = [
-  {
-    name: 'Instagram',
-    handle: '@burqahijab.shop',
-    url: 'https://instagram.com/burqahijab.shop',
-    description: 'Follow us for daily inspiration, styling tips, and behind-the-scenes content',
-  },
-  {
-    name: 'Facebook',
-    handle: 'BurqaHijab.shop',
-    url: 'https://facebook.com/burqahijab.shop',
-    description: 'Join our community for the latest updates, collections, and exclusive offers',
-  },
-  {
-    name: 'TikTok',
-    handle: '@burqahijab.shop',
-    url: 'https://tiktok.com/@burqahijab.shop',
-    description: 'Watch styling tutorials, fashion hacks, and product showcases',
-  },
-];
+function getHandleFromUrl(url: string): string {
+  try {
+    const u = new URL(url);
+    const pathname = u.pathname.replace(/^\//, '').replace(/\/$/, '');
+    if (u.hostname.includes('tiktok') || u.hostname.includes('instagram') || u.hostname.includes('twitter') || u.hostname.includes('x.com')) {
+      return pathname ? `@${pathname}` : '';
+    }
+    return pathname || '';
+  } catch {
+    return '';
+  }
+}
 
 export function ContactPage() {
   const navigateHome = useUIStore((s) => s.navigateHome);
   const navigateToFaq = useUIStore((s) => s.navigateToFaq);
+  const { settings, fetch } = useStoreSettings();
+
+  useEffect(() => { fetch(); }, [fetch]);
+
+  const contactInfo = useMemo(() => [
+    {
+      icon: Phone,
+      label: 'WhatsApp',
+      value: settings.phoneNumber,
+      description: 'Chat with us anytime for quick assistance',
+      highlight: true,
+    },
+    {
+      icon: Mail,
+      label: 'Email',
+      value: settings.contactEmail,
+      description: 'We respond within 24 hours on business days',
+      highlight: false,
+    },
+    {
+      icon: MapPin,
+      label: 'Store Address',
+      value: settings.storeAddress,
+      description: 'Visit us by appointment for a personalized shopping experience',
+      highlight: false,
+    },
+    {
+      icon: Clock,
+      label: 'Business Hours',
+      value: settings.businessHours,
+      description: 'Closed on Sundays and public holidays',
+      highlight: false,
+    },
+  ], [settings.phoneNumber, settings.contactEmail, settings.storeAddress, settings.businessHours]);
+
+  const socialLinks = useMemo(() => {
+    const links: Array<{ name: string; handle: string; url: string; description: string }> = [];
+    if (settings.instagramUrl) {
+      links.push({
+        name: 'Instagram',
+        handle: getHandleFromUrl(settings.instagramUrl) || '@burqahijab.shop',
+        url: settings.instagramUrl,
+        description: 'Follow us for daily inspiration, styling tips, and behind-the-scenes content',
+      });
+    }
+    if (settings.facebookUrl) {
+      links.push({
+        name: 'Facebook',
+        handle: getHandleFromUrl(settings.facebookUrl) || 'BurqaHijab.shop',
+        url: settings.facebookUrl,
+        description: 'Join our community for the latest updates, collections, and exclusive offers',
+      });
+    }
+    if (settings.tiktokUrl) {
+      links.push({
+        name: 'TikTok',
+        handle: getHandleFromUrl(settings.tiktokUrl) || '@burqahijab.shop',
+        url: settings.tiktokUrl,
+        description: 'Watch styling tutorials, fashion hacks, and product showcases',
+      });
+    }
+    return links;
+  }, [settings.instagramUrl, settings.facebookUrl, settings.tiktokUrl]);
 
   const [formState, setFormState] = useState({
     name: '',

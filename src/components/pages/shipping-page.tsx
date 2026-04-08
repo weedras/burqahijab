@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import {
   ArrowLeft,
@@ -15,6 +16,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { useUIStore } from '@/stores/ui-store';
+import { useStoreSettings } from '@/stores/store-settings-store';
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 20 },
@@ -24,63 +26,6 @@ const fadeInUp = {
     transition: { delay: i * 0.1, duration: 0.5, ease: 'easeOut' },
   }),
 };
-
-const domesticShipping = {
-  standard: {
-    title: 'Standard Delivery',
-    time: '3–5 Business Days',
-    cost: 'PKR 200',
-    freeThreshold: 'Free on orders over PKR 3,000',
-    description:
-      'Our standard delivery service covers all major cities and towns across Pakistan. Orders are dispatched within 24 hours of placement (for orders before 2:00 PM PKT). You will receive a tracking number via SMS and email once your order has been shipped.',
-  },
-  express: {
-    title: 'Express Delivery',
-    time: '1–2 Business Days',
-    cost: 'PKR 450',
-    freeThreshold: 'Available for Karachi, Lahore, Islamabad & Rawalpindi only',
-    description:
-      'Need your order urgently? Our express delivery option ensures next-day delivery for orders placed before 12:00 PM PKT in Karachi, Lahore, Islamabad, and Rawalpindi. This service is perfect for last-minute Eid shopping or special occasions when you need your outfit in a hurry.',
-  },
-};
-
-const internationalRegions = [
-  {
-    region: 'Middle East & GCC',
-    countries: 'UAE, Saudi Arabia, Qatar, Kuwait, Bahrain, Oman',
-    time: '5–8 Business Days',
-    cost: 'Starting from $15 USD',
-    free: 'Free on orders over $150 USD',
-  },
-  {
-    region: 'United Kingdom & Europe',
-    countries: 'UK, Germany, France, Netherlands, Sweden, Denmark',
-    time: '7–10 Business Days',
-    cost: 'Starting from $18 USD',
-    free: 'Free on orders over $175 USD',
-  },
-  {
-    region: 'North America',
-    countries: 'USA, Canada',
-    time: '8–12 Business Days',
-    cost: 'Starting from $20 USD',
-    free: 'Free on orders over $200 USD',
-  },
-  {
-    region: 'Southeast Asia & Australia',
-    countries: 'Malaysia, Indonesia, Singapore, Australia, New Zealand',
-    time: '7–12 Business Days',
-    cost: 'Starting from $16 USD',
-    free: 'Free on orders over $160 USD',
-  },
-  {
-    region: 'Rest of World',
-    countries: 'All other countries',
-    time: '10–14 Business Days',
-    cost: 'Starting from $25 USD',
-    free: 'Free on orders over $250 USD',
-  },
-];
 
 const shippingPartners = [
   {
@@ -109,6 +54,66 @@ export function ShippingPage() {
   const navigateHome = useUIStore((s) => s.navigateHome);
   const navigateToReturns = useUIStore((s) => s.navigateToReturns);
   const navigateToContact = useUIStore((s) => s.navigateToContact);
+  const { settings, fetch } = useStoreSettings();
+
+  useEffect(() => { fetch(); }, [fetch]);
+
+  const domesticShipping = useMemo(() => ({
+    standard: {
+      title: 'Standard Delivery',
+      time: `${settings.domesticDeliveryDays} Business Days`,
+      cost: `PKR ${settings.shippingCostDomestic}`,
+      freeThreshold: `Free on orders over PKR ${Number(settings.freeShippingThreshold).toLocaleString()}`,
+      description:
+        'Our standard delivery service covers all major cities and towns across Pakistan. Orders are dispatched within 24 hours of placement (for orders before 2:00 PM PKT). You will receive a tracking number via SMS and email once your order has been shipped.',
+    },
+    express: {
+      title: 'Express Delivery',
+      time: '1–2 Business Days',
+      cost: `PKR ${settings.shippingCostExpress}`,
+      freeThreshold: 'Available for Karachi, Lahore, Islamabad & Rawalpindi only',
+      description:
+        'Need your order urgently? Our express delivery option ensures next-day delivery for orders placed before 12:00 PM PKT in Karachi, Lahore, Islamabad, and Rawalpindi. This service is perfect for last-minute Eid shopping or special occasions when you need your outfit in a hurry.',
+    },
+  }), [settings.domesticDeliveryDays, settings.shippingCostDomestic, settings.freeShippingThreshold, settings.shippingCostExpress]);
+
+  const internationalRegions = useMemo(() => [
+    {
+      region: 'Middle East & GCC',
+      countries: 'UAE, Saudi Arabia, Qatar, Kuwait, Bahrain, Oman',
+      time: '5–8 Business Days',
+      cost: 'Starting from $15 USD',
+      free: 'Free on orders over $150 USD',
+    },
+    {
+      region: 'United Kingdom & Europe',
+      countries: 'UK, Germany, France, Netherlands, Sweden, Denmark',
+      time: '7–10 Business Days',
+      cost: 'Starting from $18 USD',
+      free: 'Free on orders over $175 USD',
+    },
+    {
+      region: 'North America',
+      countries: 'USA, Canada',
+      time: '8–12 Business Days',
+      cost: 'Starting from $20 USD',
+      free: 'Free on orders over $200 USD',
+    },
+    {
+      region: 'Southeast Asia & Australia',
+      countries: 'Malaysia, Indonesia, Singapore, Australia, New Zealand',
+      time: '7–12 Business Days',
+      cost: 'Starting from $16 USD',
+      free: 'Free on orders over $160 USD',
+    },
+    {
+      region: 'Rest of World',
+      countries: 'All other countries',
+      time: `${settings.internationalDeliveryDays} Business Days`,
+      cost: 'Starting from $25 USD',
+      free: `$${settings.freeShippingInternational} USD`,
+    },
+  ], [settings.internationalDeliveryDays, settings.freeShippingInternational]);
 
   return (
     <div className="min-h-screen bg-white dark:bg-[#0A0A0A]">
@@ -286,8 +291,8 @@ export function ShippingPage() {
               <p className="text-sm text-gray-500 dark:text-gray-400 ">
                 If you have not received tracking information within 48 hours of placing
                 your order, please contact us at{' '}
-                <span className="text-[#d79c4a]">hello@burqahijab.shop</span> or WhatsApp us
-                at <span className="text-[#d79c4a]">+92 300 1234567</span>.
+                <span className="text-[#d79c4a]">{settings.contactEmail}</span> or WhatsApp us
+                at <span className="text-[#d79c4a]">{settings.phoneNumber}</span>.
               </p>
             </CardContent>
           </Card>
@@ -396,7 +401,7 @@ export function ShippingPage() {
                 your order has already been shipped, we will work with our courier
                 partner to attempt a re-routing, but this is not guaranteed and may incur
                 additional charges. To request an address change, email us at{' '}
-                <span className="text-[#d79c4a]">hello@burqahijab.shop</span> with your
+                <span className="text-[#d79c4a]">{settings.contactEmail}</span> with your
                 order number and the updated address. We will do our best to accommodate
                 your request.
               </p>

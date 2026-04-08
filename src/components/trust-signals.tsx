@@ -1,32 +1,37 @@
 'use client';
 
+import { useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Truck, ShieldCheck, RotateCcw, Lock } from 'lucide-react';
-
-const signals = [
-  {
-    icon: Truck,
-    label: 'Free Shipping',
-    description: 'On orders over PKR 3,000',
-  },
-  {
-    icon: ShieldCheck,
-    label: 'Quality Guarantee',
-    description: 'Premium fabrics & craftsmanship',
-  },
-  {
-    icon: RotateCcw,
-    label: 'Easy Returns',
-    description: '14-day hassle-free returns',
-  },
-  {
-    icon: Lock,
-    label: 'Secure Payment',
-    description: 'SSL encrypted checkout',
-  },
-];
+import { useStoreSettings } from '@/stores/store-settings-store';
 
 export function TrustSignals() {
+  const { settings, fetch } = useStoreSettings();
+
+  useEffect(() => { fetch(); }, [fetch]);
+
+  const signals = useMemo(() => [
+    {
+      icon: Truck,
+      label: 'Free Shipping',
+      description: `On orders over PKR ${Number(settings.freeShippingThreshold).toLocaleString()}`,
+    },
+    {
+      icon: ShieldCheck,
+      label: 'Quality Guarantee',
+      description: 'Premium fabrics & craftsmanship',
+    },
+    {
+      icon: RotateCcw,
+      label: 'Easy Returns',
+      description: '14-day hassle-free returns',
+    },
+    {
+      icon: Lock,
+      label: 'Secure Payment',
+      description: 'SSL encrypted checkout',
+    },
+  ], [settings.freeShippingThreshold]);
   return (
     <section className="border-y border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-[#111]">
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">

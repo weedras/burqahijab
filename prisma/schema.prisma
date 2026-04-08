@@ -133,13 +133,44 @@ model Order {
 }
 
 model SiteSettings {
-  id               String   @id @default("main")
-  facebookUrl      String   @default("")
-  instagramUrl     String   @default("https://instagram.com/burqahijab")
-  tiktokUrl        String   @default("")
-  twitterUrl       String   @default("")
-  youtubeUrl       String   @default("")
-  whatsappNumber   String   @default("")
-  whatsappMessage  String   @default("")
-  updatedAt        DateTime @updatedAt
+  id                     String   @id @default("main")
+
+  // ── Social Media ──
+  facebookUrl            String   @default("")
+  instagramUrl           String   @default("https://instagram.com/burqahijab")
+  tiktokUrl              String   @default("")
+  twitterUrl             String   @default("")
+  youtubeUrl             String   @default("")
+
+  // ── Contact ──
+  whatsappNumber         String   @default("")
+  whatsappMessage        String   @default("")
+  phoneNumber            String   @default("+92 300 1234567")
+  supportEmail           String   @default("support@burqahijab.shop")
+  contactEmail           String   @default("hello@burqahijab.shop")
+  careersEmail           String   @default("careers@burqahijab.shop")
+
+  // ── Store Info ──
+  storeName              String   @default("BurqaHijab")
+  storeTagline           String   @default("Where Modesty Meets Luxury")
+  storeAddress           String   @default("Block 9, Clifton, Karachi, Pakistan")
+  storeAddressShort      String   @default("Karachi, Pakistan")
+  businessHours          String   @default("Monday – Saturday, 10:00 AM – 8:00 PM PKT")
+  copyrightText          String   @default("© 2026 BurqaHijab. All rights reserved.")
+  announcementMessage    String   @default("Free shipping on orders above PKR 3,000!")
+
+  // ── Shipping ──
+  freeShippingThreshold  String   @default("3000")
+  shippingCostDomestic   String   @default("250")
+  shippingCostExpress    String   @default("450")
+  domesticDeliveryDays   String   @default("3-5")
+  internationalDeliveryDays String @default("7-14")
+  freeShippingInternational String @default("250")
+
+  // ── Return Policy ──
+  returnWindowDays       String   @default("14")
+  refundDaysJazzCash     String   @default("3-5")
+  refundDaysBank         String   @default("3-5")
+
+  updatedAt              DateTime @updatedAt
 }
