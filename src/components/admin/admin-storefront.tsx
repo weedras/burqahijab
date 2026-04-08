@@ -18,6 +18,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 import { adminFetch } from '@/lib/admin-fetch';
+import { ProductImage } from '@/components/product-image';
 
 interface ProductData {
   id: string;
@@ -41,7 +42,7 @@ const cardVariants = {
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: i * 0.05, duration: 0.3, ease: 'easeOut' },
+    transition: { delay: i * 0.05, duration: 0.3, ease: 'easeOut' as const },
   }),
 };
 
@@ -132,7 +133,6 @@ export function AdminStorefront() {
   }) => {
     const images = Array.isArray(product.images) ? product.images : [];
     const isToggling = togglingId === product.id;
-    const [imgError, setImgError] = useState(false);
 
     return (
       <motion.div
@@ -145,12 +145,12 @@ export function AdminStorefront() {
       >
         {/* Image */}
         <div className="relative aspect-square overflow-hidden bg-muted">
-          {images.length > 0 && images[0] && !imgError ? (
-            <img
+          {images.length > 0 && images[0] ? (
+            <ProductImage
               src={images[0]}
               alt={product.name}
               className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-              onError={() => setImgError(true)}
+              fallbackClassName="flex h-full w-full items-center justify-center"
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center">

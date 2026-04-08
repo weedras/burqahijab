@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Heart, Trash2, ShoppingBag, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { ProductImage } from '@/components/product-image';
 import { useWishlistStore } from '@/stores/wishlist-store';
 import { useCartStore } from '@/stores/cart-store';
 import { useUIStore } from '@/stores/ui-store';
@@ -97,12 +98,11 @@ export function WishlistPage() {
                     onClick={() => navigateToProduct(product)}
                   >
                     {product.images[0] ? (
-                      <img
+                      <ProductImage
                         src={product.images[0]}
                         alt={product.name}
                         className="aspect-[3/4] w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-                        loading="lazy"
-                        onError={(e) => { (e.currentTarget.style.display = 'none'); }}
+                        fallbackClassName="aspect-[3/4] w-full"
                       />
                     ) : (
                       <div className="aspect-[3/4] w-full flex items-center justify-center bg-gray-100 dark:bg-[#1A1A1A]">

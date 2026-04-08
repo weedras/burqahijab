@@ -54,6 +54,7 @@ import {
 } from '@/components/ui/table';
 import { toast } from 'sonner';
 import { adminFetch } from '@/lib/admin-fetch';
+import { ProductImage } from '@/components/product-image';
 
 interface ProductData {
   id: string;
@@ -405,11 +406,11 @@ export function AdminProducts() {
                       <div className="flex items-center gap-3">
                         {images[0] ? (
                           <div className="h-11 w-11 flex-shrink-0 overflow-hidden rounded-lg bg-muted">
-                            <img
+                            <ProductImage
                               src={images[0]}
                               alt={product.name}
                               className="h-full w-full object-cover"
-                              onError={(e) => { (e.currentTarget.style.display = 'none'); }}
+                              fallbackClassName="h-full w-full rounded-lg"
                             />
                           </div>
                         ) : (
@@ -670,7 +671,12 @@ export function AdminProducts() {
                       key={i}
                       className="relative group h-20 w-20 overflow-hidden rounded-lg border border-border bg-muted"
                     >
-                      <img src={url} alt="" className="h-full w-full object-cover" onError={(e) => { const t = e.currentTarget; t.style.display = 'none'; }} />
+                      <ProductImage
+                        src={url}
+                        alt={`Product image ${i + 1}`}
+                        className="h-full w-full object-cover"
+                        fallbackClassName="h-full w-full rounded-lg"
+                      />
                       <button
                         type="button"
                         onClick={() => {

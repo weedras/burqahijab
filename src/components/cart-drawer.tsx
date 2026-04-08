@@ -253,7 +253,7 @@ export function CartDrawer() {
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
 
-                <p className="text-center text-[10px] text-gray-500 dark:text-gray-400 ">
+                <p className="text-center text-xs text-gray-500 dark:text-gray-400 ">
                   Taxes and shipping calculated at checkout
                 </p>
               </div>

@@ -59,7 +59,7 @@ export function SearchDialog() {
   }, [dbCategories]);
 
   // Get category name for a product from its categories array
-  const getCategoryName = useCallback((product: { id: string } & Record<string, unknown>): string => {
+  const getCategoryName = useCallback((product: Record<string, unknown>): string => {
     const productCats = product.categories as Array<{ id: string }> | undefined;
     if (productCats && productCats.length > 0) {
       return categoryMap.get(productCats[0].id) || '';
@@ -171,7 +171,7 @@ export function SearchDialog() {
                         </p>
                         <div className="mt-0.5 flex items-center gap-2">
                           <span className="text-xs text-gray-500 dark:text-gray-400 ">
-                            {getCategoryName(product)}
+                            {getCategoryName(product as unknown as Record<string, unknown>)}
                           </span>
                           {product.salePrice && (
                             <>

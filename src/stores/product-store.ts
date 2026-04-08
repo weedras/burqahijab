@@ -10,7 +10,7 @@ interface ProductState {
   initialized: boolean;
 
   // Actions
-  fetchProducts: () => Promise<void>;
+  fetchProducts: (attempt?: number) => Promise<void>;
   fetchCategoriesAndCollections: () => Promise<void>;
   initialize: () => Promise<void>;
   getProductBySlug: (slug: string) => Product | undefined;
@@ -21,7 +21,7 @@ interface ProductState {
 }
 
 const MAX_RETRIES = 3;
-const FETCH_TIMEOUT = 10000; // 10 seconds
+const FETCH_TIMEOUT = 15000; // 15 seconds
 
 async function fetchWithTimeout(url: string, timeout: number): Promise<Response> {
   const controller = new AbortController();
@@ -98,8 +98,9 @@ export const useProductStore = create<ProductState>()((set, get) => ({
   },
 
   initialize: async () => {
-    // Allow re-initialization if previous attempt failed
-    if (get().initialized && !get().error) return;
+    // Always allow re-initialization if there's an error or no products loaded
+    const state = get();
+    if (state.initialized && !state.error && state.products.length > 0) return;
     set({ initialized: true, error: null });
     await Promise.all([
       get().fetchProducts(1),
@@ -131,7 +132,7 @@ export const useProductStore = create<ProductState>()((set, get) => ({
     }
     if (categoryIds.size === 0) return products;
     return products.filter((p) => {
-      const productCats = (p as Record<string, unknown>).categories as Array<{ id: string }> | undefined;
+      const productCats = (p as unknown as Record<string, unknown>).categories as Array<{ id: string }> | undefined;
       if (!productCats || !Array.isArray(productCats)) return false;
       return productCats.some((c) => categoryIds.has(c.id));
     });
@@ -140,7 +141,7 @@ export const useProductStore = create<ProductState>()((set, get) => ({
   getProductsByCollectionSlug: (slug) => {
     const { products } = get();
     return products.filter((p) => {
-      const productCols = (p as Record<string, unknown>).collections as Array<{ slug: string }> | undefined;
+      const productCols = (p as unknown as Record<string, unknown>).collections as Array<{ slug: string }> | undefined;
       if (!productCols || !Array.isArray(productCols)) return false;
       return productCols.some((c) => c.slug === slug);
     });

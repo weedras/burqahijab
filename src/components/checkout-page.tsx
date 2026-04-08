@@ -269,7 +269,7 @@ export function CheckoutPage() {
               {/* Form */}
               <div className="lg:col-span-3 space-y-6">
                 <div className="rounded-2xl bg-white p-6 shadow-sm dark:bg-[#141414]">
-                  <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">Contact Information</h2>
+                  <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-1">Contact Information</h2>
                   <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">We&apos;ll use this to send your order updates</p>
 
                   <div className="space-y-4">
@@ -345,6 +345,7 @@ export function CheckoutPage() {
                   shippingCost={shippingCost}
                   total={totalAmount}
                   qualifiesFreeShipping={qualifiesFreeShipping}
+                  freeShippingThreshold={freeShippingThreshold}
                 />
               </div>
             </motion.div>
@@ -361,7 +362,7 @@ export function CheckoutPage() {
             >
               <div className="lg:col-span-3 space-y-6">
                 <div className="rounded-2xl bg-white p-6 shadow-sm dark:bg-[#141414]">
-                  <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">Shipping Address</h2>
+                  <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-1">Shipping Address</h2>
                   <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Where should we deliver your order?</p>
 
                   <div className="space-y-4">
@@ -454,6 +455,7 @@ export function CheckoutPage() {
                   shippingCost={shippingCost}
                   total={totalAmount}
                   qualifiesFreeShipping={qualifiesFreeShipping}
+                  freeShippingThreshold={freeShippingThreshold}
                 />
               </div>
             </motion.div>
@@ -470,7 +472,7 @@ export function CheckoutPage() {
             >
               <div className="lg:col-span-3 space-y-6">
                 <div className="rounded-2xl bg-white p-6 shadow-sm dark:bg-[#141414]">
-                  <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">Payment Method</h2>
+                  <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-1">Payment Method</h2>
                   <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Choose how you&apos;d like to pay</p>
 
                   <div className="space-y-3">
@@ -572,6 +574,7 @@ export function CheckoutPage() {
                   shippingCost={shippingCost}
                   total={totalAmount}
                   qualifiesFreeShipping={qualifiesFreeShipping}
+                  freeShippingThreshold={freeShippingThreshold}
                   showPaymentBadge
                 />
               </div>
@@ -590,6 +593,7 @@ function OrderSummaryCard({
   shippingCost,
   total,
   qualifiesFreeShipping,
+  freeShippingThreshold,
   showPaymentBadge = false,
 }: {
   items: { product: { id: string; name: string; images: string[]; salePrice: number | null; price: number }; quantity: number; selectedColor: string; selectedSize: string }[];
@@ -597,6 +601,7 @@ function OrderSummaryCard({
   shippingCost: number;
   total: number;
   qualifiesFreeShipping: boolean;
+  freeShippingThreshold: number;
   showPaymentBadge?: boolean;
 }) {
   return (

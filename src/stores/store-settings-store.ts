@@ -93,7 +93,9 @@ export const useStoreSettings = create<StoreSettingsState>((set, get) => ({
   },
 
   invalidate: () => {
-    set({ loaded: false, settings: DEFAULT_SETTINGS });
+    const { loaded } = get();
+    if (!loaded) return; // Don't re-fetch if already loading
+    set({ loaded: false });
     get().fetch();
   },
 }));

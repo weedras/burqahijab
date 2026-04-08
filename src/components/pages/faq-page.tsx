@@ -19,7 +19,7 @@ const fadeInUp = {
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: i * 0.1, duration: 0.5, ease: 'easeOut' },
+    transition: { delay: i * 0.1, duration: 0.5, ease: 'easeOut' as const },
   }),
 };
 
@@ -235,10 +235,10 @@ export function FaqPage() {
                     value={`${sectionIndex}-${index}`}
                     className="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-[#1A1A1A] px-4 data-[state=open]:border-[#d79c4a]/30"
                   >
-                    <AccordionTrigger className="text-left text-sm font-medium text-gray-900 dark:text-white hover:no-underline hover:text-[#d79c4a]  py-4">
+                    <AccordionTrigger className="text-left text-base font-medium text-gray-900 dark:text-white hover:no-underline hover:text-[#d79c4a]  py-4">
                       {item.question}
                     </AccordionTrigger>
-                    <AccordionContent className="pb-4 text-sm leading-relaxed text-gray-500 dark:text-gray-400 ">
+                    <AccordionContent className="pb-4 text-base leading-relaxed text-gray-500 dark:text-gray-400 ">
                       {item.answer}
                     </AccordionContent>
                   </AccordionItem>

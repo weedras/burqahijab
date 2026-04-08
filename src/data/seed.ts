@@ -72,7 +72,7 @@ export const products: Product[] = [
     occasion: 'Daily', fabric: 'Chiffon',
     colors: ['#000000', '#1A1A1A', '#2D2D2D', '#1A4B5C'],
     sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
-    rating: 4.8, reviewCount: 47, stockCount: 24
+    rating: 4.8, reviewCount: 47, stockCount: 24, videoUrl: null
   },
   {
     id: 'prod-2', name: 'Emerald Caligraphy Crepe Abaya', slug: 'emerald-calligraphy-crepe-abaya',
@@ -85,7 +85,7 @@ export const products: Product[] = [
     occasion: 'Eid', fabric: 'Crepe',
     colors: ['#065F46', '#000000', '#1A1A1A'],
     sizes: ['S', 'M', 'L', 'XL', 'XXL'],
-    rating: 4.9, reviewCount: 32, stockCount: 12
+    rating: 4.9, reviewCount: 32, stockCount: 12, videoUrl: null
   },
   {
     id: 'prod-3', name: 'Minimal Beige Nida Abaya', slug: 'minimal-beige-nida-abaya',
@@ -98,7 +98,7 @@ export const products: Product[] = [
     occasion: 'Daily', fabric: 'Nida',
     colors: ['#F5F0EB', '#E5DDD5', '#000000'],
     sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
-    rating: 4.7, reviewCount: 89, stockCount: 45
+    rating: 4.7, reviewCount: 89, stockCount: 45, videoUrl: null
   },
   {
     id: 'prod-4', name: 'Midnight Butterfly Abaya', slug: 'midnight-butterfly-abaya',
@@ -111,7 +111,7 @@ export const products: Product[] = [
     occasion: 'Wedding', fabric: 'Chiffon',
     colors: ['#000000', '#1A1A1A', '#2D2D2D'],
     sizes: ['S', 'M', 'L', 'XL'],
-    rating: 4.6, reviewCount: 28, stockCount: 15
+    rating: 4.6, reviewCount: 28, stockCount: 15, videoUrl: null
   },
   {
     id: 'prod-5', name: 'Dusty Rose Jersey Hijab', slug: 'dusty-rose-jersey-hijab',
@@ -124,7 +124,7 @@ export const products: Product[] = [
     occasion: 'Daily', fabric: 'Jersey',
     colors: ['#D4A5A5', '#FAF8F5', '#000000', '#1A4B5C'],
     sizes: ['One Size'],
-    rating: 4.8, reviewCount: 156, stockCount: 120
+    rating: 4.8, reviewCount: 156, stockCount: 120, videoUrl: null
   },
   {
     id: 'prod-6', name: 'Ivory Silk Gold Border Hijab', slug: 'ivory-silk-gold-border-hijab',
@@ -137,7 +137,7 @@ export const products: Product[] = [
     occasion: 'Wedding', fabric: 'Silk',
     colors: ['#FAF8F5', '#F5F0EB', '#000000'],
     sizes: ['One Size'],
-    rating: 4.9, reviewCount: 34, stockCount: 30
+    rating: 4.9, reviewCount: 34, stockCount: 30, videoUrl: null
   },
   {
     id: 'prod-7', name: 'Charcoal Instant Hijab', slug: 'charcoal-instant-hijab',
@@ -150,7 +150,7 @@ export const products: Product[] = [
     occasion: 'Daily', fabric: 'Jersey',
     colors: ['#2D2D2D', '#000000', '#1A1A1A', '#6B6B6B'],
     sizes: ['One Size'],
-    rating: 4.5, reviewCount: 78, stockCount: 90
+    rating: 4.5, reviewCount: 78, stockCount: 90, videoUrl: null
   },
   {
     id: 'prod-8', name: 'Burgundy Luxe Chiffon Hijab', slug: 'burgundy-luxe-chiffon-hijab',
@@ -163,7 +163,7 @@ export const products: Product[] = [
     occasion: 'Eid', fabric: 'Chiffon',
     colors: ['#7F1D1D', '#000000', '#C9A96E'],
     sizes: ['One Size'],
-    rating: 4.7, reviewCount: 45, stockCount: 60
+    rating: 4.7, reviewCount: 45, stockCount: 60, videoUrl: null
   },
   {
     id: 'prod-9', name: 'Navy Kimono Embroidered Abaya', slug: 'navy-kimono-embroidered-abaya',
@@ -176,7 +176,7 @@ export const products: Product[] = [
     occasion: 'Office', fabric: 'Crepe',
     colors: ['#1A4B5C', '#000000', '#2D2D2D'],
     sizes: ['S', 'M', 'L', 'XL', 'XXL'],
-    rating: 4.7, reviewCount: 22, stockCount: 18
+    rating: 4.7, reviewCount: 22, stockCount: 18, videoUrl: null
   },
   {
     id: 'prod-10', name: 'Lavender Coord Set with Hijab', slug: 'lavender-coord-set-with-hijab',
@@ -189,7 +189,7 @@ export const products: Product[] = [
     occasion: 'Travel', fabric: 'Crepe',
     colors: ['#D4A5A5', '#000000', '#FAF8F5'],
     sizes: ['S', 'M', 'L', 'XL'],
-    rating: 4.8, reviewCount: 19, stockCount: 20
+    rating: 4.8, reviewCount: 19, stockCount: 20, videoUrl: null
   },
   {
     id: 'prod-11', name: 'Gold Pearl Hijab Pin Set', slug: 'gold-pearl-hijab-pin-set',
@@ -202,7 +202,7 @@ export const products: Product[] = [
     occasion: 'Daily', fabric: null,
     colors: ['#C9A96E', '#FAF8F5'],
     sizes: ['One Size'],
-    rating: 4.9, reviewCount: 112, stockCount: 80
+    rating: 4.9, reviewCount: 112, stockCount: 80, videoUrl: null
   },
   {
     id: 'prod-12', name: 'Premium Cotton Underscarve Cap', slug: 'premium-cotton-underscarve-cap',
@@ -215,7 +215,7 @@ export const products: Product[] = [
     occasion: 'Daily', fabric: 'Cotton',
     colors: ['#000000', '#F5F0EB', '#2D2D2D', '#D4A5A5'],
     sizes: ['One Size'],
-    rating: 4.6, reviewCount: 203, stockCount: 200
+    rating: 4.6, reviewCount: 203, stockCount: 200, videoUrl: null
   },
 ];
 

@@ -609,7 +609,7 @@ export function AdminOrders() {
                         <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
                           <Phone className="h-3.5 w-3.5" />
                           <button
-                            onClick={() => copyToClipboard(selectedOrder.customerPhone)}
+                            onClick={() => copyToClipboard(selectedOrder.customerPhone!)}
                             className="hover:text-[#d79c4a] transition-colors flex items-center gap-1"
                           >
                             {selectedOrder.customerPhone}

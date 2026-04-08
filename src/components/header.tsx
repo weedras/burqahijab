@@ -9,8 +9,6 @@ import {
   Menu,
   Sun,
   Moon,
-  ChevronDown,
-  X,
   User,
 } from 'lucide-react';
 import Image from 'next/image';
@@ -263,7 +261,7 @@ export function Header() {
             >
               <ShoppingCart className="w-[18px] h-[18px] sm:w-5 sm:h-5" />
               {mounted && totalItems > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-[#d79c4a] px-0.5 text-[9px] font-bold text-white">
+                <span className="absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#d79c4a] px-0.5 text-xs font-bold text-white">
                   {totalItems}
                 </span>
               )}
@@ -319,7 +317,7 @@ export function Header() {
 
                   <Separator className="my-3" />
 
-                  <p className="px-4 pt-2 pb-1 text-[10px] font-semibold uppercase tracking-widest text-gray-500 dark:text-gray-400">
+                  <p className="px-4 pt-2 pb-1 text-xs font-semibold uppercase tracking-widest text-gray-500 dark:text-gray-400">
                     Categories
                   </p>
                   {categoryLinks.map((link) => (
@@ -334,7 +332,7 @@ export function Header() {
 
                   <Separator className="my-3" />
 
-                  <p className="px-4 pt-2 pb-1 text-[10px] font-semibold uppercase tracking-widest text-gray-500 dark:text-gray-400">
+                  <p className="px-4 pt-2 pb-1 text-xs font-semibold uppercase tracking-widest text-gray-500 dark:text-gray-400">
                     Help
                   </p>
                   {helpLinks.map((link) => (
@@ -349,7 +347,7 @@ export function Header() {
 
                   <Separator className="my-3" />
 
-                  <p className="px-4 pt-2 pb-1 text-[10px] font-semibold uppercase tracking-widest text-gray-500 dark:text-gray-400">
+                  <p className="px-4 pt-2 pb-1 text-xs font-semibold uppercase tracking-widest text-gray-500 dark:text-gray-400">
                     About
                   </p>
                   {aboutLinks.map((link) => (

@@ -3,6 +3,7 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Minus, Plus, Heart, ShoppingBag, Star, Truck, Shield, RotateCcw, Play, Film, Volume2, VolumeX, Loader2 } from 'lucide-react';
+import { ProductImage } from '@/components/product-image';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
@@ -84,7 +85,6 @@ function StarRating({ rating, count }: { rating: number; count: number }) {
 }
 
 function ProductCard({ product, onClick }: { product: Product; onClick: () => void }) {
-  const [imgError, setImgError] = useState(false);
   return (
     <motion.div
       whileHover={{ y: -4 }}
@@ -95,13 +95,12 @@ function ProductCard({ product, onClick }: { product: Product; onClick: () => vo
       onKeyDown={(e) => { if (e.key === 'Enter') onClick(); }}
     >
       <div className="relative mb-2 overflow-hidden rounded-xl bg-gray-50 dark:bg-[#141414]">
-        {product.images[0] && !imgError ? (
-          <img
+        {product.images[0] ? (
+          <ProductImage
             src={product.images[0]}
             alt={product.name}
             className="aspect-[3/4] w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-            loading="lazy"
-            onError={() => setImgError(true)}
+            fallbackClassName="aspect-[3/4] w-full flex items-center justify-center"
           />
         ) : (
           <div
@@ -112,12 +111,12 @@ function ProductCard({ product, onClick }: { product: Product; onClick: () => vo
           </div>
         )}
         {product.isNew && (
-          <span className="absolute top-2 left-2 rounded-full bg-[#d79c4a] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[#0A0A0A] ">
+          <span className="absolute top-2 left-2 rounded-full bg-[#d79c4a] px-2 py-0.5 text-xs font-semibold uppercase tracking-wider text-[#0A0A0A] ">
             New
           </span>
         )}
         {product.salePrice && (
-          <span className="absolute top-2 left-2 rounded-full bg-red-500/90 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-white ">
+          <span className="absolute top-2 left-2 rounded-full bg-red-500/90 px-2 py-0.5 text-xs font-semibold uppercase tracking-wider text-white ">
             Sale
           </span>
         )}
@@ -253,8 +252,6 @@ function ProductDetailContent({ product }: { product: Product }) {
   const toggleItem = useWishlistStore((s) => s.toggleItem);
   const wishlistItems = useWishlistStore((s) => s.items);
   const { products: dbProducts, collections: dbCollections, initialize } = useProductStore();
-  const [imgErrors, setImgErrors] = useState<Set<number>>(new Set());
-
   useEffect(() => { initialize(); }, [initialize]);
 
   // State initialized from product props - resets when component remounts via key
@@ -320,19 +317,19 @@ function ProductDetailContent({ product }: { product: Product }) {
 
   // Related products from same collection
   const relatedProducts = useMemo(() => {
-    const productCols = (product as Record<string, unknown>).collections as Array<{ id: string }> | undefined;
+    const productCols = (product as unknown as Record<string, unknown>).collections as Array<{ id: string }> | undefined;
     if (!productCols || productCols.length === 0) return [];
     const colIds = new Set(productCols.map((c) => c.id));
     return dbProducts.filter((p) => {
       if (p.id === product.id) return false;
-      const pCols = (p as Record<string, unknown>).collections as Array<{ id: string }> | undefined;
+      const pCols = (p as unknown as Record<string, unknown>).collections as Array<{ id: string }> | undefined;
       if (!pCols) return false;
       return pCols.some((c) => colIds.has(c.id));
     }).slice(0, 4);
   }, [product, dbProducts]);
 
   const collectionName = useMemo(() => {
-    const productCols = (product as Record<string, unknown>).collections as Array<{ id: string }> | undefined;
+    const productCols = (product as unknown as Record<string, unknown>).collections as Array<{ id: string }> | undefined;
     if (!productCols || productCols.length === 0) return '';
     const colId = productCols[0].id;
     return dbCollections.find((c) => c.id === colId)?.name || '';
@@ -367,12 +364,12 @@ function ProductDetailContent({ product }: { product: Product }) {
           >
             {/* Image slide */}
             {!isVideoSlide && (
-              product.images[selectedSlide] && !imgErrors.has(selectedSlide) ? (
-                <img
+              product.images[selectedSlide] ? (
+                <ProductImage
                   src={product.images[selectedSlide]}
                   alt={product.name}
                   className="aspect-[3/4] w-full object-cover"
-                  onError={() => setImgErrors((prev) => new Set(prev).add(selectedSlide))}
+                  fallbackClassName="aspect-[3/4] w-full flex items-center justify-center bg-[#1A1A1A]"
                 />
               ) : (
                 <div className="aspect-[3/4] w-full flex items-center justify-center bg-[#1A1A1A]">
@@ -413,17 +410,17 @@ function ProductDetailContent({ product }: { product: Product }) {
             {/* Badges */}
             <div className="absolute top-4 left-4 flex flex-col gap-2">
               {product.isNew && (
-                <Badge className="rounded-full bg-[#d79c4a] px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-[#0A0A0A] border-0 ">
+                <Badge className="rounded-full bg-[#d79c4a] px-3 py-1 text-xs font-semibold uppercase tracking-wider text-[#0A0A0A] border-0 ">
                   New
                 </Badge>
               )}
               {product.salePrice && (
-                <Badge className="rounded-full bg-red-500/90 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-white border-0 ">
+                <Badge className="rounded-full bg-red-500/90 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-white border-0 ">
                   {Math.round(((product.price - product.salePrice) / product.price) * 100)}% Off
                 </Badge>
               )}
               {product.isBestSeller && (
-                <Badge className="rounded-full bg-[#1A4B5C] px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-white border-0 ">
+                <Badge className="rounded-full bg-[#1A4B5C] px-3 py-1 text-xs font-semibold uppercase tracking-wider text-white border-0 ">
                   Best Seller
                 </Badge>
               )}
@@ -445,12 +442,12 @@ function ProductDetailContent({ product }: { product: Product }) {
                       : 'ring-1 ring-border opacity-60 hover:opacity-100'
                   )}
                 >
-                  {img && !imgErrors.has(idx) ? (
-                    <img
+                  {img ? (
+                    <ProductImage
                       src={img}
                       alt={`${product.name} ${idx + 1}`}
                       className="h-full w-full object-cover"
-                      onError={() => setImgErrors((prev) => new Set(prev).add(idx))}
+                      fallbackClassName="h-full w-full bg-gray-200 dark:bg-[#1A1A1A]"
                     />
                   ) : (
                     <div className="h-full w-full bg-gray-200 dark:bg-[#1A1A1A]" />
@@ -676,19 +673,19 @@ function ProductDetailContent({ product }: { product: Product }) {
           <div className="grid grid-cols-3 gap-3">
             <div className="flex flex-col items-center gap-1.5 rounded-lg bg-gray-50 dark:bg-[#141414] p-3 text-center">
               <Truck className="h-4 w-4 text-[#d79c4a]" />
-              <span className="text-[10px] text-gray-500 dark:text-gray-400 ">
+              <span className="text-xs text-gray-500 dark:text-gray-400 ">
                 Free Shipping
               </span>
             </div>
             <div className="flex flex-col items-center gap-1.5 rounded-lg bg-gray-50 dark:bg-[#141414] p-3 text-center">
               <RotateCcw className="h-4 w-4 text-[#d79c4a]" />
-              <span className="text-[10px] text-gray-500 dark:text-gray-400 ">
+              <span className="text-xs text-gray-500 dark:text-gray-400 ">
                 Easy Returns
               </span>
             </div>
             <div className="flex flex-col items-center gap-1.5 rounded-lg bg-gray-50 dark:bg-[#141414] p-3 text-center">
               <Shield className="h-4 w-4 text-[#d79c4a]" />
-              <span className="text-[10px] text-gray-500 dark:text-gray-400 ">
+              <span className="text-xs text-gray-500 dark:text-gray-400 ">
                 Secure Pay
               </span>
             </div>

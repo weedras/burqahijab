@@ -4,6 +4,7 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Camera, X, Maximize2, Download, ChevronLeft, ChevronRight, Loader2, ShieldAlert, RotateCcw, ZoomIn, ZoomOut, Move, ImageOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import type { Product } from '@/types';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -746,8 +747,4 @@ export function ARViewButton({ onClick, className, productName }: ARViewButtonPr
   );
 }
 
-// ─── Utility: cn ──────────────────────────────────────────────────────────────
 
-function cn(...inputs: (string | boolean | undefined | null)[]) {
-  return inputs.filter(Boolean).join(' ');
-}

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
+import { ProductImage } from '@/components/product-image';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowLeft,
@@ -10,7 +11,6 @@ import {
   ChevronDown,
   Heart,
   ShoppingCart,
-  Loader2,
   Package,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -73,10 +73,9 @@ function ProductCardShop({ product }: { product: Product }) {
   const wishlistItems = useWishlistStore((s) => s.items);
   const { navigateToProduct } = useUIStore();
   const [hovered, setHovered] = useState(false);
-  const [imgError, setImgError] = useState(false);
 
   const price = product.salePrice ?? product.price;
-  const hasImage = product.images.length > 0 && product.images[0] && !imgError;
+  const hasImage = product.images.length > 0 && product.images[0];
 
   return (
     <motion.div
@@ -98,12 +97,11 @@ function ProductCardShop({ product }: { product: Product }) {
         className="relative mb-3 overflow-hidden rounded-xl bg-gray-50 dark:bg-[#141414]"
       >
         {hasImage ? (
-          <img
+          <ProductImage
             src={product.images[0]}
             alt={product.name}
             className="aspect-[3/4] w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-            loading="lazy"
-            onError={() => setImgError(true)}
+            fallbackClassName="aspect-[3/4] w-full"
           />
         ) : (
           <div
@@ -115,17 +113,17 @@ function ProductCardShop({ product }: { product: Product }) {
         {/* Badges */}
         <div className="absolute top-3 left-3 flex flex-col gap-1.5">
           {product.isNew && (
-            <span className="rounded-full bg-[#d79c4a] px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[#0A0A0A] ">
+            <span className="rounded-full bg-[#d79c4a] px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider text-[#0A0A0A] ">
               New
             </span>
           )}
           {product.salePrice && (
-            <span className="rounded-full bg-red-500/90 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-white ">
+            <span className="rounded-full bg-red-500/90 px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider text-white ">
               Sale
             </span>
           )}
           {product.isBestSeller && !product.isNew && (
-            <span className="rounded-full bg-[#1A4B5C] px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-white ">
+            <span className="rounded-full bg-[#1A4B5C] px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider text-white ">
               Best Seller
             </span>
           )}
@@ -210,7 +208,7 @@ function ProductCardShop({ product }: { product: Product }) {
           e.stopPropagation();
           addItem(product, product.colors[0] || 'Default', product.sizes[0] || 'One Size');
         }}
-        className="mt-2 h-8 w-full rounded-lg bg-[#d79c4a] text-[10px] font-bold uppercase tracking-wider text-[#0A0A0A] hover:bg-[#c48a35] active:scale-95 md:hidden "
+        className="mt-2 h-8 w-full rounded-lg bg-[#d79c4a] text-xs font-bold uppercase tracking-wider text-[#0A0A0A] hover:bg-[#c48a35] active:scale-95 md:hidden "
       >
         <ShoppingCart className="mr-1 h-3 w-3" />
         Add to Cart
@@ -439,7 +437,7 @@ export function ShopPage() {
       categoryIds.forEach((id) => {
         // Find products that have this category ID in their categories array
         dbProducts.forEach((p) => {
-          const productCats = (p as Record<string, unknown>).categories as Array<{ id: string }> | undefined;
+          const productCats = (p as unknown as Record<string, unknown>).categories as Array<{ id: string }> | undefined;
           if (productCats && productCats.some((c) => categoryIds.includes(c.id))) {
             productIds.add(p.id);
           }
@@ -542,7 +540,7 @@ export function ShopPage() {
               <span className="hidden sm:inline">Home</span>
             </button>
             <Separator orientation="vertical" className="h-5 bg-gray-200 dark:bg-gray-700" />
-            <h1 className=" text-xl text-gray-900 dark:text-white">
+            <h1 className=" text-2xl sm:text-3xl font-semibold text-gray-900 dark:text-white">
               {headerTitle}
             </h1>
             <span className="text-sm text-gray-500 dark:text-gray-400 ">
@@ -576,7 +574,7 @@ export function ShopPage() {
                       <SlidersHorizontal className="h-4 w-4" />
                       <span>Filters</span>
                       {activeTags.length > 0 && (
-                        <Badge className="ml-1 h-5 min-w-[1.25rem] rounded-full bg-[#d79c4a] px-1 text-[10px] text-[#0A0A0A] ">
+                        <Badge className="ml-1 h-5 min-w-[1.25rem] rounded-full bg-[#d79c4a] px-1 text-xs text-[#0A0A0A] ">
                           {activeTags.length}
                         </Badge>
                       )}

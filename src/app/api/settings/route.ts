@@ -30,7 +30,13 @@ export async function GET() {
     if (!settings) {
       settings = await db.siteSettings.create({ data: { id: 'main' } });
     }
-    return jsonResponse(extractPublic(settings as unknown as Record<string, unknown>));
+    return new Response(JSON.stringify(extractPublic(settings as unknown as Record<string, unknown>)), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-store, no-cache, must-revalidate',
+      },
+    });
   } catch (error) {
     console.error('Error fetching settings:', error);
     return errorResponse('Failed to fetch settings', 500);

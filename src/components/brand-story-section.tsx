@@ -2,11 +2,8 @@
 
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { useUIStore } from '@/stores/ui-store';
 
 export function BrandStorySection() {
-  const { navigateToShop } = useUIStore();
-
   const scrollToStory = () => {
     document.getElementById('brand-story')?.scrollIntoView({ behavior: 'smooth' });
   };

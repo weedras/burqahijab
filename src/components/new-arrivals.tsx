@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Heart, ShoppingCart, Shield, Star, Truck, Package, Play, Loader2, RefreshCw } from 'lucide-react';
+import { Heart, ShoppingCart, Shield, Star, Truck, Package, Play, RefreshCw } from 'lucide-react';
+import { ProductImage } from '@/components/product-image';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useProductStore } from '@/stores/product-store';
@@ -41,8 +42,7 @@ function FeaturedProductCard({ product, index }: { product: Product; index: numb
   const toggleItem = useWishlistStore((s) => s.toggleItem);
   const wishlistItems = useWishlistStore((s) => s.items);
   const { navigateToProduct } = useUIStore();
-  const [imgError, setImgError] = useState(false);
-  const hasImage = product.images.length > 0 && product.images[0] && !imgError;
+  const hasImage = product.images.length > 0 && product.images[0];
 
   return (
     <motion.div
@@ -62,12 +62,11 @@ function FeaturedProductCard({ product, index }: { product: Product; index: numb
         {/* ── Image Container ── */}
         <div className="relative aspect-[3/4] overflow-hidden bg-gray-100 dark:bg-[#111]">
           {hasImage ? (
-            <img
+            <ProductImage
               src={product.images[0]}
               alt={product.name}
               className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
-              loading="lazy"
-              onError={() => setImgError(true)}
+              fallbackClassName="absolute inset-0"
             />
           ) : product.videoUrl ? (
             <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900">
@@ -75,7 +74,7 @@ function FeaturedProductCard({ product, index }: { product: Product; index: numb
                 <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/80 dark:bg-white/10 backdrop-blur-sm">
                   <Play className="h-5 w-5 fill-[#d79c4a] text-[#d79c4a] ml-0.5" />
                 </div>
-                <span className="text-[10px] font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider">Video</span>
+                <span className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider">Video</span>
               </div>
             </div>
           ) : (
@@ -84,7 +83,7 @@ function FeaturedProductCard({ product, index }: { product: Product; index: numb
                 <div className="mx-auto mb-2 flex h-14 w-14 items-center justify-center rounded-full bg-gray-200/60 dark:bg-gray-800/60">
                   <Package className="h-5 w-5 text-gray-300 dark:text-gray-600" />
                 </div>
-                <p className="text-[10px] text-gray-400 dark:text-gray-600">No Image</p>
+                <p className="text-xs text-gray-400 dark:text-gray-600">No Image</p>
               </div>
             </div>
           )}
@@ -92,17 +91,17 @@ function FeaturedProductCard({ product, index }: { product: Product; index: numb
           {/* Badges */}
           <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
             {product.isNew && (
-              <span className="inline-flex items-center rounded-full bg-[#d79c4a] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#0A0A0A]">
+              <span className="inline-flex items-center rounded-full bg-[#d79c4a] px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider text-[#0A0A0A]">
                 New
               </span>
             )}
             {product.salePrice && (
-              <span className="inline-flex items-center rounded-full bg-red-500 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white">
+              <span className="inline-flex items-center rounded-full bg-red-500 px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider text-white">
                 Sale
               </span>
             )}
             {product.isBestSeller && !product.isNew && (
-              <span className="inline-flex items-center rounded-full bg-[#1A4B5C] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white">
+              <span className="inline-flex items-center rounded-full bg-[#1A4B5C] px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider text-white">
                 Best Seller
               </span>
             )}
@@ -135,7 +134,7 @@ function FeaturedProductCard({ product, index }: { product: Product; index: numb
                 e.stopPropagation();
                 addItem(product, product.colors[0] || 'Default', product.sizes[0] || 'One Size');
               }}
-              className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-white/95 dark:bg-[#0A0A0A]/95 backdrop-blur-md py-2.5 text-[11px] font-semibold uppercase tracking-wider text-gray-900 dark:text-white shadow-lg hover:bg-white dark:hover:bg-[#0A0A0A] transition-colors"
+              className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-white/95 dark:bg-[#0A0A0A]/95 backdrop-blur-md py-2.5 text-xs font-semibold uppercase tracking-wider text-gray-900 dark:text-white shadow-lg hover:bg-white dark:hover:bg-[#0A0A0A] transition-colors"
             >
               <ShoppingCart className="h-3.5 w-3.5" />
               Add to Cart
@@ -177,7 +176,7 @@ function FeaturedProductCard({ product, index }: { product: Product; index: numb
               e.stopPropagation();
               addItem(product, product.colors[0] || 'Default', product.sizes[0] || 'One Size');
             }}
-            className="sm:hidden mt-3 flex w-full items-center justify-center gap-1.5 rounded-lg bg-[#d79c4a] py-2 text-[11px] font-bold uppercase tracking-wider text-[#0A0A0A] hover:bg-[#c48a35] active:scale-[0.98] transition-all"
+            className="sm:hidden mt-3 flex w-full items-center justify-center gap-1.5 rounded-lg bg-[#d79c4a] py-2 text-xs font-bold uppercase tracking-wider text-[#0A0A0A] hover:bg-[#c48a35] active:scale-[0.98] transition-all"
           >
             <ShoppingCart className="h-3 w-3" />
             Add to Cart

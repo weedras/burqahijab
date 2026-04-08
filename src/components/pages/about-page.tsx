@@ -21,7 +21,7 @@ const fadeInUp = {
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: i * 0.1, duration: 0.5, ease: 'easeOut' },
+    transition: { delay: i * 0.1, duration: 0.5, ease: 'easeOut' as const },
   }),
 };
 
@@ -113,7 +113,7 @@ export function AboutPage() {
           <div className="grid gap-6 sm:grid-cols-2">
             <Card className="border-[#d79c4a]/20 bg-gradient-to-br from-[#d79c4a]/5 to-elevated">
               <CardContent className="p-6">
-                <h2 className="mb-3 text-xl font-semibold text-gray-900 dark:text-white ">
+                <h2 className="mb-3 text-2xl font-semibold text-gray-900 dark:text-white ">
                   Our Mission
                 </h2>
                 <p className="text-sm leading-relaxed text-gray-500 dark:text-gray-400 ">
@@ -128,7 +128,7 @@ export function AboutPage() {
             </Card>
             <Card className="border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-[#1A1A1A]">
               <CardContent className="p-6">
-                <h2 className="mb-3 text-xl font-semibold text-gray-900 dark:text-white ">
+                <h2 className="mb-3 text-2xl font-semibold text-gray-900 dark:text-white ">
                   Our Vision
                 </h2>
                 <p className="text-sm leading-relaxed text-gray-500 dark:text-gray-400 ">

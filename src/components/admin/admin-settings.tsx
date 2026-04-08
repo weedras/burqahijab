@@ -604,7 +604,7 @@ export function AdminSettings() {
                   <FieldCard
                     key={field.key}
                     field={field}
-                    value={(settings as Record<string, string>)[field.key] || ''}
+                    value={(settings as unknown as Record<string, string>)[field.key] || ''}
                     onChange={updateField}
                   />
                 ))}
