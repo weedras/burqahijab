@@ -409,6 +409,7 @@ export function AdminProducts() {
                               src={images[0]}
                               alt={product.name}
                               className="h-full w-full object-cover"
+                              onError={(e) => { (e.currentTarget.style.display = 'none'); }}
                             />
                           </div>
                         ) : (
@@ -669,7 +670,7 @@ export function AdminProducts() {
                       key={i}
                       className="relative group h-20 w-20 overflow-hidden rounded-lg border border-border bg-muted"
                     >
-                      <img src={url} alt="" className="h-full w-full object-cover" />
+                      <img src={url} alt="" className="h-full w-full object-cover" onError={(e) => { const t = e.currentTarget; t.style.display = 'none'; }} />
                       <button
                         type="button"
                         onClick={() => {

@@ -71,6 +71,7 @@ interface StoreSettingsState {
   settings: StoreSettings;
   loaded: boolean;
   fetch: () => Promise<void>;
+  invalidate: () => void;
 }
 
 export const useStoreSettings = create<StoreSettingsState>((set, get) => ({
@@ -89,5 +90,10 @@ export const useStoreSettings = create<StoreSettingsState>((set, get) => ({
     } catch {
       set({ loaded: true });
     }
+  },
+
+  invalidate: () => {
+    set({ loaded: false, settings: DEFAULT_SETTINGS });
+    get().fetch();
   },
 }));

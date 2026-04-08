@@ -29,6 +29,7 @@ import { WishlistPage } from '@/components/pages/wishlist-page';
 import { CheckoutPage } from '@/components/checkout-page';
 import { useUIStore } from '@/stores/ui-store';
 import { useProductStore } from '@/stores/product-store';
+import { useStoreSettings } from '@/stores/store-settings-store';
 
 const contentPages = [
   'faq',
@@ -94,15 +95,17 @@ export default function Home() {
     }
   }, [viewMode, selectedProduct]);
 
-  // Invalidate product store cache when leaving admin (products may have changed)
+  // Invalidate product & settings store cache when leaving admin (data may have changed)
   const invalidateProductStore = useProductStore((s) => s.invalidate);
+  const invalidateSettingsStore = useStoreSettings((s) => s.invalidate);
   const prevViewModeRef = useRef<string | null>(null);
   useEffect(() => {
     if (prevViewModeRef.current === 'admin' && viewMode !== 'admin') {
       invalidateProductStore();
+      invalidateSettingsStore();
     }
     prevViewModeRef.current = viewMode;
-  }, [viewMode, invalidateProductStore]);
+  }, [viewMode, invalidateProductStore, invalidateSettingsStore]);
 
   // Secret keyboard shortcut to open admin: Ctrl+Shift+A
   useEffect(() => {

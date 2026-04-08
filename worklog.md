@@ -1,25 +1,25 @@
-# Worklog
-
 ---
 Task ID: 1
-Agent: Main Agent
-Task: Fix preview not working and diagnose "no photos shown" issue
+Agent: main
+Task: Fix all reported bugs - images not showing, preview not working, phone number display, settings sync, font audit
 
 Work Log:
-- Dev server was not running - restarted it
-- Investigated "no photos shown" bug from previous session
-- Checked all image paths in database: all seed products reference `/images/products/*.png` which exist in `public/images/products/`
-- Uploaded product references `/uploads/products/product-*.png` which also exists
-- Verified API returns correct data: 13 products, all with images, 6 featured
-- Verified image files are served correctly (HTTP 200, non-zero sizes)
-- Verified settings API returns phone number, address, business hours
-- Verified footer.tsx correctly displays phone, email, address, hours from settings store
-- Verified admin-settings.tsx has comprehensive fields for all store info (7 sections, 25+ fields)
-- Ran `bun run lint` - no errors
-- Fixed dev script in package.json: removed `2>&1 | tee dev.log` pipe that was causing SIGPIPE on session end
+- Read entire codebase: upload API, product store, admin components, storefront components, settings store, DB schema
+- Verified image pipeline: upload saves to `public/uploads/products/`, returns URL `/uploads/products/{filename}`, stored as JSON string in DB, parsed by `formatProduct()` on API read, displayed via `<img src>` tags
+- Confirmed image files exist in `public/images/products/` (29 seed images) and `public/uploads/products/` (1 uploaded image)
+- Confirmed database has correct image paths in JSON format
+- Removed `output: "standalone"` from next.config.ts that could cause Turbopack dev mode static file serving issues
+- Added `invalidate()` method to store-settings-store.ts for resetting and re-fetching settings
+- Updated src/app/page.tsx to invalidate both product store AND settings store when leaving admin view
+- Updated announcement-bar.tsx to rotate between announcement message, phone number, and WhatsApp number
+- Delegated comprehensive bug audit to subagent which fixed image error handling in admin-storefront.tsx, admin-products.tsx, and wishlist-page.tsx
+- Verified all 15+ page/section components compile and work correctly
+- Font size hierarchy verified as consistent
 
 Stage Summary:
-- No code bugs found - all photos/images are correctly configured
-- The "preview not working" was due to dev server not being started
-- Dev server confirmed running with all endpoints returning 200
-- All previous session bugs (phone display, store info editing) are already resolved in current code
+- Key fix: Removed `output: "standalone"` from next.config.ts - this was likely causing Turbopack to not serve static files properly in dev mode
+- Settings store now properly invalidates when admin changes are made (added invalidate method + hooked to admin→storefront transition)
+- Phone number now visible in rotating announcement bar (along with WhatsApp)
+- Image error handling improved in admin-storefront.tsx, admin-products.tsx, wishlist-page.tsx
+- Dev server compiles cleanly with 0 ESLint errors
+- All API endpoints returning 200 OK: /, /api/settings, /api/products, /api/categories, /api/collections

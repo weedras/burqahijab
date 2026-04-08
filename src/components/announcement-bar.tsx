@@ -12,7 +12,13 @@ export function AnnouncementBar() {
   const { announcementDismissed, dismissAnnouncement } = useUIStore();
   const { settings, fetch } = useStoreSettings();
 
-  const messages = useMemo(() => [settings.announcementMessage], [settings.announcementMessage]);
+  const messages = useMemo(() => {
+    const msgs: string[] = [];
+    if (settings.announcementMessage) msgs.push(settings.announcementMessage);
+    if (settings.phoneNumber) msgs.push(`📞 ${settings.phoneNumber}`);
+    if (settings.whatsappNumber) msgs.push(`💬 WhatsApp: ${settings.whatsappNumber}`);
+    return msgs.length > 0 ? msgs : ['Welcome to BurqaHijab.shop'];
+  }, [settings.announcementMessage, settings.phoneNumber, settings.whatsappNumber]);
 
   useEffect(() => { fetch(); }, [fetch]);
 

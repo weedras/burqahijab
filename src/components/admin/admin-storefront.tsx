@@ -132,6 +132,7 @@ export function AdminStorefront() {
   }) => {
     const images = Array.isArray(product.images) ? product.images : [];
     const isToggling = togglingId === product.id;
+    const [imgError, setImgError] = useState(false);
 
     return (
       <motion.div
@@ -144,11 +145,12 @@ export function AdminStorefront() {
       >
         {/* Image */}
         <div className="relative aspect-square overflow-hidden bg-muted">
-          {images.length > 0 && images[0] ? (
+          {images.length > 0 && images[0] && !imgError ? (
             <img
               src={images[0]}
               alt={product.name}
               className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+              onError={() => setImgError(true)}
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center">

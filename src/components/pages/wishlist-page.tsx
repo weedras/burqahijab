@@ -102,6 +102,7 @@ export function WishlistPage() {
                         alt={product.name}
                         className="aspect-[3/4] w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                         loading="lazy"
+                        onError={(e) => { (e.currentTarget.style.display = 'none'); }}
                       />
                     ) : (
                       <div className="aspect-[3/4] w-full flex items-center justify-center bg-gray-100 dark:bg-[#1A1A1A]">
