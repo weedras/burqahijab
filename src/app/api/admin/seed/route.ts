@@ -16,6 +16,8 @@ export async function POST(request: Request) {
     const authError = await requireAdmin(request);
     if (authError) return authError;
     // Clear existing data in reverse dependency order
+    await db.session.deleteMany();
+    await db.user.deleteMany();
     await db.review.deleteMany();
     await db.productCategory.deleteMany();
     await db.productCollection.deleteMany();

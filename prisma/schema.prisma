@@ -174,3 +174,18 @@ model SiteSettings {
 
   updatedAt              DateTime @updatedAt
 }
+
+model Session {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+}
+
+model User {
+  id            String   @id @default("admin")
+  username      String   @unique @default("admin")
+  passwordHash  String
+  resetCode     String?
+  updatedAt     DateTime @updatedAt
+}

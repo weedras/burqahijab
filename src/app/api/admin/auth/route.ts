@@ -1,6 +1,6 @@
 import { jsonResponse, errorResponse } from '@/lib/api-utils';
 import { createSession, getSessionToken, destroySession, SESSION_COOKIE_NAME } from '@/lib/auth';
-import { getAdminPassword } from '@/lib/password-config';
+import { getAdminCredentials } from '@/lib/password-config';
 
 // GET /api/admin/auth — Validate existing session (used by admin panel to check auth on mount)
 export async function GET(request: Request) {
@@ -26,19 +26,28 @@ export async function POST(request: Request) {
       return errorResponse('Password is required');
     }
 
-    const adminPassword = getAdminPassword();
+    const credentials = await getAdminCredentials();
 
-    if (!adminPassword) {
-      return errorResponse('Authentication service unavailable', 503);
-    }
-
-    const { safeCompare } = await import('@/lib/safe-compare');
-    if (!safeCompare(password, adminPassword)) {
-      return errorResponse('Incorrect password', 401);
+    if (!credentials) {
+      // If no admin user exists in DB, we use the fallback from ENV to seed it
+      // This is a safety measure for the very first login
+      const fallbackPassword = process.env.ADMIN_PASSWORD;
+      if (!fallbackPassword || password !== fallbackPassword) {
+        return errorResponse('Authentication service unavailable or incorrect password', 401);
+      }
+      
+      // Seed the admin user now
+      const { setAdminPassword } = await import('@/lib/password-config');
+      await setAdminPassword(password);
+    } else {
+      const { safeCompare } = await import('@/lib/safe-compare');
+      if (!safeCompare(password, credentials.passwordHash)) {
+        return errorResponse('Incorrect password', 401);
+      }
     }
 
     // Create a session and return Set-Cookie header
-    const { setCookieHeader } = createSession();
+    const { setCookieHeader } = await createSession();
 
     return new Response(
       JSON.stringify({
@@ -67,7 +76,7 @@ export async function DELETE(request: Request) {
     let clearCookieHeader: string;
 
     if (token) {
-      clearCookieHeader = destroySession(token);
+      clearCookieHeader = await destroySession(token);
     } else {
       clearCookieHeader = [
         `${SESSION_COOKIE_NAME}=`,

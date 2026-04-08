@@ -16,7 +16,6 @@ import { CartDrawer } from '@/components/cart-drawer';
 import { ProductDetail } from '@/components/product-detail';
 import { ShopPage } from '@/components/shop-page';
 import { SearchDialog } from '@/components/search-dialog';
-import { AdminPanel } from '@/components/admin/admin-panel';
 import { FaqPage } from '@/components/pages/faq-page';
 import { SizeGuidePage } from '@/components/pages/size-guide-page';
 import { ShippingPage } from '@/components/pages/shipping-page';
@@ -76,7 +75,6 @@ const PAGE_TITLES: Record<string, string> = {
   about: 'About Us | BurqaHijab',
   'brand-story-page': 'Brand Story | BurqaHijab',
   careers: 'Careers | BurqaHijab',
-  admin: 'Admin Panel | BurqaHijab',
 };
 
 const DEFAULT_TITLE = 'BurqaHijab — Where Modesty Meets Luxury';
@@ -84,7 +82,6 @@ const DEFAULT_TITLE = 'BurqaHijab — Where Modesty Meets Luxury';
 export default function Home() {
   const viewMode = useUIStore((s) => s.viewMode);
   const selectedProduct = useUIStore((s) => s.selectedProduct);
-  const navigateToAdmin = useUIStore((s) => s.navigateToAdmin);
 
   // Dynamic page title
   useEffect(() => {
@@ -95,37 +92,21 @@ export default function Home() {
     }
   }, [viewMode, selectedProduct]);
 
-  // Invalidate product & settings store cache when leaving admin (data may have changed)
+  // Invalidate product & settings store cache when leaving pages (data may have changed in admin)
   const invalidateProductStore = useProductStore((s) => s.invalidate);
   const invalidateSettingsStore = useStoreSettings((s) => s.invalidate);
   const prevViewModeRef = useRef<string | null>(null);
+  
   useEffect(() => {
-    if (prevViewModeRef.current === 'admin' && viewMode !== 'admin') {
+    // If we were just away from the page, refresh data
+    if (prevViewModeRef.current !== viewMode) {
       invalidateProductStore();
       invalidateSettingsStore();
     }
     prevViewModeRef.current = viewMode;
   }, [viewMode, invalidateProductStore, invalidateSettingsStore]);
 
-  // Secret keyboard shortcut to open admin: Ctrl+Shift+A
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.ctrlKey && e.shiftKey && e.key === 'A') {
-        e.preventDefault();
-        navigateToAdmin();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [navigateToAdmin]);
-
   const isContentPage = contentPages.includes(viewMode as (typeof contentPages)[number]);
-
-  // Admin panel is a full-page takeover — no header/footer/nav
-  if (viewMode === 'admin') {
-    return <AdminPanel />;
-  }
-
   const isHomePage = viewMode === 'home';
 
   return (

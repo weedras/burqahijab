@@ -1,36 +1,28 @@
-import { readFileSync, writeFileSync } from 'fs';
-import { join } from 'path';
+import { db } from './db';
 
 /**
- * Read ADMIN_PASSWORD directly from .env file.
- * This bypasses Next.js/Turbopack env caching so password changes take effect immediately.
+ * Get admin credentials from the database.
  */
-export function getAdminPassword(): string | null {
-  try {
-    const envPath = join(process.cwd(), '.env');
-    const envContent = readFileSync(envPath, 'utf-8');
-    const match = envContent.match(/^ADMIN_PASSWORD=(.+)$/m);
-    return match ? match[1].trim() : null;
-  } catch {
-    return null;
-  }
+export async function getAdminCredentials() {
+  return db.user.findFirst({
+    where: { username: 'admin' },
+  });
 }
 
 /**
- * Write ADMIN_PASSWORD directly to .env file.
- * Returns true on success, false on failure.
+ * Update admin password in the database.
  */
-export function setAdminPassword(newPassword: string): boolean {
+export async function setAdminPassword(newPasswordHash: string): Promise<boolean> {
   try {
-    const envPath = join(process.cwd(), '.env');
-    const envContent = readFileSync(envPath, 'utf-8');
-    const updatedEnv = envContent.replace(
-      /^ADMIN_PASSWORD=.*$/m,
-      `ADMIN_PASSWORD=${newPassword}`
-    );
-    if (updatedEnv === envContent) return false;
-    writeFileSync(envPath, updatedEnv, 'utf-8');
-    process.env.ADMIN_PASSWORD = newPassword;
+    await db.user.upsert({
+      where: { username: 'admin' },
+      update: { passwordHash: newPasswordHash },
+      create: { 
+        id: 'admin',
+        username: 'admin',
+        passwordHash: newPasswordHash 
+      },
+    });
     return true;
   } catch {
     return false;
@@ -38,16 +30,22 @@ export function setAdminPassword(newPassword: string): boolean {
 }
 
 /**
- * Read RESET_CODE directly from .env file.
- * This bypasses Next.js/Turbopack env caching.
+ * Update reset code in the database.
  */
-export function getResetCode(): string | null {
+export async function setResetCode(code: string): Promise<boolean> {
   try {
-    const envPath = join(process.cwd(), '.env');
-    const envContent = readFileSync(envPath, 'utf-8');
-    const match = envContent.match(/^RESET_CODE=(.+)$/m);
-    return match ? match[1].trim() : null;
+    await db.user.upsert({
+      where: { username: 'admin' },
+      update: { resetCode: code },
+      create: { 
+        id: 'admin',
+        username: 'admin',
+        passwordHash: 'REPLACE_ME_ON_SEED',
+        resetCode: code
+      },
+    });
+    return true;
   } catch {
-    return null;
+    return false;
   }
 }

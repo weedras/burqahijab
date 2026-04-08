@@ -1,28 +1,6 @@
-/**
- * Server-side session-based authentication for admin routes.
- *
- * After a successful login, a session token is stored in a cookie (httpOnly, SameSite=Strict).
- * The session token maps to a server-side session entry stored in memory via globalThis
- * to ensure a single shared Map across all Turbopack/Next.js route handlers.
- */
-
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
-
-// ---- In-memory session store (shared via globalThis) ----
-interface SessionEntry {
-  token: string;
-  createdAt: number;
-}
-
-const SESSION_KEY = '__bhq_admin_sessions__';
-
-function getSessions(): Map<string, SessionEntry> {
-  if (!(globalThis as Record<string, unknown>)[SESSION_KEY]) {
-    (globalThis as Record<string, unknown>)[SESSION_KEY] = new Map<string, SessionEntry>();
-  }
-  return (globalThis as Record<string, unknown>)[SESSION_KEY] as Map<string, SessionEntry>;
-}
+import { db } from './db';
 
 /** Maximum session duration: 24 hours */
 const SESSION_MAX_AGE_MS = 24 * 60 * 60 * 1000;
@@ -30,30 +8,21 @@ const SESSION_MAX_AGE_MS = 24 * 60 * 60 * 1000;
 /** Cookie name used for the session */
 export const SESSION_COOKIE_NAME = 'bhq_admin_session';
 
-/** Clean up expired sessions (call periodically) */
-function cleanExpiredSessions() {
-  const sessions = getSessions();
-  const now = Date.now();
-  for (const [key, entry] of sessions) {
-    if (now - entry.createdAt > SESSION_MAX_AGE_MS) {
-      sessions.delete(key);
-    }
-  }
-}
-
-// Clean sessions every 10 minutes
-const CLEANUP_KEY = '__bhq_cleanup_interval__';
-if (!(globalThis as Record<string, unknown>)[CLEANUP_KEY]) {
-  (globalThis as Record<string, unknown>)[CLEANUP_KEY] = true;
-  setInterval(cleanExpiredSessions, 10 * 60 * 1000);
-}
-
 /**
  * Create a new session and return the Set-Cookie header value.
  */
-export function createSession(): { token: string; setCookieHeader: string } {
+export async function createSession(): Promise<{ token: string; setCookieHeader: string }> {
   const token = 'sess_' + Date.now().toString(36) + '_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-  getSessions().set(token, { token, createdAt: Date.now() });
+  
+  const expiresAt = new Date(Date.now() + SESSION_MAX_AGE_MS);
+  
+  // Persist to database
+  await db.session.create({
+    data: {
+      token,
+      expiresAt,
+    },
+  });
 
   const isProduction = process.env.NODE_ENV === 'production';
   const setCookieHeader = [
@@ -71,13 +40,21 @@ export function createSession(): { token: string; setCookieHeader: string } {
 /**
  * Validate a session token and return whether it is valid.
  */
-export function isValidSession(token: string): boolean {
-  const entry = getSessions().get(token);
-  if (!entry) return false;
-  if (Date.now() - entry.createdAt > SESSION_MAX_AGE_MS) {
-    getSessions().delete(token);
+export async function isValidSession(token: string): Promise<boolean> {
+  if (!token) return false;
+  
+  const session = await db.session.findUnique({
+    where: { token },
+  });
+
+  if (!session) return false;
+
+  if (new Date() > session.expiresAt) {
+    // Session expired — clean it up
+    await db.session.delete({ where: { token } }).catch(() => {});
     return false;
   }
+
   return true;
 }
 
@@ -107,15 +84,18 @@ export async function getSessionToken(request?: Request): Promise<string | null>
   const token = match.substring(SESSION_COOKIE_NAME.length + 1);
   if (!token) return null;
 
-  return isValidSession(token) ? token : null;
+  const isValid = await isValidSession(token);
+  return isValid ? token : null;
 }
 
 /**
  * Destroy a session by token.
  * Returns the Set-Cookie header to clear the cookie.
  */
-export function destroySession(token: string): string {
-  getSessions().delete(token);
+export async function destroySession(token: string): Promise<string> {
+  if (token) {
+    await db.session.delete({ where: { token } }).catch(() => {});
+  }
 
   return [
     `${SESSION_COOKIE_NAME}=`,
