@@ -24,14 +24,14 @@ export function TrustSignals() {
     {
       icon: RotateCcw,
       label: 'Easy Returns',
-      description: '14-day hassle-free returns',
+      description: `${settings.returnWindowDays}-day hassle-free returns`,
     },
     {
       icon: Lock,
       label: 'Secure Payment',
       description: 'SSL encrypted checkout',
     },
-  ], [settings.freeShippingThreshold]);
+  ], [settings.freeShippingThreshold, settings.returnWindowDays]);
   return (
     <section className="border-y border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-[#111]">
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">

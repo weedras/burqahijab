@@ -285,7 +285,7 @@ export function ReturnsPage() {
                   {[
                     { method: 'Credit/Debit Card', time: '5–7 business days' },
                     { method: 'JazzCash / EasyPaisa', time: `${settings.refundDaysJazzCash} business days` },
-                    { method: 'Bank Transfer', time: '3–5 business days' },
+                    { method: 'Bank Transfer', time: `${settings.refundDaysBank} business days` },
                     { method: 'Apple Pay / Google Pay', time: '5–10 business days' },
                   ].map((item) => (
                     <div key={item.method} className="rounded-lg bg-white dark:bg-[#0A0A0A] p-3">

@@ -24,8 +24,9 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { useCartStore, getCartSubtotal, getCartTotalItems, FREE_SHIPPING_THRESHOLD } from '@/stores/cart-store';
+import { useCartStore, getCartSubtotal, getCartTotalItems } from '@/stores/cart-store';
 import { useUIStore } from '@/stores/ui-store';
+import { useStoreSettings } from '@/stores/store-settings-store';
 import { formatPrice } from '@/lib/format';
 import { cn } from '@/lib/utils';
 
@@ -72,6 +73,7 @@ export function CheckoutPage() {
   const clearCart = useCartStore((s) => s.clearCart);
   const navigateToShop = useUIStore((s) => s.navigateToShop);
   const navigateHome = useUIStore((s) => s.navigateHome);
+  const { settings } = useStoreSettings();
 
   const [step, setStep] = useState<Step>('information');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -91,9 +93,10 @@ export function CheckoutPage() {
 
   const currentSubtotal = useMemo(() => getCartSubtotal(items), [items]);
   const itemCount = useMemo(() => getCartTotalItems(items), [items]);
-  const shippingCost = currentSubtotal >= FREE_SHIPPING_THRESHOLD ? 0 : 250;
+  const freeShippingThreshold = useMemo(() => Number(settings.freeShippingThreshold) || 3000, [settings.freeShippingThreshold]);
+  const shippingCost = currentSubtotal >= freeShippingThreshold ? 0 : (Number(settings.shippingCostDomestic) || 250);
   const totalAmount = currentSubtotal + shippingCost;
-  const qualifiesFreeShipping = currentSubtotal >= FREE_SHIPPING_THRESHOLD;
+  const qualifiesFreeShipping = currentSubtotal >= freeShippingThreshold;
 
   const updateForm = (field: string, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -248,7 +251,7 @@ export function CheckoutPage() {
               </div>
               <div className="mt-10 flex items-center justify-center gap-6 text-xs text-gray-400 dark:text-gray-500">
                 <div className="flex items-center gap-1.5"><Shield className="h-3.5 w-3.5" /> Secure Checkout</div>
-                <div className="flex items-center gap-1.5"><Truck className="h-3.5 w-3.5" /> Free Shipping over {formatPrice(FREE_SHIPPING_THRESHOLD)}</div>
+                <div className="flex items-center gap-1.5"><Truck className="h-3.5 w-3.5" /> Free Shipping over {formatPrice(freeShippingThreshold)}</div>
                 <div className="flex items-center gap-1.5"><Package className="h-3.5 w-3.5" /> Easy Returns</div>
               </div>
             </motion.div>
@@ -649,7 +652,7 @@ function OrderSummaryCard({
 
       {!qualifiesFreeShipping && (
         <div className="mt-4 rounded-lg bg-[#d79c4a]/10 px-3 py-2 text-xs text-[#d79c4a] text-center">
-          Add {formatPrice(FREE_SHIPPING_THRESHOLD - subtotal)} more for free shipping!
+          Add {formatPrice(Math.max(0, freeShippingThreshold - subtotal))} more for free shipping!
         </div>
       )}
 

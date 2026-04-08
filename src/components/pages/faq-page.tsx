@@ -70,7 +70,7 @@ export function FaqPage() {
         {
           question: 'Do you offer free shipping?',
           answer:
-            `Yes, we offer free shipping on all domestic orders within Pakistan that exceed PKR ${Number(settings.freeShippingThreshold).toLocaleString()} in value. For orders below this amount, a flat shipping fee of PKR 200 applies. For international orders, shipping rates vary by destination and are calculated at checkout. We frequently run promotional campaigns that include free shipping offers, so be sure to subscribe to our newsletter and follow us on social media to stay updated on our latest deals and shipping promotions.`,
+            `Yes, we offer free shipping on all domestic orders within Pakistan that exceed PKR ${Number(settings.freeShippingThreshold).toLocaleString()} in value. For orders below this amount, a flat shipping fee of PKR ${settings.shippingCostDomestic} applies. For international orders, shipping rates vary by destination and are calculated at checkout. We frequently run promotional campaigns that include free shipping offers, so be sure to subscribe to our newsletter and follow us on social media to stay updated on our latest deals and shipping promotions.`,
         },
         {
           question: 'How can I track my order?',
@@ -90,12 +90,12 @@ export function FaqPage() {
         {
           question: 'What is your return policy?',
           answer:
-            'We offer a 14-day return policy from the date of delivery. If you are not completely satisfied with your purchase, you may return eligible items in their original condition — unworn, unwashed, with all tags attached, and in their original packaging. To initiate a return, simply contact our customer service team with your order number, and we will provide you with return instructions. Please note that sale items, accessories, and customized products are not eligible for returns. Refunds are processed within 5 to 7 business days after we receive and inspect the returned item.',
+            `We offer a ${settings.returnWindowDays}-day return policy from the date of delivery. If you are not completely satisfied with your purchase, you may return eligible items in their original condition — unworn, unwashed, with all tags attached, and in their original packaging. To initiate a return, simply contact our customer service team with your order number, and we will provide you with return instructions. Please note that sale items, accessories, and customized products are not eligible for returns. Refunds are processed within 5 to 7 business days after we receive and inspect the returned item.`,
         },
         {
           question: 'How do I exchange an item for a different size or color?',
           answer:
-            'Exchanging an item is easy and hassle-free. Contact our customer service team within 14 days of receiving your order to request an exchange. Provide your order number along with the size or color you would like instead. If the desired item is in stock, we will arrange the exchange immediately. You will need to ship the original item back to us, and once received and inspected, we will dispatch the replacement at no additional shipping cost. If the replacement is not available, we will offer you a store credit or a full refund.',
+            `Exchanging an item is easy and hassle-free. Contact our customer service team within ${settings.returnWindowDays} days of receiving your order to request an exchange. Provide your order number along with the size or color you would like instead. If the desired item is in stock, we will arrange the exchange immediately. You will need to ship the original item back to us, and once received and inspected, we will dispatch the replacement at no additional shipping cost. If the replacement is not available, we will offer you a store credit or a full refund.`,
         },
         {
           question: 'What items are non-returnable?',

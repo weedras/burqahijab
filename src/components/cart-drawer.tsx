@@ -8,8 +8,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
-import { useCartStore, getCartSubtotal, getCartTotalItems, FREE_SHIPPING_THRESHOLD } from '@/stores/cart-store';
+import { useCartStore, getCartSubtotal, getCartTotalItems } from '@/stores/cart-store';
 import { useUIStore } from '@/stores/ui-store';
+import { useStoreSettings } from '@/stores/store-settings-store';
 import { formatPrice } from '@/lib/format';
 
 export function CartDrawer() {
@@ -20,12 +21,14 @@ export function CartDrawer() {
   const updateQuantity = useCartStore((s) => s.updateQuantity);
   const navigateHome = useUIStore((s) => s.navigateHome);
   const navigateToCheckout = useUIStore((s) => s.navigateToCheckout);
+  const { settings } = useStoreSettings();
 
   const currentSubtotal = useMemo(() => getCartSubtotal(items), [items]);
   const itemCount = useMemo(() => getCartTotalItems(items), [items]);
-  const remaining = Math.max(FREE_SHIPPING_THRESHOLD - currentSubtotal, 0);
-  const qualifiesFreeShipping = currentSubtotal >= FREE_SHIPPING_THRESHOLD;
-  const progress = Math.min((currentSubtotal / FREE_SHIPPING_THRESHOLD) * 100, 100);
+  const freeShippingThreshold = Number(settings.freeShippingThreshold) || 3000;
+  const remaining = Math.max(freeShippingThreshold - currentSubtotal, 0);
+  const qualifiesFreeShipping = currentSubtotal >= freeShippingThreshold;
+  const progress = Math.min((currentSubtotal / freeShippingThreshold) * 100, 100);
 
   return (
     <Sheet open={isOpen} onOpenChange={(open) => { if (!open) closeCart(); }}>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import Image from 'next/image';
 import {
   Instagram,
@@ -11,6 +11,9 @@ import {
   Twitter,
   Youtube,
   Globe,
+  Phone,
+  Clock,
+  MapPin,
 } from 'lucide-react';
 import { useUIStore } from '@/stores/ui-store';
 import { useStoreSettings } from '@/stores/store-settings-store';
@@ -38,13 +41,6 @@ const customerServiceLinks = [
   { label: 'Returns & Exchanges', action: 'returns' as const },
   { label: 'FAQ', action: 'faq' as const },
   { label: 'Size Guide', action: 'size-guide' as const },
-];
-
-const socialLinks = [
-  { label: 'Facebook', icon: Facebook, href: 'https://facebook.com' },
-  { label: 'Instagram', icon: Instagram, href: 'https://instagram.com/burqahijab' },
-  { label: 'Twitter', icon: Twitter, href: 'https://twitter.com' },
-  { label: 'Youtube', icon: Youtube, href: 'https://youtube.com' },
 ];
 
 /* ------------------------------------------------------------------ */
@@ -82,7 +78,7 @@ function PayPalIcon() {
       <path d="M16.8 22.6h2.4c.2 0 .3-.1.3-.3l.2-.9c0-.2.1-.3.3-.3h3.4c.3 0 .4.1.3.3l-.1.6c-.1.4 0 .6.4.6h2.1c.5 0 .7-.2.8-.7l1.3-7.6c.1-.5-.1-.7-.6-.7h-2.7c-.2 0-.3.1-.3.3l-.3 1.5c0 .2-.1.3-.3.3h-3.5c-.2 0-.3-.1-.3-.3l.3-1.5c0-.2-.1-.3-.3-.3h-2.7c-.5 0-.7.2-.8.7l-1.1 6.5c-.1.5.1.7.6.7z" fill="#003087"/>
       <path d="M47.5 20.5l.5-3.1c.2-1.1-.3-1.7-1.5-1.7h-1.3c-.7 0-1.1.3-1.3.9l-2.3 6.6c-.1.2 0 .3.2.3h2.1c.3 0 .4-.1.5-.3l.5-1.7h2.1l.2 1.7c0 .2.2.3.4.3h2.3c.2 0 .3-.1.4-.3l1.3-7.6c.1-.5-.1-.7-.6-.7h-2.7c-.2 0-.3.1-.3.3l-.8 5.3z" fill="#009CDE"/>
       <path d="M39 25c-.1.6.1.9.7.9h2c.2 0 .3-.1.4-.3l.3-1.7c0-.2 0-.2-.2-.2h-1.3c-1.1 0-1.7-.5-1.5-1.6l.7-4h1.8c.2 0 .3-.1.3-.3l.3-1.8c0-.2-.1-.3-.3-.3h-1.7l.3-1.8c0-.2-.1-.3-.3-.3H37.8c-.2 0-.3.1-.3.3l-1.2 7.2c-.2 1.2.5 2 1.7 2h1z" fill="#003087"/>
-      <path d="M54.2 15.7h-2.3c-.3 0-.5.2-.5.4l-1.6 8.5c0 .2.1.4.3.4h2.4c.2 0 .3-.1.3-.3l.3-1.7h2.5l-.2 1.7c0 .2.1.3.3.3h2.3c.3 0 .5-.2.5-.4l1.6-8.5c0-.2-.1-.4-.3-.4h-2.4c-.2 0-.3.1-.3.3l-.3 1.8h-2.5l.2-1.8c0-.1 0-.3-.1-.3z" fill="#009CDE"/>
+      <path d="M54.2 15.7h-2.3c-.3 0-.5.2-.5.4l-1.6 8.5c0 .2.1.4.3.4h2.4c.2 0 .3-.1.3-.3l.3-1.7h2.5l-.2 1.7c0 .2.1.3.3.3h2.3c.3 0 .5-.2.5-.4l1.6-8.5c0-.2-.1-.4-.3-.4h-2.4c-.2 0-.3.1-.3.3l-.3 1.8h-2.5l.2-1.8c0-.1 0-.3-.1-.3h-.2z" fill="#009CDE"/>
       <path d="M62.8 15.7h-2.3c-.3 0-.5.2-.5.4l-1.6 8.5c0 .2.1.4.3.4h2.4c.2 0 .3-.1.3-.3l.3-1.7h2.5l-.2 1.7c0 .2.1.3.3.3h2.3c.3 0 .5-.2.5-.4l.8-4.3c.2-1.1-.3-1.7-1.5-1.7H63l.2-1.8c0-.1-.1-.1-.2-.1h-.2z" fill="#009CDE"/>
     </svg>
   );
@@ -147,15 +143,6 @@ const paymentIcons = [
 /*  Footer Component                                                   */
 /* ------------------------------------------------------------------ */
 
-function getInstagramHandle(url: string): string {
-  try {
-    const pathname = new URL(url).pathname.replace(/^\//, '');
-    return pathname ? `@${pathname}` : '@burqahijab';
-  } catch {
-    return '@burqahijab';
-  }
-}
-
 export function Footer() {
   const {
     navigateToShop,
@@ -171,30 +158,28 @@ export function Footer() {
 
   useEffect(() => { fetch(); }, [fetch]);
 
-  const [socialLinks, setSocialLinks] = useState<Array<{ label: string; icon: React.ComponentType<{ className?: string }>; href: string }>>([
-    { label: 'Instagram', icon: Instagram, href: 'https://instagram.com/burqahijab' },
-    { label: 'Facebook', icon: Facebook, href: 'https://facebook.com' },
-    { label: 'Twitter', icon: Twitter, href: 'https://twitter.com' },
-    { label: 'Youtube', icon: Youtube, href: 'https://youtube.com' },
-  ]);
+  // Build social links from settings (single source of truth)
+  const socialLinksList = useMemo(() => {
+    const links: Array<{ label: string; icon: React.ComponentType<{ className?: string }>; href: string }> = [];
+    if (settings.instagramUrl) links.push({ label: 'Instagram', icon: Instagram, href: settings.instagramUrl });
+    if (settings.facebookUrl) links.push({ label: 'Facebook', icon: Facebook, href: settings.facebookUrl });
+    if (settings.tiktokUrl) links.push({ label: 'TikTok', icon: Globe, href: settings.tiktokUrl });
+    if (settings.twitterUrl) links.push({ label: 'Twitter', icon: Twitter, href: settings.twitterUrl });
+    if (settings.youtubeUrl) links.push({ label: 'Youtube', icon: Youtube, href: settings.youtubeUrl });
+    // Fallback to Instagram if nothing is configured
+    if (links.length === 0) {
+      links.push({ label: 'Instagram', icon: Instagram, href: 'https://instagram.com/burqahijab' });
+    }
+    return links;
+  }, [settings.instagramUrl, settings.facebookUrl, settings.tiktokUrl, settings.twitterUrl, settings.youtubeUrl]);
 
-  // Fetch social links from settings API
-  useEffect(() => {
-    fetch('/api/settings')
-      .then((res) => res.json())
-      .then((data) => {
-        const links: Array<{ label: string; icon: React.ComponentType<{ className?: string }>; href: string }> = [];
-        if (data.instagramUrl) links.push({ label: 'Instagram', icon: Instagram, href: data.instagramUrl });
-        if (data.facebookUrl) links.push({ label: 'Facebook', icon: Facebook, href: data.facebookUrl });
-        if (data.tiktokUrl) links.push({ label: 'TikTok', icon: Globe, href: data.tiktokUrl });
-        if (data.twitterUrl) links.push({ label: 'Twitter', icon: Twitter, href: data.twitterUrl });
-        if (data.youtubeUrl) links.push({ label: 'Youtube', icon: Youtube, href: data.youtubeUrl });
-        if (links.length > 0) setSocialLinks(links);
-      })
-      .catch(() => {
-        // Keep defaults on error
-      });
-  }, []);
+  // Build WhatsApp link from settings
+  const whatsappLink = useMemo(() => {
+    if (!settings.whatsappNumber) return null;
+    const number = settings.whatsappNumber.replace(/[^0-9]/g, '');
+    const message = encodeURIComponent(settings.whatsappMessage || "Hi! I'm interested in a product from BurqaHijab.shop");
+    return `https://wa.me/${number}${settings.whatsappMessage ? `?text=${message}` : ''}`;
+  }, [settings.whatsappNumber, settings.whatsappMessage]);
 
   const [showBackToTop, setShowBackToTop] = useState(false);
 
@@ -251,14 +236,36 @@ export function Footer() {
             <p className="text-sm leading-relaxed text-gray-400 mb-4">
               Empowering women through elegant modest fashion. Discover our curated collection of hijabs, abayas, and accessories.
             </p>
+            {/* Contact Info */}
             <div className="space-y-2 text-sm text-gray-400">
-              <p>{settings.supportEmail}</p>
-              <p>{settings.phoneNumber}</p>
-              <p>{settings.storeAddressShort}</p>
+              {settings.phoneNumber && (
+                <a href={`tel:${settings.phoneNumber.replace(/\s/g, '')}`} className="flex items-center gap-2 hover:text-[#d79c4a] transition-colors">
+                  <Phone className="h-3.5 w-3.5 shrink-0" />
+                  {settings.phoneNumber}
+                </a>
+              )}
+              {settings.supportEmail && (
+                <a href={`mailto:${settings.supportEmail}`} className="flex items-center gap-2 hover:text-[#d79c4a] transition-colors">
+                  <ExternalLink className="h-3.5 w-3.5 shrink-0" />
+                  {settings.supportEmail}
+                </a>
+              )}
+              {settings.storeAddressShort && (
+                <p className="flex items-center gap-2">
+                  <MapPin className="h-3.5 w-3.5 shrink-0" />
+                  {settings.storeAddressShort}
+                </p>
+              )}
+              {settings.businessHours && (
+                <p className="flex items-center gap-2">
+                  <Clock className="h-3.5 w-3.5 shrink-0" />
+                  {settings.businessHours}
+                </p>
+              )}
             </div>
             {/* Social Icons */}
             <div className="flex items-center gap-3 mt-6">
-              {socialLinks.map((link) => (
+              {socialLinksList.map((link) => (
                 <a
                   key={link.label}
                   href={link.href}
@@ -270,6 +277,17 @@ export function Footer() {
                   <link.icon className="h-4 w-4" />
                 </a>
               ))}
+              {whatsappLink && (
+                <a
+                  href={whatsappLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="WhatsApp"
+                  className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-700 text-gray-400 transition-all hover:border-green-500 hover:text-green-500"
+                >
+                  <MessageCircle className="h-4 w-4" />
+                </a>
+              )}
             </div>
           </div>
 

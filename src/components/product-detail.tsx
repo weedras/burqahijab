@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Minus, Plus, Heart, ShoppingBag, Star, Truck, Shield, RotateCcw, Play, Film, Volume2, VolumeX, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -139,14 +139,14 @@ function ProductCard({ product, onClick }: { product: Product; onClick: () => vo
 function NativeVideoPlayer({ src, poster }: { src: string; poster?: string }) {
   const [playing, setPlaying] = useState(false);
   const [muted, setMuted] = useState(true);
-  const videoRef = useState<HTMLVideoElement | null>(null)[0];
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   return (
     <div className="relative w-full h-full">
       {!playing ? (
         <button
           className="absolute inset-0 z-10 flex items-center justify-center bg-black/40 backdrop-blur-[2px] w-full h-full cursor-pointer"
-          onClick={() => { setPlaying(true); setTimeout(() => videoRef?.play(), 100); }}
+          onClick={() => { setPlaying(true); setTimeout(() => videoRef.current?.play(), 100); }}
         >
           <div className="flex flex-col items-center gap-3">
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm border border-white/30 transition-transform hover:scale-110">
@@ -164,7 +164,7 @@ function NativeVideoPlayer({ src, poster }: { src: string; poster?: string }) {
         </button>
       )}
       <video
-        ref={(el) => { if (el) { (videoRef as unknown) = el; } }}
+        ref={videoRef}
         src={src}
         poster={poster}
         className="w-full h-full object-cover"

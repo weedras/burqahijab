@@ -222,3 +222,34 @@ Stage Summary:
 - 27 configurable fields organized into 7 logical sections
 - Shipping cost inconsistency fixed (both checkout and shipping page now use same values)
 - Social handles standardized (derived from settings URLs)
+
+---
+Task ID: 8
+Agent: Main Agent
+Task: Complete audit and fix all bugs across the store
+
+Work Log:
+- **Comprehensive audit** of all components, API routes, stores, and settings
+- Analyzed uploaded screenshot with VLM — identified broken product images and UI issues
+- **Fixed 12 bugs** across 8 files:
+
+1. **Footer variable shadowing** — `socialLinks` constant (line 43) was shadowed by `socialLinks` state (line 174). Also removed redundant raw `fetch('/api/settings')` — now uses single source of truth via `useStoreSettings`
+2. **Footer missing WhatsApp & business hours** — Added WhatsApp number with clickable `wa.me` link, phone number with `tel:` link, email with `mailto:` link, address with MapPin icon, and business hours with Clock icon
+3. **Checkout FREE_SHIPPING_THRESHOLD runtime error** — Two references to `FREE_SHIPPING_THRESHOLD` remained after import was removed (lines 254, 655), causing undefined reference at runtime. Fixed to use dynamic `freeShippingThreshold` from settings
+4. **Checkout hardcoded shipping cost** — Changed from `250` to `Number(settings.shippingCostDomestic) || 250`
+5. **Cart drawer hardcoded FREE_SHIPPING_THRESHOLD** — Same issue as checkout, imported `useStoreSettings` and made free shipping threshold dynamic
+6. **TrustSignals hardcoded "14-day"** — Changed to `${settings.returnWindowDays}-day hassle-free returns`
+7. **Contact page WhatsApp showing phoneNumber** — WhatsApp card now shows `whatsappNumber` (the number user added in admin), separate Phone card shows `phoneNumber`. Both are clickable links (wa.me for WhatsApp, tel: for phone)
+8. **Contact page contact info not clickable** — Made all contact cards with phone/email clickable with proper href attributes
+9. **Product detail video ref hack** — Replaced `useState<HTMLVideoElement | null>(null)[0]` with proper `useRef<HTMLVideoElement>(null)` and `ref={videoRef}` pattern
+10. **FAQ page hardcoded "PKR 200" shipping fee** — Changed to use `settings.shippingCostDomestic`
+11. **FAQ page hardcoded "14-day"** — Changed to use `settings.returnWindowDays` (2 occurrences)
+12. **Returns page hardcoded bank transfer refund time** — Changed to use `settings.refundDaysBank`
+
+Stage Summary:
+- All 12 bugs identified and fixed
+- ESLint: 0 errors, 0 warnings
+- All store info (phone, email, address, hours, WhatsApp, social links, shipping, returns) now editable from admin and reflects instantly on storefront
+- Free shipping threshold, shipping cost, and return window are now dynamic across: checkout, cart drawer, trust signals, FAQ, shipping page, returns page
+- WhatsApp number shows in footer and contact page with clickable link
+- Phone number, email, address, business hours all show in footer with proper icons and links

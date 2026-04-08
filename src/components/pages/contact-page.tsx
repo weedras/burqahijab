@@ -56,14 +56,24 @@ export function ContactPage() {
     {
       icon: Phone,
       label: 'WhatsApp',
-      value: settings.phoneNumber,
+      value: settings.whatsappNumber || settings.phoneNumber,
+      href: settings.whatsappNumber ? `https://wa.me/${settings.whatsappNumber.replace(/[^0-9]/g, '')}` : settings.phoneNumber ? `tel:${settings.phoneNumber.replace(/\s/g, '')}` : undefined,
       description: 'Chat with us anytime for quick assistance',
       highlight: true,
     },
     {
+      icon: Phone,
+      label: 'Phone',
+      value: settings.phoneNumber,
+      href: settings.phoneNumber ? `tel:${settings.phoneNumber.replace(/\s/g, '')}` : undefined,
+      description: 'Call us for immediate support',
+      highlight: false,
+    },
+    {
       icon: Mail,
       label: 'Email',
-      value: settings.contactEmail,
+      value: settings.supportEmail,
+      href: settings.supportEmail ? `mailto:${settings.supportEmail}` : undefined,
       description: 'We respond within 24 hours on business days',
       highlight: false,
     },
@@ -81,7 +91,7 @@ export function ContactPage() {
       description: 'Closed on Sundays and public holidays',
       highlight: false,
     },
-  ], [settings.phoneNumber, settings.contactEmail, settings.storeAddress, settings.businessHours]);
+  ], [settings.whatsappNumber, settings.phoneNumber, settings.supportEmail, settings.storeAddress, settings.businessHours]);
 
   const socialLinks = useMemo(() => {
     const links: Array<{ name: string; handle: string; url: string; description: string }> = [];
@@ -180,22 +190,41 @@ export function ContactPage() {
                 }`}
               >
                 <CardContent className="p-5">
-                  <div className="flex items-start gap-3">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#d79c4a]/10">
-                      <info.icon className="h-5 w-5 text-[#d79c4a]" />
+                  {info.href ? (
+                    <a href={info.href} target={info.href.startsWith('http') ? '_blank' : undefined} rel={info.href.startsWith('http') ? 'noopener noreferrer' : undefined} className="flex items-start gap-3">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#d79c4a]/10">
+                        <info.icon className="h-5 w-5 text-[#d79c4a]" />
+                      </div>
+                      <div>
+                        <span className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 ">
+                          {info.label}
+                        </span>
+                        <p className="text-sm font-semibold text-gray-900 dark:text-white hover:text-[#d79c4a] transition-colors">
+                          {info.value}
+                        </p>
+                        <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400 ">
+                          {info.description}
+                        </p>
+                      </div>
+                    </a>
+                  ) : (
+                    <div className="flex items-start gap-3">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#d79c4a]/10">
+                        <info.icon className="h-5 w-5 text-[#d79c4a]" />
+                      </div>
+                      <div>
+                        <span className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 ">
+                          {info.label}
+                        </span>
+                        <p className="text-sm font-semibold text-gray-900 dark:text-white ">
+                          {info.value}
+                        </p>
+                        <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400 ">
+                          {info.description}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <span className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 ">
-                        {info.label}
-                      </span>
-                      <p className="text-sm font-semibold text-gray-900 dark:text-white ">
-                        {info.value}
-                      </p>
-                      <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400 ">
-                        {info.description}
-                      </p>
-                    </div>
-                  </div>
+                  )}
                 </CardContent>
               </Card>
             ))}
