@@ -11,14 +11,15 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { currentPassword, newPassword } = body;
 
-    if (!currentPassword?.trim()) return errorResponse('Current password is required', 400);
+    if (currentPassword.trim().length < 1) return errorResponse('Current password is required', 400);
     if (!newPassword?.trim()) return errorResponse('New password is required', 400);
     if (newPassword.trim().length < 8) return errorResponse('New password must be at least 8 characters', 400);
 
     const adminPassword = getAdminPassword();
     if (!adminPassword) return errorResponse('Server configuration error.', 500);
 
-    if (currentPassword !== adminPassword) {
+    const { safeCompare } = await import('@/lib/safe-compare');
+    if (!safeCompare(currentPassword, adminPassword)) {
       return errorResponse('Current password is incorrect.', 401);
     }
 

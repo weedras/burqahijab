@@ -29,11 +29,11 @@ export async function POST(request: Request) {
     const adminPassword = getAdminPassword();
 
     if (!adminPassword) {
-      console.error('ADMIN_PASSWORD is not configured in .env file');
-      return errorResponse('Server configuration error. Admin password not set.', 500);
+      return errorResponse('Authentication service unavailable', 503);
     }
 
-    if (password !== adminPassword) {
+    const { safeCompare } = await import('@/lib/safe-compare');
+    if (!safeCompare(password, adminPassword)) {
       return errorResponse('Incorrect password', 401);
     }
 

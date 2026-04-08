@@ -1,13 +1,50 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+/** Allowed domains for URL validation */
+const ALLOWED_DOMAINS = [
+  'youtube.com', 'youtu.be', 'instagram.com', 'www.instagram.com',
+  'tiktok.com', 'www.tiktok.com', 'open.spotify.com',
+];
+
+/** Block private/internal IP ranges */
+const PRIVATE_IP_REGEX = /^(127\.|10\.|172\.(1[6-9]|2[0-9]|3[01])\.|192\.168\.|0\.|169\.254|::1|0:0:0:0:0:0:0:1)/;
+
+function isValidExternalUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') return false;
+    if (PRIVATE_IP_REGEX.test(parsed.hostname)) return false;
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function isAllowedDomain(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    return ALLOWED_DOMAINS.some(d => parsed.hostname === d || parsed.hostname.endsWith('.' + d));
+  } catch {
+    return false;
+  }
+}
+
 export async function GET(request: NextRequest) {
   const url = request.nextUrl.searchParams.get('url');
   if (!url) {
     return NextResponse.json({ error: 'No URL provided' }, { status: 400 });
   }
 
-  // Direct video file (.mp4, .webm, .ogg)
+  // Validate URL is safe (not internal/private IP)
+  if (!isValidExternalUrl(url)) {
+    return NextResponse.json({ error: 'Invalid URL' }, { status: 400 });
+  }
+
+  // Direct video file (.mp4, .webm, .ogg) — only from allowed domains
   if (/\.(mp4|webm|ogg)(\?|$)/i.test(url)) {
+    if (!isAllowedDomain(url)) {
+      return NextResponse.json({ error: 'Domain not allowed' }, { status: 400 });
+    }
     return NextResponse.json({ type: 'direct', videoUrl: url, thumbnailUrl: '' });
   }
 
@@ -30,7 +67,6 @@ export async function GET(request: NextRequest) {
     if (resolvedUrl) {
       return NextResponse.json({ type: 'direct', videoUrl: resolvedUrl, thumbnailUrl: '' });
     }
-    // Could not resolve — return so the frontend can show a clean fallback
     return NextResponse.json({ type: 'unresolvable', videoId: igMatch[1] });
   }
 
@@ -40,13 +76,12 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ type: 'unresolvable', videoId: tkMatch[1] });
   }
 
-  // Treat anything else as a direct URL (might work, might not)
-  return NextResponse.json({ type: 'direct', videoUrl: url, thumbnailUrl: '' });
+  // Reject unknown URLs (no open proxy)
+  return NextResponse.json({ error: 'Unsupported video URL. Use YouTube, Instagram, or TikTok.' }, { status: 400 });
 }
 
 // ── Instagram video URL extraction ──────────────────────────────────────
 async function resolveInstagramVideo(videoId: string): Promise<string | null> {
-  // Method 1: Fetch the reel page and extract from meta tags / embedded data
   try {
     const reelUrl = `https://www.instagram.com/reel/${videoId}/`;
     const response = await fetch(reelUrl, {
@@ -69,7 +104,6 @@ async function resolveInstagramVideo(videoId: string): Promise<string | null> {
     /* continue to next method */
   }
 
-  // Method 2: Fetch the embed page (designed to be publicly embeddable)
   try {
     const embedUrl = `https://www.instagram.com/reel/${videoId}/embed/`;
     const response = await fetch(embedUrl, {
@@ -96,25 +130,20 @@ async function resolveInstagramVideo(videoId: string): Promise<string | null> {
 
 /** Look for video URLs in HTML using multiple extraction strategies */
 function extractVideoUrlFromHtml(html: string): string | null {
-  // og:video:secure_url meta tag
   const ogSecure = html.match(/property="og:video:secure_url"\s+content="([^"]+)"/);
   if (ogSecure) return ogSecure[1];
 
-  // og:video meta tag
   const ogVideo = html.match(/property="og:video"\s+content="([^"]+)"/);
   if (ogVideo) return ogVideo[1];
 
-  // "video_url" field in Instagram's JSON data
   const videoUrl = html.match(/"video_url"\s*:\s*"([^"]+)"/);
   if (videoUrl) return videoUrl[1].replace(/\\u0026/g, '&');
 
-  // video_versions array
   const videoVersions = html.match(
     /"video_versions"\s*:\s*\[.*?"url"\s*:\s*"([^"]+)"/s
   );
   if (videoVersions) return videoVersions[1].replace(/\\u0026/g, '&');
 
-  // Literal <video src="...">
   const videoSrc = html.match(/<video[^>]*\bsrc="([^"]+)"/);
   if (videoSrc) return videoSrc[1];
 

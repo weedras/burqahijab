@@ -7,7 +7,7 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { resetCode, newPassword } = body;
 
-    if (!resetCode?.trim()) return errorResponse('Reset code is required', 400);
+    if (resetCode.trim().length < 1) return errorResponse('Reset code is required', 400);
     if (!newPassword?.trim()) return errorResponse('New password is required', 400);
     if (newPassword.trim().length < 8) return errorResponse('Password must be at least 8 characters', 400);
 
@@ -15,10 +15,11 @@ export async function POST(request: Request) {
 
     if (!validResetCode) {
       console.error('RESET_CODE is not configured in .env file');
-      return errorResponse('Password reset is not configured on this server.', 500);
+      return errorResponse('Password reset service unavailable.', 503);
     }
 
-    if (resetCode.trim() !== validResetCode) {
+    const { safeCompare } = await import('@/lib/safe-compare');
+    if (!safeCompare(resetCode.trim(), validResetCode)) {
       return errorResponse('Invalid reset code. Please check and try again.', 401);
     }
 
