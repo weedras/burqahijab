@@ -38,7 +38,7 @@ export function FaqPage() {
       title: 'Ordering & Payment',
       items: [
         {
-          question: 'How do I place an order on BurqaHijab.shop?',
+          question: 'How do I place an order on BurqaHijab?',
           answer:
             'Placing an order is simple and secure. Browse our collection, select your desired items, choose your size and color preferences, and add them to your cart. Once you are ready, proceed to checkout where you can enter your shipping details and choose from our multiple payment options including Visa, Mastercard, JazzCash, EasyPaisa, Apple Pay, and Google Pay. You will receive an order confirmation email immediately after placing your order with all the details and your order number for tracking purposes.',
         },
@@ -55,7 +55,7 @@ export function FaqPage() {
         {
           question: 'Is it safe to shop on your website?',
           answer:
-            'Absolutely. Your security is our top priority. BurqaHijab.shop uses industry-standard SSL encryption to protect all personal and payment information transmitted through our website. We partner with trusted payment processors that comply with PCI DSS standards. We never store your credit card details on our servers, and all transactions are processed through secure, PCI-compliant payment gateways. You can shop with complete confidence knowing that your data is fully protected.',
+            'Absolutely. Your security is our top priority. BurqaHijab uses industry-standard SSL encryption to protect all personal and payment information transmitted through our website. We partner with trusted payment processors that comply with PCI DSS standards. We never store your credit card details on our servers, and all transactions are processed through secure, PCI-compliant payment gateways. You can shop with complete confidence knowing that your data is fully protected.',
         },
       ],
     },
@@ -138,19 +138,19 @@ export function FaqPage() {
       title: 'General',
       items: [
         {
-          question: 'Where is BurqaHijab.shop based?',
+          question: 'Where is BurqaHijab based?',
           answer:
-            'BurqaHijab.shop is proudly based in Karachi, Pakistan — the heart of South Asia\'s fashion industry. Our design studio and main warehouse are located in Karachi, where our team of talented designers and artisans work tirelessly to create beautiful, high-quality modest fashion pieces. We draw inspiration from Pakistan\'s rich textile heritage and combine it with contemporary design sensibilities. While our roots are in Pakistan, our reach is global, and we are honored to serve modest fashion enthusiasts in over 50 countries around the world.',
+            'BurqaHijab is proudly based in Karachi, Pakistan — the heart of South Asia\'s fashion industry. Our design studio and main warehouse are located in Karachi, where our team of talented designers and artisans work tirelessly to create beautiful, high-quality modest fashion pieces. We draw inspiration from Pakistan\'s rich textile heritage and combine it with contemporary design sensibilities. While our roots are in Pakistan, our reach is global, and we are honored to serve modest fashion enthusiasts in over 50 countries around the world.',
         },
         {
           question: 'How can I stay updated on new arrivals and promotions?',
           answer:
-            'There are several ways to stay connected with BurqaHijab.shop and be the first to know about new arrivals, exclusive offers, and special promotions. Subscribe to our newsletter at the bottom of our homepage to receive regular updates directly in your inbox. Follow us on Instagram (@burqahijab.shop), Facebook, and TikTok for daily inspiration, styling tips, behind-the-scenes content, and flash sale announcements. You can also save our website to your bookmarks and check back regularly, as we update our collections frequently with new designs and limited-edition pieces.',
+            'There are several ways to stay connected with BurqaHijab and be the first to know about new arrivals, exclusive offers, and special promotions. Subscribe to our newsletter at the bottom of our homepage to receive regular updates directly in your inbox. Follow us on Instagram (@burqahijab), Facebook, and TikTok for daily inspiration, styling tips, behind-the-scenes content, and flash sale announcements. You can also save our website to your bookmarks and check back regularly, as we update our collections frequently with new designs and limited-edition pieces.',
         },
         {
           question: 'Do you offer gift wrapping or special packaging?',
           answer:
-            'Yes, we offer beautiful gift-ready packaging for all orders. Every BurqaHijab.shop order arrives in our signature elegant packaging — a premium box wrapped with tissue paper and tied with a satin ribbon. This makes our products perfect for gifting on special occasions such as Eid, weddings, birthdays, or any celebration. We also offer a complimentary gift message service — simply include your message at checkout and we will include a handwritten card with your order. For corporate or bulk gifting inquiries, please contact our customer service team for special arrangements.',
+            'Yes, we offer beautiful gift-ready packaging for all orders. Every BurqaHijab order arrives in our signature elegant packaging — a premium box wrapped with tissue paper and tied with a satin ribbon. This makes our products perfect for gifting on special occasions such as Eid, weddings, birthdays, or any celebration. We also offer a complimentary gift message service — simply include your message at checkout and we will include a handwritten card with your order. For corporate or bulk gifting inquiries, please contact our customer service team for special arrangements.',
         },
       ],
     },

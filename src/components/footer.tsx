@@ -177,7 +177,7 @@ export function Footer() {
   const whatsappLink = useMemo(() => {
     if (!settings.whatsappNumber) return null;
     const number = settings.whatsappNumber.replace(/[^0-9]/g, '');
-    const message = encodeURIComponent(settings.whatsappMessage || "Hi! I'm interested in a product from BurqaHijab.shop");
+    const message = encodeURIComponent(settings.whatsappMessage || "Hi! I'm interested in a product from BurqaHijab");
     return `https://wa.me/${number}${settings.whatsappMessage ? `?text=${message}` : ''}`;
   }, [settings.whatsappNumber, settings.whatsappMessage]);
 

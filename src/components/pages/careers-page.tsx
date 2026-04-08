@@ -88,7 +88,7 @@ const openPositions = [
     type: 'Full-time',
     location: 'Karachi, Pakistan (On-site)',
     description:
-      'We are seeking an empathetic and detail-oriented Customer Service Representative to be the voice of BurqaHijab.shop. You will be the first point of contact for our customers, handling inquiries across email, WhatsApp, phone, and social media. Your role is critical in ensuring every customer interaction reflects our commitment to excellence and builds lasting relationships.',
+      'We are seeking an empathetic and detail-oriented Customer Service Representative to be the voice of BurqaHijab. You will be the first point of contact for our customers, handling inquiries across email, WhatsApp, phone, and social media. Your role is critical in ensuring every customer interaction reflects our commitment to excellence and builds lasting relationships.',
     responsibilities: [
       'Respond to customer inquiries via email, WhatsApp, phone calls, and social media messages promptly and professionally',
       'Provide accurate product information, sizing guidance, and order status updates',
@@ -149,7 +149,7 @@ const benefits = [
   {
     icon: MapPin,
     title: 'Employee Discount',
-    description: 'Generous employee discount on all BurqaHijab.shop products, plus early access to new collections and exclusive sample sales.',
+    description: 'Generous employee discount on all BurqaHijab products, plus early access to new collections and exclusive sample sales.',
   },
 ];
 
@@ -207,7 +207,7 @@ export function CareersPage() {
             <CardContent className="p-6 md:p-8">
               <div className="space-y-4 text-sm leading-relaxed text-gray-500 dark:text-gray-400 ">
                 <p>
-                  At BurqaHijab.shop, we believe that great things are built by great
+                  At BurqaHijab, we believe that great things are built by great
                   teams. Our culture is rooted in creativity, collaboration, mutual
                   respect, and a shared passion for our mission: to create the world&apos;s
                   finest modest fashion. We foster an environment where every team member
@@ -370,12 +370,12 @@ export function CareersPage() {
                     {
                       step: 1,
                       title: 'Prepare Your Application',
-                      desc: 'Update your resume/CV and write a brief cover letter explaining why you are interested in joining BurqaHijab.shop and how your skills and experience align with the role.',
+                      desc: 'Update your resume/CV and write a brief cover letter explaining why you are interested in joining BurqaHijab and how your skills and experience align with the role.',
                     },
                     {
                       step: 2,
                       title: 'Email Your Application',
-                      desc: 'Send your resume, cover letter, and portfolio (if applicable for design roles) to careers@burqahijab.shop with the subject line: "Application: [Position Title] — [Your Full Name]".',
+                      desc: 'Send your resume, cover letter, and portfolio (if applicable for design roles) to careers@burqahijab.com with the subject line: "Application: [Position Title] — [Your Full Name]".',
                     },
                     {
                       step: 3,
@@ -401,7 +401,7 @@ export function CareersPage() {
                     Don&apos;t see a role that fits?
                   </strong>{' '}
                   We are always looking for talented individuals. Send your resume to{' '}
-                  <span className="text-[#d79c4a]">careers@burqahijab.shop</span> with
+                  <span className="text-[#d79c4a]">careers@burqahijab.com</span> with
                   a note about the type of role you are interested in, and we will keep
                   your profile on file for future opportunities.
                 </p>

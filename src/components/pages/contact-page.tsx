@@ -98,7 +98,7 @@ export function ContactPage() {
     if (settings.instagramUrl) {
       links.push({
         name: 'Instagram',
-        handle: getHandleFromUrl(settings.instagramUrl) || '@burqahijab.shop',
+        handle: getHandleFromUrl(settings.instagramUrl) || '@burqahijab',
         url: settings.instagramUrl,
         description: 'Follow us for daily inspiration, styling tips, and behind-the-scenes content',
       });
@@ -106,7 +106,7 @@ export function ContactPage() {
     if (settings.facebookUrl) {
       links.push({
         name: 'Facebook',
-        handle: getHandleFromUrl(settings.facebookUrl) || 'BurqaHijab.shop',
+        handle: getHandleFromUrl(settings.facebookUrl) || 'BurqaHijab',
         url: settings.facebookUrl,
         description: 'Join our community for the latest updates, collections, and exclusive offers',
       });
@@ -114,7 +114,7 @@ export function ContactPage() {
     if (settings.tiktokUrl) {
       links.push({
         name: 'TikTok',
-        handle: getHandleFromUrl(settings.tiktokUrl) || '@burqahijab.shop',
+        handle: getHandleFromUrl(settings.tiktokUrl) || '@burqahijab',
         url: settings.tiktokUrl,
         description: 'Watch styling tutorials, fashion hacks, and product showcases',
       });

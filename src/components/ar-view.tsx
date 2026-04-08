@@ -209,7 +209,7 @@ export function ARViewModal({
         ctx.fillStyle = 'rgba(215, 156, 74, 0.7)';
         ctx.font = '16px Inter, sans-serif';
         ctx.textAlign = 'left';
-        ctx.fillText('BurqaHijab.shop', 16, canvas.height - 16);
+        ctx.fillText('BurqaHijab', 16, canvas.height - 16);
 
         // Download
         const link = document.createElement('a');

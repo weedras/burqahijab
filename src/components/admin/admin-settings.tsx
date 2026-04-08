@@ -78,9 +78,9 @@ const defaultSettings: StoreSettings = {
   announcementMessage: 'Free shipping on orders above PKR 3,000!',
   copyrightText: '© 2026 BurqaHijab. All rights reserved.',
   phoneNumber: '+92 300 1234567',
-  supportEmail: 'support@burqahijab.shop',
-  contactEmail: 'hello@burqahijab.shop',
-  careersEmail: 'careers@burqahijab.shop',
+  supportEmail: 'support@burqahijab.com',
+  contactEmail: 'hello@burqahijab.com',
+  careersEmail: 'careers@burqahijab.com',
   storeAddress: 'Block 9, Clifton, Karachi, Pakistan',
   storeAddressShort: 'Karachi, Pakistan',
   businessHours: 'Monday – Saturday, 10:00 AM – 8:00 PM PKT',
@@ -189,7 +189,7 @@ const sections: SectionConfig[] = [
       {
         key: 'supportEmail',
         label: 'Support Email',
-        placeholder: 'support@burqahijab.shop',
+        placeholder: 'support@burqahijab.com',
         description: 'Email address for customer support inquiries.',
         icon: Mail,
         iconBg: 'bg-[#d79c4a]/10',
@@ -199,7 +199,7 @@ const sections: SectionConfig[] = [
       {
         key: 'contactEmail',
         label: 'General Contact Email',
-        placeholder: 'hello@burqahijab.shop',
+        placeholder: 'hello@burqahijab.com',
         description: 'General purpose contact email for partnerships and media.',
         icon: Mail,
         iconBg: 'bg-purple-500/10',
@@ -209,7 +209,7 @@ const sections: SectionConfig[] = [
       {
         key: 'careersEmail',
         label: 'Careers Email',
-        placeholder: 'careers@burqahijab.shop',
+        placeholder: 'careers@burqahijab.com',
         description: 'Email for job applications and career-related inquiries.',
         icon: Mail,
         iconBg: 'bg-emerald-500/10',
@@ -329,7 +329,7 @@ const sections: SectionConfig[] = [
       {
         key: 'whatsappMessage',
         label: 'Default Message',
-        placeholder: "Hi! I'm interested in a product from BurqaHijab.shop",
+        placeholder: "Hi! I'm interested in a product from BurqaHijab",
         description: 'Pre-filled message when customers tap the WhatsApp link.',
         icon: MessageCircle,
         iconBg: 'bg-emerald-500/10',

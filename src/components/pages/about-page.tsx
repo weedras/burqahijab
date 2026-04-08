@@ -30,7 +30,7 @@ const values = [
     icon: Gem,
     title: 'Uncompromising Quality',
     description:
-      'Every garment we create is crafted from premium, carefully sourced fabrics. We never compromise on material quality, construction, or finishing. Each piece undergoes rigorous quality inspection before it reaches you, ensuring that every BurqaHijab.shop garment meets the highest standards of excellence in modest fashion.',
+      'Every garment we create is crafted from premium, carefully sourced fabrics. We never compromise on material quality, construction, or finishing. Each piece undergoes rigorous quality inspection before it reaches you, ensuring that every BurqaHijab garment meets the highest standards of excellence in modest fashion.',
   },
   {
     icon: Heart,
@@ -60,7 +60,7 @@ const values = [
     icon: Award,
     title: 'Customer First',
     description:
-      'Our customers are at the heart of everything we do. From the moment you visit our website to the day your order arrives at your doorstep (and beyond), we strive to create an exceptional experience. Our dedicated customer service team is always ready to assist, ensuring that every interaction with BurqaHijab.shop is positive and memorable.',
+      'Our customers are at the heart of everything we do. From the moment you visit our website to the day your order arrives at your doorstep (and beyond), we strive to create an exceptional experience. Our dedicated customer service team is always ready to assist, ensuring that every interaction with BurqaHijab is positive and memorable.',
   },
 ];
 
@@ -80,7 +80,7 @@ export function AboutPage() {
           >
             <Sparkles className="mx-auto mb-4 h-12 w-12 text-[#d79c4a]" />
             <h1 className="mb-3 text-4xl font-bold tracking-tight text-gray-900 dark:text-white md:text-5xl ">
-              About BurqaHijab.shop
+              About BurqaHijab
             </h1>
             <p className="mx-auto max-w-2xl text-base text-gray-500 dark:text-gray-400 ">
               Where timeless elegance meets modern modesty. We are a luxury modest fashion
@@ -158,7 +158,7 @@ export function AboutPage() {
           </h2>
           <div className="space-y-4 text-sm leading-relaxed text-gray-500 dark:text-gray-400 ">
             <p>
-              BurqaHijab.shop was born from a simple yet powerful belief: that modest
+              BurqaHijab was born from a simple yet powerful belief: that modest
               fashion deserves the same level of luxury, craftsmanship, and attention to
               detail as any high-end fashion house. Founded in Karachi, Pakistan — the
               vibrant heart of South Asia\'s textile industry — our brand grew from a
@@ -170,7 +170,7 @@ export function AboutPage() {
               What started as a passion project quickly gained recognition among
               discerning customers who appreciated the quality of our fabrics, the
               precision of our tailoring, and the thoughtfulness of our designs. Word of
-              mouth spread, orders flowed in, and BurqaHijab.shop evolved from a local
+              mouth spread, orders flowed in, and BurqaHijab evolved from a local
               atelier into a brand that ships to over 50 countries worldwide.
             </p>
             <p>
@@ -208,7 +208,7 @@ export function AboutPage() {
             <CardContent className="p-6">
               <div className="space-y-4 text-sm leading-relaxed text-gray-500 dark:text-gray-400 ">
                 <p>
-                  Quality is not just a standard at BurqaHijab.shop — it is our
+                  Quality is not just a standard at BurqaHijab — it is our
                   obsession. Every fabric we use is hand-selected from the finest mills
                   and suppliers, ensuring that each material meets our strict criteria
                   for durability, comfort, drape, and beauty. We work exclusively with
@@ -226,7 +226,7 @@ export function AboutPage() {
                 </p>
                 <p>
                   We stand behind the quality of our products with confidence. Every
-                  BurqaHijab.shop garment is designed to be a lasting addition to your
+                  BurqaHijab garment is designed to be a lasting addition to your
                   wardrobe — a piece that you will reach for again and again, season
                   after season, knowing that it was made with care, skill, and an
                   unwavering commitment to excellence.
@@ -253,7 +253,7 @@ export function AboutPage() {
             <CardContent className="p-6">
               <div className="space-y-4 text-sm leading-relaxed text-gray-500 dark:text-gray-400 ">
                 <p>
-                  Behind every BurqaHijab.shop garment are the hands of skilled artisans
+                  Behind every BurqaHijab garment are the hands of skilled artisans
                   who carry forward centuries of Pakistani textile traditions. We are
                   deeply proud of our partnerships with local artisan cooperatives and
                   family-run workshops across Karachi, Lahore, and Faisalabad. These
@@ -271,7 +271,7 @@ export function AboutPage() {
                   families.
                 </p>
                 <p>
-                  When you purchase from BurqaHijab.shop, you are not just buying a
+                  When you purchase from BurqaHijab, you are not just buying a
                   garment — you are supporting a community of talented craftspeople,
                   investing in the preservation of traditional arts, and contributing
                   to the economic empowerment of women and families across Pakistan.
@@ -345,7 +345,7 @@ export function AboutPage() {
               <div className="space-y-4 text-sm leading-relaxed text-gray-500 dark:text-gray-400 ">
                 <p>
                   Giving back is woven into the fabric of who we are. At
-                  BurqaHijab.shop, we believe that a successful business has a
+                  BurqaHijab, we believe that a successful business has a
                   responsibility to uplift the community that supports it. That is why
                   we have established several initiatives aimed at making a meaningful
                   difference in the lives of women and families across Pakistan.

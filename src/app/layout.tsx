@@ -17,22 +17,22 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "BurqaHijab.shop — Where Modesty Meets Luxury",
+  title: "BurqaHijab — Where Modesty Meets Luxury",
   description: "Discover Premium Abayas & Hijabs Crafted for the Modern Woman. Shop luxury modest fashion with worldwide shipping from Pakistan.",
   keywords: ["abayas", "hijabs", "modest fashion", "luxury abaya", "Islamic clothing", "burqa", "premium hijab", "Pakistan", "modest wear"],
-  authors: [{ name: "BurqaHijab.shop" }],
+  authors: [{ name: "BurqaHijab" }],
   icons: {
     icon: "/favicon.ico",
     apple: "/apple-touch-icon.png",
   },
   openGraph: {
-    title: "BurqaHijab.shop — Where Modesty Meets Luxury",
+    title: "BurqaHijab — Where Modesty Meets Luxury",
     description: "Discover Premium Abayas & Hijabs Crafted for the Modern Woman",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "BurqaHijab.shop — Where Modesty Meets Luxury",
+    title: "BurqaHijab — Where Modesty Meets Luxury",
     description: "Discover Premium Abayas & Hijabs Crafted for the Modern Woman",
   },
 };

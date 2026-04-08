@@ -30,7 +30,7 @@ const milestones = [
     year: '2019',
     title: 'The Beginning',
     description:
-      'BurqaHijab.shop was born from a small workshop in Karachi. With a grandmother\'s sewing machine, a passion for beautiful fabrics, and a vision to elevate modest fashion, our founder created the first collection of 12 handcrafted abayas. Every piece was made with meticulous attention to detail and an unwavering commitment to quality that would become the hallmark of our brand.',
+      'BurqaHijab was born from a small workshop in Karachi. With a grandmother\'s sewing machine, a passion for beautiful fabrics, and a vision to elevate modest fashion, our founder created the first collection of 12 handcrafted abayas. Every piece was made with meticulous attention to detail and an unwavering commitment to quality that would become the hallmark of our brand.',
   },
   {
     year: '2020',
@@ -48,13 +48,13 @@ const milestones = [
     year: '2022',
     title: 'International Launch',
     description:
-      'BurqaHijab.shop crossed borders, launching international shipping to the Middle East, UK, Europe, and North America. We partnered with DHL Express and FedEx to ensure reliable worldwide delivery. What started as a local Karachi brand was now reaching modest fashion lovers in over 30 countries, proving that the appeal of beautifully crafted modest fashion is truly universal.',
+      'BurqaHijab crossed borders, launching international shipping to the Middle East, UK, Europe, and North America. We partnered with DHL Express and FedEx to ensure reliable worldwide delivery. What started as a local Karachi brand was now reaching modest fashion lovers in over 30 countries, proving that the appeal of beautifully crafted modest fashion is truly universal.',
   },
   {
     year: '2023',
     title: 'Luxury Redefined',
     description:
-      'We unveiled our first luxury collection, featuring premium Nida silk abayas with hand-finished details, custom-designed embellishments, and our signature gold-accent packaging. The collection was a milestone in our evolution, establishing BurqaHijab.shop as a serious contender in the global modest luxury fashion space. Our customer base grew to include fashion-forward women across 50+ countries.',
+      'We unveiled our first luxury collection, featuring premium Nida silk abayas with hand-finished details, custom-designed embellishments, and our signature gold-accent packaging. The collection was a milestone in our evolution, establishing BurqaHijab as a serious contender in the global modest luxury fashion space. Our customer base grew to include fashion-forward women across 50+ countries.',
   },
   {
     year: '2024',
@@ -66,7 +66,7 @@ const milestones = [
     year: '2025',
     title: 'The Future',
     description:
-      'Today, BurqaHijab.shop stands as a testament to what passion, quality, and purpose can achieve. We continue to innovate with new collections, sustainable practices, and technological enhancements. Our dream remains the same as the day we started: to create beautiful, high-quality modest fashion that empowers women around the world to express their elegance with confidence and grace.',
+      'Today, BurqaHijab stands as a testament to what passion, quality, and purpose can achieve. We continue to innovate with new collections, sustainable practices, and technological enhancements. Our dream remains the same as the day we started: to create beautiful, high-quality modest fashion that empowers women around the world to express their elegance with confidence and grace.',
   },
 ];
 
@@ -75,7 +75,7 @@ const craftsmanshipDetails = [
     icon: Scissors,
     title: 'Handcrafted Excellence',
     description:
-      'Every BurqaHijab.shop garment is handcrafted by skilled artisans with decades of experience. From the initial pattern cutting to the final stitch, our pieces are made with a level of care and precision that machines simply cannot replicate. Our artisans take pride in their work, treating every garment as a work of art — because to us, that is exactly what it is.',
+      'Every BurqaHijab garment is handcrafted by skilled artisans with decades of experience. From the initial pattern cutting to the final stitch, our pieces are made with a level of care and precision that machines simply cannot replicate. Our artisans take pride in their work, treating every garment as a work of art — because to us, that is exactly what it is.',
   },
   {
     icon: Palette,
@@ -87,7 +87,7 @@ const craftsmanshipDetails = [
     icon: Star,
     title: 'Attention to Detail',
     description:
-      'It is the small details that elevate a garment from good to extraordinary. At BurqaHijab.shop, we obsess over every detail — from the precise angle of a collar to the perfect placement of an embellishment, from the weight of a button to the drape of a sleeve. Our quality control process involves multiple inspection stages, ensuring that every stitch is perfect, every seam is straight, and every finishing detail is flawless.',
+      'It is the small details that elevate a garment from good to extraordinary. At BurqaHijab, we obsess over every detail — from the precise angle of a collar to the perfect placement of an embellishment, from the weight of a button to the drape of a sleeve. Our quality control process involves multiple inspection stages, ensuring that every stitch is perfect, every seam is straight, and every finishing detail is flawless.',
   },
   {
     icon: Crown,
@@ -125,7 +125,7 @@ export function BrandStoryPage() {
               Our Journey
             </Badge>
             <h1 className="mb-4 text-4xl font-bold tracking-tight text-gray-900 dark:text-white md:text-6xl ">
-              The BurqaHijab.shop Story
+              The BurqaHijab Story
             </h1>
             <p className="mx-auto max-w-2xl text-lg text-gray-500 dark:text-gray-400 ">
               From a small Karachi workshop to a globally beloved modest fashion brand —
@@ -161,7 +161,7 @@ export function BrandStoryPage() {
               just create a fashion brand — we wove a dream into fabric.&rdquo;
             </blockquote>
             <p className="text-sm text-gray-500 dark:text-gray-400 ">
-              — The BurqaHijab.shop Founding Team
+              — The BurqaHijab Founding Team
             </p>
           </div>
         </motion.div>
@@ -188,7 +188,7 @@ export function BrandStoryPage() {
                   dream was born. Our founder grew up watching her grandmother transform
                   simple fabric into elegant garments — each one a labor of love, each
                   stitch placed with intention and care. Those early memories planted a
-                  seed that would eventually grow into BurqaHijab.shop.
+                  seed that would eventually grow into BurqaHijab.
                 </p>
                 <p>
                   The vision was clear yet ambitious: to create modest fashion that did
@@ -207,7 +207,7 @@ export function BrandStoryPage() {
                   were late nights, learning curves, and moments of doubt — but every
                   challenge only strengthened our resolve. And with the unwavering
                   support of our early customers, who became our most passionate
-                  advocates, BurqaHijab.shop began to flourish.
+                  advocates, BurqaHijab began to flourish.
                 </p>
               </div>
             </CardContent>
@@ -368,7 +368,7 @@ export function BrandStoryPage() {
               Thank You for Being Part of Our Story
             </h2>
             <p className="mx-auto mb-4 max-w-xl text-sm leading-relaxed text-gray-500 dark:text-gray-400 ">
-              Every customer who wears a BurqaHijab.shop garment becomes a part of our
+              Every customer who wears a BurqaHijab garment becomes a part of our
               story. Your trust, your feedback, and your love for our creations inspire
               us to keep pushing boundaries and reaching new heights. We are grateful
               beyond words for the incredible community that has grown around this

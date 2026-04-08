@@ -1,4 +1,4 @@
-// BurqaHijab.shop Database Schema
+// BurqaHijab Database Schema
 
 generator client {
   provider = "prisma-client-js"
@@ -146,9 +146,9 @@ model SiteSettings {
   whatsappNumber         String   @default("")
   whatsappMessage        String   @default("")
   phoneNumber            String   @default("+92 300 1234567")
-  supportEmail           String   @default("support@burqahijab.shop")
-  contactEmail           String   @default("hello@burqahijab.shop")
-  careersEmail           String   @default("careers@burqahijab.shop")
+  supportEmail           String   @default("support@burqahijab.com")
+  contactEmail           String   @default("hello@burqahijab.com")
+  careersEmail           String   @default("careers@burqahijab.com")
 
   // ── Store Info ──
   storeName              String   @default("BurqaHijab")

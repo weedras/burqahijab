@@ -41,7 +41,7 @@ export function BrandStorySection() {
           </h2>
 
           <p className="mx-auto mb-4 max-w-2xl text-sm leading-relaxed text-white/80 font-[family-name:var(--font-inter)]">
-            Every stitch tells a story. At BurqaHijab.shop, we believe that
+            Every stitch tells a story. At BurqaHijab, we believe that
             modesty and luxury are not opposites — they are companions. Our
             abayas and hijabs are crafted by skilled artisans in Pakistan using
             the finest fabrics sourced from around the world.

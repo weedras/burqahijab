@@ -154,7 +154,7 @@ export function ReturnsPage() {
                     We offer a generous {settings.returnWindowDays}-day return window from the date your order
                     is delivered. During this period, you can return any eligible item
                     that does not meet your expectations for a full refund or exchange.
-                    We want you to love every purchase from BurqaHijab.shop, and if
+                    We want you to love every purchase from BurqaHijab, and if
                     something is not quite right, we will gladly help you find the
                     perfect alternative or process your return smoothly.
                   </p>

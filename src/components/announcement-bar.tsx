@@ -17,7 +17,7 @@ export function AnnouncementBar() {
     if (settings.announcementMessage) msgs.push(settings.announcementMessage);
     if (settings.phoneNumber) msgs.push(`📞 ${settings.phoneNumber}`);
     if (settings.whatsappNumber) msgs.push(`💬 WhatsApp: ${settings.whatsappNumber}`);
-    return msgs.length > 0 ? msgs : ['Welcome to BurqaHijab.shop'];
+    return msgs.length > 0 ? msgs : ['Welcome to BurqaHijab'];
   }, [settings.announcementMessage, settings.phoneNumber, settings.whatsappNumber]);
 
   useEffect(() => { fetch(); }, [fetch]);
@@ -67,7 +67,7 @@ export function AnnouncementBar() {
           animate={{ height: 32, opacity: 1 }}
           exit={{ height: 0, opacity: 0 }}
           transition={{ duration: 0.3 }}
-          className="relative flex items-center justify-center overflow-hidden bg-[#1a1a1a] dark:bg-[#1a1a1a]"
+          className="relative flex items-center justify-center overflow-hidden bg-[#d79c4a] dark:bg-[#b8862e]"
           style={{ height: 32 }}
         >
           <AnimatePresence mode="wait">
@@ -77,7 +77,7 @@ export function AnnouncementBar() {
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: -10, opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="absolute inset-0 flex items-center justify-center px-8 text-center text-xs font-medium tracking-wide text-white/80"
+              className="absolute inset-0 flex items-center justify-center px-8 text-center text-xs font-medium tracking-wide text-white"
             >
               {messages[currentIndex]}
             </motion.p>
@@ -88,7 +88,7 @@ export function AnnouncementBar() {
             className="absolute right-2 flex h-5 w-5 items-center justify-center rounded-full transition-colors hover:bg-white/10"
             aria-label="Dismiss announcement"
           >
-            <X className="h-3 w-3 text-white/60" />
+            <X className="h-3 w-3 text-white/80" />
           </button>
         </motion.div>
       )}

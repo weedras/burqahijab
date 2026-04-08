@@ -130,7 +130,7 @@ export function ShippingPage() {
               Shipping Information
             </h1>
             <p className="mx-auto max-w-2xl text-base text-gray-500 dark:text-gray-400 ">
-              We ship worldwide with care and precision. Every BurqaHijab.shop order
+              We ship worldwide with care and precision. Every BurqaHijab order
               is lovingly packaged in our signature gift-ready boxes and dispatched
               through trusted delivery partners to ensure it arrives at your doorstep
               safely and on time.
@@ -271,7 +271,7 @@ export function ShippingPage() {
           <Card className="border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-[#1A1A1A]">
             <CardContent className="p-6">
               <p className="mb-4 text-sm leading-relaxed text-gray-500 dark:text-gray-400 ">
-                Every BurqaHijab.shop order comes with real-time tracking so you can
+                Every BurqaHijab order comes with real-time tracking so you can
                 monitor your package every step of the way. Once your order has been
                 dispatched, you will receive:
               </p>
@@ -354,7 +354,7 @@ export function ShippingPage() {
           <Card className="border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-[#1A1A1A]">
             <CardContent className="p-6">
               <p className="mb-4 text-sm leading-relaxed text-gray-500 dark:text-gray-400 ">
-                Every BurqaHijab.shop order is a gift — to yourself or someone you
+                Every BurqaHijab order is a gift — to yourself or someone you
                 love. We take great care in packaging each order to ensure your items
                 arrive in perfect condition and create a memorable unboxing experience.
               </p>

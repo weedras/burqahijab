@@ -339,7 +339,7 @@ export function AdminPanel() {
             </h1>
             <div className="hidden sm:block h-5 w-px bg-border" />
             <span className="hidden sm:block text-xs text-muted-foreground">
-              BurqaHijab.shop
+              BurqaHijab
             </span>
           </div>
 

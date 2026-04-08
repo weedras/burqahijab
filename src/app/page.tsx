@@ -64,22 +64,22 @@ function ContentPageRenderer({ view }: { view: (typeof contentPages)[number] }) 
 }
 
 const PAGE_TITLES: Record<string, string> = {
-  home: 'BurqaHijab.shop — Where Modesty Meets Luxury',
-  shop: 'Shop All Products | BurqaHijab.shop',
-  wishlist: 'My Wishlist | BurqaHijab.shop',
-  checkout: 'Checkout | BurqaHijab.shop',
-  faq: 'FAQ | BurqaHijab.shop',
-  'size-guide': 'Size Guide | BurqaHijab.shop',
-  shipping: 'Shipping & Delivery | BurqaHijab.shop',
-  returns: 'Returns & Exchanges | BurqaHijab.shop',
-  contact: 'Contact Us | BurqaHijab.shop',
-  about: 'About Us | BurqaHijab.shop',
-  'brand-story-page': 'Brand Story | BurqaHijab.shop',
-  careers: 'Careers | BurqaHijab.shop',
-  admin: 'Admin Panel | BurqaHijab.shop',
+  home: 'BurqaHijab — Where Modesty Meets Luxury',
+  shop: 'Shop All Products | BurqaHijab',
+  wishlist: 'My Wishlist | BurqaHijab',
+  checkout: 'Checkout | BurqaHijab',
+  faq: 'FAQ | BurqaHijab',
+  'size-guide': 'Size Guide | BurqaHijab',
+  shipping: 'Shipping & Delivery | BurqaHijab',
+  returns: 'Returns & Exchanges | BurqaHijab',
+  contact: 'Contact Us | BurqaHijab',
+  about: 'About Us | BurqaHijab',
+  'brand-story-page': 'Brand Story | BurqaHijab',
+  careers: 'Careers | BurqaHijab',
+  admin: 'Admin Panel | BurqaHijab',
 };
 
-const DEFAULT_TITLE = 'BurqaHijab.shop — Where Modesty Meets Luxury';
+const DEFAULT_TITLE = 'BurqaHijab — Where Modesty Meets Luxury';
 
 export default function Home() {
   const viewMode = useUIStore((s) => s.viewMode);
@@ -89,7 +89,7 @@ export default function Home() {
   // Dynamic page title
   useEffect(() => {
     if (viewMode === 'product' && selectedProduct) {
-      document.title = `${selectedProduct.name} | BurqaHijab.shop`;
+      document.title = `${selectedProduct.name} | BurqaHijab`;
     } else {
       document.title = PAGE_TITLES[viewMode] || DEFAULT_TITLE;
     }
