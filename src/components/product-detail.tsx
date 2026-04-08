@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Minus, Plus, Heart, ShoppingBag, Star, Truck, Shield, RotateCcw, Play, Film } from 'lucide-react';
+import { ArrowLeft, Minus, Plus, Heart, ShoppingBag, Star, Truck, Shield, RotateCcw, Play, Film, Volume2, VolumeX, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
@@ -16,22 +16,47 @@ import { cn } from '@/lib/utils';
 import { ARViewModal, ARViewButton } from '@/components/ar-view';
 import type { Product } from '@/types';
 
-/** Convert a video URL into an embeddable URL (paused by default) */
-function getEmbedUrl(url: string): { type: 'iframe' | 'video'; src: string; srcAuto: string } | null {
+/** Parse a video URL into embed info — returns null for unsupported types */
+function parseVideoUrl(url: string): {
+  type: 'youtube' | 'instagram' | 'direct';
+  videoId: string;
+  thumbnailUrl: string;
+  embedUrl: string;
+} | null {
   if (!url) return null;
-  const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/);
+
+  // YouTube watch / short / embed
+  const ytMatch = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]+)/);
   if (ytMatch) {
-    const base = `https://www.youtube.com/embed/${ytMatch[1]}?rel=0&modestbranding=1`;
-    return { type: 'iframe', src: `${base}&autoplay=0&mute=1`, srcAuto: `${base}&autoplay=1&mute=0` };
+    return {
+      type: 'youtube',
+      videoId: ytMatch[1],
+      thumbnailUrl: `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`,
+      embedUrl: `https://www.youtube.com/embed/${ytMatch[1]}?rel=0&modestbranding=1&autoplay=1&mute=0&controls=1&showinfo=0`,
+    };
   }
-  const ytShortMatch = url.match(/youtube\.com\/shorts\/([\w-]+)/);
-  if (ytShortMatch) {
-    const base = `https://www.youtube.com/embed/${ytShortMatch[1]}?rel=0`;
-    return { type: 'iframe', src: `${base}&autoplay=0&mute=1`, srcAuto: `${base}&autoplay=1&mute=0` };
-  }
+
+  // Instagram reel or post
   const igMatch = url.match(/instagram\.com\/(?:reel|p)\/([\w-]+)/);
-  if (igMatch) return { type: 'iframe', src: `https://www.instagram.com/reel/${igMatch[1]}/embed/`, srcAuto: `https://www.instagram.com/reel/${igMatch[1]}/embed/` };
-  if (url.match(/\.(mp4|webm|ogg)(\?|$)/i)) return { type: 'video', src: url, srcAuto: url };
+  if (igMatch) {
+    return {
+      type: 'instagram',
+      videoId: igMatch[1],
+      thumbnailUrl: `https://www.instagram.com/reel/${igMatch[1]}/embed/captioned/`,
+      embedUrl: `https://www.instagram.com/reel/${igMatch[1]}/embed/`,
+    };
+  }
+
+  // Direct video file
+  if (url.match(/\.(mp4|webm|ogg)(\?|$)/i)) {
+    return {
+      type: 'direct',
+      videoId: '',
+      thumbnailUrl: '',
+      embedUrl: url,
+    };
+  }
+
   return null;
 }
 
@@ -64,6 +89,9 @@ function ProductCard({ product, onClick }: { product: Product; onClick: () => vo
       whileHover={{ y: -4 }}
       className="group cursor-pointer"
       onClick={onClick}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => { if (e.key === 'Enter') onClick(); }}
     >
       <div className="relative mb-2 overflow-hidden rounded-xl bg-gray-50 dark:bg-[#141414]">
         <div
@@ -107,6 +135,146 @@ function ProductCard({ product, onClick }: { product: Product; onClick: () => vo
   );
 }
 
+/** Native video player component — plays .mp4/.webm directly */
+function NativeVideoPlayer({ src, poster }: { src: string; poster?: string }) {
+  const [playing, setPlaying] = useState(false);
+  const [muted, setMuted] = useState(true);
+  const videoRef = useState<HTMLVideoElement | null>(null)[0];
+
+  return (
+    <div className="relative w-full h-full">
+      {!playing ? (
+        <button
+          className="absolute inset-0 z-10 flex items-center justify-center bg-black/40 backdrop-blur-[2px] w-full h-full cursor-pointer"
+          onClick={() => { setPlaying(true); setTimeout(() => videoRef?.play(), 100); }}
+        >
+          <div className="flex flex-col items-center gap-3">
+            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm border border-white/30 transition-transform hover:scale-110">
+              <Play className="h-7 w-7 fill-white text-white ml-1" />
+            </div>
+            <span className="text-xs font-medium text-white/90 uppercase tracking-widest">Tap to Play</span>
+          </div>
+        </button>
+      ) : (
+        <button
+          className="absolute bottom-3 right-3 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm hover:bg-black/70 transition-colors"
+          onClick={() => setMuted(!muted)}
+        >
+          {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+        </button>
+      )}
+      <video
+        ref={(el) => { if (el) { (videoRef as unknown) = el; } }}
+        src={src}
+        poster={poster}
+        className="w-full h-full object-cover"
+        playsInline
+        muted={muted}
+        loop
+        controls={playing}
+      />
+    </div>
+  );
+}
+
+/** YouTube video player — shows thumbnail first, plays iframe on tap */
+function YouTubePlayer({ videoId, thumbnailUrl }: { videoId: string; thumbnailUrl: string }) {
+  const [playing, setPlaying] = useState(false);
+
+  return (
+    <div className="relative w-full h-full bg-black">
+      {playing ? (
+        <iframe
+          src={`https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&autoplay=1&mute=0&controls=1&showinfo=0&fs=1`}
+          className="absolute inset-0 w-full h-full"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+          allowFullScreen
+          title="Product video"
+          style={{ border: 0 }}
+        />
+      ) : (
+        <button
+          className="relative w-full h-full flex items-center justify-center cursor-pointer group/vid"
+          onClick={() => setPlaying(true)}
+        >
+          <img
+            src={thumbnailUrl}
+            alt="Video thumbnail"
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-black/30 group-hover/vid:bg-black/40 transition-colors" />
+          <div className="relative z-10 flex flex-col items-center gap-3">
+            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-red-600 shadow-lg shadow-red-600/30 transition-transform group-hover/vid:scale-110">
+              <Play className="h-7 w-7 fill-white text-white ml-1" />
+            </div>
+            <span className="text-xs font-medium text-white/90 uppercase tracking-widest">Tap to Play</span>
+          </div>
+        </button>
+      )}
+    </div>
+  );
+}
+
+/** Instagram video player — shows a clean thumbnail + play button, opens embed on tap */
+function InstagramPlayer({ videoId }: { videoId: string }) {
+  const [playing, setPlaying] = useState(false);
+  const [thumbnail, setThumbnail] = useState<string | null>(null);
+
+  // Try to get a thumbnail from Instagram oEmbed
+  useEffect(() => {
+    fetch(`/api/video-thumbnail?url=${encodeURIComponent(`https://www.instagram.com/reel/${videoId}/`)}`)
+      .then(r => r.json())
+      .then(data => { if (data.thumbnail) setThumbnail(data.thumbnail); })
+      .catch(() => {});
+  }, [videoId]);
+
+  return (
+    <div className="relative w-full h-full bg-gradient-to-br from-purple-900/40 via-gray-900/60 to-pink-900/40">
+      {playing ? (
+        <div className="relative w-full h-full">
+          <iframe
+            src={`https://www.instagram.com/reel/${videoId}/embed/`}
+            className="absolute inset-0 w-full h-full scale-125 origin-center"
+            allow="autoplay; clipboard-write; encrypted-media"
+            allowFullScreen
+            title="Product video"
+            style={{ border: 0, pointerEvents: 'auto' }}
+          />
+          <button
+            className="absolute top-2 right-2 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-black/60 text-white backdrop-blur-sm hover:bg-black/80 transition-colors"
+            onClick={() => setPlaying(false)}
+          >
+            <X className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      ) : (
+        <button
+          className="relative w-full h-full flex items-center justify-center cursor-pointer group/vid"
+          onClick={() => setPlaying(true)}
+        >
+          {thumbnail && (
+            <img
+              src={thumbnail}
+              alt="Video thumbnail"
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+          )}
+          <div className={cn(
+            "absolute inset-0 transition-colors",
+            thumbnail ? "bg-black/25 group-hover/vid:bg-black/40" : ""
+          )} />
+          <div className="relative z-10 flex flex-col items-center gap-3">
+            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-pink-500 shadow-lg shadow-purple-500/30 transition-transform group-hover/vid:scale-110">
+              <Play className="h-7 w-7 fill-white text-white ml-1" />
+            </div>
+            <span className="text-xs font-medium text-white/90 uppercase tracking-widest">Tap to Play</span>
+          </div>
+        </button>
+      )}
+    </div>
+  );
+}
+
 function ProductDetailContent({ product }: { product: Product }) {
   const { navigateToShop, navigateToProduct } = useUIStore();
   const addItem = useCartStore((s) => s.addItem);
@@ -125,13 +293,12 @@ function ProductDetailContent({ product }: { product: Product }) {
   const [quantity, setQuantity] = useState(1);
   const [addedFeedback, setAddedFeedback] = useState(false);
   const [arOpen, setArOpen] = useState(false);
-  const [videoHovered, setVideoHovered] = useState(false);
 
-  // Build slide gallery: images + video as a selectable slide
-  const videoEmbed = useMemo(() => product.videoUrl ? getEmbedUrl(product.videoUrl) : null, [product.videoUrl]);
-  const totalSlides = product.images.length + (videoEmbed ? 1 : 0);
-  const isVideoSlide = videoEmbed ? selectedSlide === product.images.length : false;
-  const hasGallery = totalSlides > 1 || videoEmbed ? true : false;
+  // Parse video URL
+  const videoInfo = useMemo(() => product.videoUrl ? parseVideoUrl(product.videoUrl) : null, [product.videoUrl]);
+  const totalSlides = product.images.length + (videoInfo ? 1 : 0);
+  const isVideoSlide = videoInfo ? selectedSlide === product.images.length : false;
+  const hasGallery = totalSlides > 1 || videoInfo ? true : false;
 
   const displayPrice = product.salePrice ?? product.price;
   const hasMultipleColors = product.colors.length > 1;
@@ -183,7 +350,7 @@ function ProductDetailContent({ product }: { product: Product }) {
             transition={{ duration: 0.3 }}
             className="relative overflow-hidden rounded-xl bg-gray-50 dark:bg-[#141414]"
           >
-            {/* Image or placeholder */}
+            {/* Image slide */}
             {!isVideoSlide && (
               product.images[selectedSlide] ? (
                 <div
@@ -196,33 +363,22 @@ function ProductDetailContent({ product }: { product: Product }) {
                 </div>
               )
             )}
-            {/* Video slide - embedded inline */}
-            {isVideoSlide && videoEmbed && (
-              <div
-                className="aspect-[3/4] w-full flex items-center justify-center bg-black"
-                onMouseEnter={() => setVideoHovered(true)}
-                onMouseLeave={() => setVideoHovered(false)}
-              >
-                {videoEmbed.type === 'iframe' ? (
-                  <iframe
-                    src={videoHovered ? videoEmbed.srcAuto : videoEmbed.src}
-                    className="w-full h-full"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                    title="Product video"
-                  />
-                ) : (
-                  <video
-                    src={videoEmbed.src}
-                    className="w-full h-full object-contain"
-                    playsInline
-                    muted={false}
-                    controls
-                    autoPlay
-                  />
+
+            {/* Video slide — native player, no links */}
+            {isVideoSlide && videoInfo && (
+              <div className="aspect-[3/4] w-full overflow-hidden">
+                {videoInfo.type === 'direct' && (
+                  <NativeVideoPlayer src={videoInfo.embedUrl} />
+                )}
+                {videoInfo.type === 'youtube' && (
+                  <YouTubePlayer videoId={videoInfo.videoId} thumbnailUrl={videoInfo.thumbnailUrl} />
+                )}
+                {videoInfo.type === 'instagram' && (
+                  <InstagramPlayer videoId={videoInfo.videoId} />
                 )}
               </div>
             )}
+
             {/* Badges */}
             <div className="absolute top-4 left-4 flex flex-col gap-2">
               {product.isNew && (
@@ -241,15 +397,6 @@ function ProductDetailContent({ product }: { product: Product }) {
                 </Badge>
               )}
             </div>
-            {/* Hover play hint on video slide */}
-            {isVideoSlide && !videoHovered && (
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className="flex items-center gap-2 rounded-full bg-black/60 px-5 py-2.5 backdrop-blur-sm">
-                  <Play className="h-5 w-5 fill-white text-white" />
-                  <span className="text-xs font-medium text-white">Hover to play</span>
-                </div>
-              </div>
-            )}
           </motion.div>
 
           {/* Gallery Strip */}
@@ -276,19 +423,27 @@ function ProductDetailContent({ product }: { product: Product }) {
                   />
                 </button>
               ))}
-              {/* Video thumbnail - always visible if video exists */}
-              {videoEmbed && (
+              {/* Video thumbnail in gallery strip */}
+              {videoInfo && (
                 <button
                   onClick={() => setSelectedSlide(product.images.length)}
                   className={cn(
-                    'relative h-20 w-16 flex-shrink-0 overflow-hidden rounded-lg transition-all flex flex-col items-center justify-center gap-0.5 bg-gray-100 dark:bg-[#1A1A1A]',
+                    'relative h-20 w-16 flex-shrink-0 overflow-hidden rounded-lg transition-all',
                     isVideoSlide
                       ? 'ring-2 ring-[#d79c4a] ring-offset-2 ring-offset-white dark:ring-offset-[#0A0A0A]'
                       : 'ring-1 ring-border opacity-60 hover:opacity-100 hover:ring-2 hover:ring-[#d79c4a]'
                   )}
                 >
-                  <Film className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-[7px] text-muted-foreground font-medium leading-none">Video</span>
+                  {videoInfo.thumbnailUrl ? (
+                    <img src={videoInfo.thumbnailUrl} alt="Video" className="h-full w-full object-cover" />
+                  ) : (
+                    <div className="h-full w-full bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">
+                      <Play className="h-4 w-4 fill-white text-white" />
+                    </div>
+                  )}
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                    <Play className="h-3.5 w-3.5 fill-white text-white drop-shadow-md" />
+                  </div>
                 </button>
               )}
             </div>
