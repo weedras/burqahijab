@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { AnnouncementBar } from '@/components/announcement-bar';
 import { Header } from '@/components/header';
 import { HeroSection } from '@/components/hero-section';
@@ -28,6 +28,7 @@ import { CareersPage } from '@/components/pages/careers-page';
 import { WishlistPage } from '@/components/pages/wishlist-page';
 import { CheckoutPage } from '@/components/checkout-page';
 import { useUIStore } from '@/stores/ui-store';
+import { useProductStore } from '@/stores/product-store';
 
 const contentPages = [
   'faq',
@@ -92,6 +93,16 @@ export default function Home() {
       document.title = PAGE_TITLES[viewMode] || DEFAULT_TITLE;
     }
   }, [viewMode, selectedProduct]);
+
+  // Invalidate product store cache when leaving admin (products may have changed)
+  const invalidateProductStore = useProductStore((s) => s.invalidate);
+  const prevViewModeRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (prevViewModeRef.current === 'admin' && viewMode !== 'admin') {
+      invalidateProductStore();
+    }
+    prevViewModeRef.current = viewMode;
+  }, [viewMode, invalidateProductStore]);
 
   // Secret keyboard shortcut to open admin: Ctrl+Shift+A
   useEffect(() => {

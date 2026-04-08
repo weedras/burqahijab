@@ -190,6 +190,10 @@ export function AdminProducts() {
       toast.error('Product name is required');
       return;
     }
+    if (!form.price || form.price <= 0) {
+      toast.error('Price is required');
+      return;
+    }
     setSaving(true);
     try {
       const url = editingProduct
@@ -200,6 +204,7 @@ export function AdminProducts() {
       const payload = {
         ...form,
         slug: form.slug || generateSlug(form.name),
+        description: form.description || form.name,
         fabricCare: form.fabricCare || null,
         shipReturn: form.shipReturn || null,
         salePrice: form.salePrice || null,
@@ -214,13 +219,16 @@ export function AdminProducts() {
         body: JSON.stringify(payload),
       });
 
-      if (!res.ok) throw new Error('Failed to save');
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || 'Failed to save');
+      }
 
       toast.success(editingProduct ? 'Product updated!' : 'Product created!');
       setDialogOpen(false);
       fetchProducts();
-    } catch {
-      toast.error('Failed to save product');
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to save product');
     } finally {
       setSaving(false);
     }
