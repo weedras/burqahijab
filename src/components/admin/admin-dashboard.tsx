@@ -789,6 +789,23 @@ export function AdminDashboard() {
 
   // ─── Loading state ─────────────────────────────────────────────────────
 
+  const [initializing, setInitializing] = useState(false);
+
+  const handleInitializeData = async () => {
+    if (!confirm('Are you sure you want to initialize sample data? This will clear existing products and collections.')) return;
+    setInitializing(true);
+    try {
+      const res = await adminFetch('/api/admin/seed', { method: 'POST' });
+      if (!res.ok) throw new Error('Failed to initialize');
+      toast.success('Store initialized successfully!');
+      fetchDashboard(true);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Initialization failed');
+    } finally {
+      setInitializing(false);
+    }
+  };
+
   if (loading) return <DashboardSkeleton />;
   if (!data) return null;
 
@@ -818,6 +835,16 @@ export function AdminDashboard() {
             </p>
           </div>
           <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleInitializeData}
+              disabled={initializing}
+              className="bg-amber-50 border-amber-200 text-amber-700 hover:bg-amber-100 dark:bg-amber-950/20 dark:border-amber-900/50 dark:text-amber-400 gap-2"
+            >
+              {initializing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Database className="h-4 w-4" />}
+              {initializing ? 'Initializing...' : 'Initialize Store Data'}
+            </Button>
             <Badge
               variant="outline"
               className="text-[11px] font-medium border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 px-2.5 py-1 hidden sm:inline-flex"
