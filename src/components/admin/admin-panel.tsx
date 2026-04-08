@@ -16,6 +16,7 @@ import {
   LogOut,
   KeyRound,
   Sparkles,
+  Settings,
 } from 'lucide-react';
 import {
   Dialog,
@@ -39,6 +40,7 @@ import { AdminCollections } from './admin-collections';
 import { AdminCategories } from './admin-categories';
 import { AdminTestimonials } from './admin-testimonials';
 import { AdminStorefront } from './admin-storefront';
+import { AdminSettings } from './admin-settings';
 import { AdminLogin } from './admin-login';
 
 const navItems: { id: AdminSection; label: string; icon: React.ReactNode }[] = [
@@ -49,6 +51,7 @@ const navItems: { id: AdminSection; label: string; icon: React.ReactNode }[] = [
   { id: 'categories', label: 'Categories', icon: <FolderTree className="h-5 w-5" /> },
   { id: 'testimonials', label: 'Testimonials', icon: <MessageSquareQuote className="h-5 w-5" /> },
   { id: 'storefront', label: 'Storefront', icon: <Sparkles className="h-5 w-5" /> },
+  { id: 'settings', label: 'Settings', icon: <Settings className="h-5 w-5" /> },
 ];
 
 export function AdminPanel() {
@@ -215,6 +218,8 @@ export function AdminPanel() {
         return <AdminTestimonials />;
       case 'storefront':
         return <AdminStorefront />;
+      case 'settings':
+        return <AdminSettings />;
       default:
         return <AdminDashboard />;
     }

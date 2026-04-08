@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Minus, Plus, Heart, ShoppingBag, Star, Truck, Shield, RotateCcw, Play, Film, X } from 'lucide-react';
+import { ArrowLeft, Minus, Plus, Heart, ShoppingBag, Star, Truck, Shield, RotateCcw, Play, Film } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
@@ -16,20 +16,22 @@ import { cn } from '@/lib/utils';
 import { ARViewModal, ARViewButton } from '@/components/ar-view';
 import type { Product } from '@/types';
 
-/** Convert a video URL into an embeddable URL */
-function getEmbedUrl(url: string): { type: 'iframe' | 'video'; src: string } | null {
+/** Convert a video URL into an embeddable URL (paused by default) */
+function getEmbedUrl(url: string): { type: 'iframe' | 'video'; src: string; srcAuto: string } | null {
   if (!url) return null;
-  // YouTube watch URL
   const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/);
-  if (ytMatch) return { type: 'iframe', src: `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=0&rel=0` };
-  // YouTube Shorts
+  if (ytMatch) {
+    const base = `https://www.youtube.com/embed/${ytMatch[1]}?rel=0&modestbranding=1`;
+    return { type: 'iframe', src: `${base}&autoplay=0&mute=1`, srcAuto: `${base}&autoplay=1&mute=0` };
+  }
   const ytShortMatch = url.match(/youtube\.com\/shorts\/([\w-]+)/);
-  if (ytShortMatch) return { type: 'iframe', src: `https://www.youtube.com/embed/${ytShortMatch[1]}?autoplay=0&rel=0` };
-  // Instagram Reel
+  if (ytShortMatch) {
+    const base = `https://www.youtube.com/embed/${ytShortMatch[1]}?rel=0`;
+    return { type: 'iframe', src: `${base}&autoplay=0&mute=1`, srcAuto: `${base}&autoplay=1&mute=0` };
+  }
   const igMatch = url.match(/instagram\.com\/(?:reel|p)\/([\w-]+)/);
-  if (igMatch) return { type: 'iframe', src: `https://www.instagram.com/reel/${igMatch[1]}/embed/` };
-  // Direct video file
-  if (url.match(/\.(mp4|webm|ogg)(\?|$)/i)) return { type: 'video', src: url };
+  if (igMatch) return { type: 'iframe', src: `https://www.instagram.com/reel/${igMatch[1]}/embed/`, srcAuto: `https://www.instagram.com/reel/${igMatch[1]}/embed/` };
+  if (url.match(/\.(mp4|webm|ogg)(\?|$)/i)) return { type: 'video', src: url, srcAuto: url };
   return null;
 }
 
@@ -119,11 +121,18 @@ function ProductDetailContent({ product }: { product: Product }) {
   const [selectedSize, setSelectedSize] = useState(() =>
     product.sizes.includes('M') ? 'M' : (product.sizes[0] || 'One Size')
   );
-  const [selectedImage, setSelectedImage] = useState(0);
+  const [selectedSlide, setSelectedSlide] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [addedFeedback, setAddedFeedback] = useState(false);
   const [arOpen, setArOpen] = useState(false);
-  const [videoOpen, setVideoOpen] = useState(false);
+  const [videoHovered, setVideoHovered] = useState(false);
+  const videoRef = useState<HTMLIFrameElement | HTMLVideoElement | null>(null);
+
+  // Build slide gallery: images + video as a selectable slide
+  const videoEmbed = useMemo(() => product.videoUrl ? getEmbedUrl(product.videoUrl) : null, [product.videoUrl]);
+  const totalSlides = product.images.length + (videoEmbed ? 1 : 0);
+  const isVideoSlide = videoEmbed ? selectedSlide === product.images.length : false;
+  const hasGallery = totalSlides > 1 || videoEmbed ? true : false;
 
   const displayPrice = product.salePrice ?? product.price;
   const hasMultipleColors = product.colors.length > 1;
@@ -165,25 +174,58 @@ function ProductDetailContent({ product }: { product: Product }) {
     <div className="mx-auto max-w-7xl px-4 pb-20 pt-2 sm:px-6 lg:px-8">
       {/* Product Grid */}
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-5 lg:gap-12">
-        {/* Left Column - Images */}
+        {/* Left Column - Images & Video */}
         <div className="lg:col-span-3 space-y-3">
-          {/* Main Image */}
+          {/* Main Media Area */}
           <motion.div
-            key={selectedImage}
+            key={selectedSlide}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.3 }}
             className="relative overflow-hidden rounded-xl bg-gray-50 dark:bg-[#141414]"
           >
-            <div
-              className="aspect-[3/4] w-full bg-cover bg-center"
-              style={{
-                backgroundImage: product.images[selectedImage]
-                  ? `url('${product.images[selectedImage]}')`
-                  : undefined,
-                backgroundColor: product.images[selectedImage] ? undefined : '#1A1A1A',
-              }}
-            />
+            {/* Image or placeholder */}
+            {!isVideoSlide && (
+              product.images[selectedSlide] ? (
+                <div
+                  className="aspect-[3/4] w-full bg-cover bg-center"
+                  style={{ backgroundImage: `url('${product.images[selectedSlide]}')` }}
+                />
+              ) : (
+                <div className="aspect-[3/4] w-full flex items-center justify-center bg-[#1A1A1A]">
+                  <Film className="h-12 w-12 text-muted-foreground opacity-30" />
+                </div>
+              )
+            )}
+            {/* Video slide - embedded inline */}
+            {isVideoSlide && videoEmbed && (
+              <div
+                className="aspect-[3/4] w-full flex items-center justify-center bg-black"
+                onMouseEnter={() => setVideoHovered(true)}
+                onMouseLeave={() => setVideoHovered(false)}
+              >
+                {videoEmbed.type === 'iframe' ? (
+                  <iframe
+                    ref={(el) => { videoRef(el); }}
+                    src={videoHovered ? videoEmbed.srcAuto : videoEmbed.src}
+                    className="w-full h-full"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    title="Product video"
+                  />
+                ) : (
+                  <video
+                    ref={(el) => { videoRef(el); }}
+                    src={videoEmbed.src}
+                    className="w-full h-full object-contain"
+                    playsInline
+                    muted={false}
+                    controls
+                    autoPlay
+                  />
+                )}
+              </div>
+            )}
             {/* Badges */}
             <div className="absolute top-4 left-4 flex flex-col gap-2">
               {product.isNew && (
@@ -202,79 +244,28 @@ function ProductDetailContent({ product }: { product: Product }) {
                 </Badge>
               )}
             </div>
-          </motion.div>
-
-          {/* Video play button on main image */}
-          {product.videoUrl && getEmbedUrl(product.videoUrl) && (
-            <button
-              onClick={() => setVideoOpen(true)}
-              className="absolute bottom-4 left-4 flex items-center gap-2 rounded-full bg-black/70 px-4 py-2 text-white backdrop-blur-sm transition-all hover:bg-black/90 hover:scale-105 z-10"
-              aria-label="Play video"
-            >
-              <Play className="h-4 w-4 fill-white" />
-              <span className="text-xs font-medium">Watch Video</span>
-            </button>
-          )}
-
-          {/* Video Modal */}
-          {videoOpen && product.videoUrl && (() => {
-            const embed = getEmbedUrl(product.videoUrl);
-            if (!embed) return null;
-            return (
-              <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-4" onClick={() => setVideoOpen(false)}>
-                <div className="relative w-full max-w-3xl" onClick={(e) => e.stopPropagation()}>
-                  <button
-                    onClick={() => setVideoOpen(false)}
-                    className="absolute -top-10 right-0 flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
-                    aria-label="Close video"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
-                  <div className="overflow-hidden rounded-xl bg-black">
-                    {embed.type === 'iframe' ? (
-                      <iframe
-                        src={embed.src}
-                        className="aspect-video w-full"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                        title="Product video"
-                      />
-                    ) : (
-                      <video
-                        src={embed.src}
-                        controls
-                        autoPlay
-                        className="aspect-video w-full"
-                      />
-                    )}
-                  </div>
+            {/* Hover play hint on video slide */}
+            {isVideoSlide && !videoHovered && (
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div className="flex items-center gap-2 rounded-full bg-black/60 px-5 py-2.5 backdrop-blur-sm">
+                  <Play className="h-5 w-5 fill-white text-white" />
+                  <span className="text-xs font-medium text-white">Hover to play</span>
                 </div>
               </div>
-            );
-          })()}
+            )}
+          </motion.div>
 
-          {/* Gallery: thumbnails + video button */}
-          {(product.videoUrl && getEmbedUrl(product.videoUrl) ? true : false) || product.images.length > 1 ? (
+          {/* Gallery Strip */}
+          {hasGallery && (
             <div className="flex gap-3">
-              {/* Video thumbnail in gallery */}
-              {product.videoUrl && getEmbedUrl(product.videoUrl) && (
-                <button
-                  onClick={() => setVideoOpen(true)}
-                  className="relative h-20 w-16 flex-shrink-0 overflow-hidden rounded-lg ring-1 ring-border transition-all hover:ring-2 hover:ring-[#d79c4a] flex flex-col items-center justify-center gap-0.5 bg-gray-100 dark:bg-[#1A1A1A]"
-                >
-                  <Film className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-[7px] text-muted-foreground font-medium leading-none">Video</span>
-                </button>
-              )}
-
               {/* Image thumbnails */}
               {product.images.map((_, idx) => (
                 <button
                   key={idx}
-                  onClick={() => setSelectedImage(idx)}
+                  onClick={() => setSelectedSlide(idx)}
                   className={cn(
                     'relative h-20 w-16 overflow-hidden rounded-lg transition-all',
-                    selectedImage === idx
+                    selectedSlide === idx && !isVideoSlide
                       ? 'ring-2 ring-[#d79c4a] ring-offset-2 ring-offset-white dark:ring-offset-[#0A0A0A]'
                       : 'ring-1 ring-border opacity-60 hover:opacity-100'
                   )}
@@ -288,8 +279,23 @@ function ProductDetailContent({ product }: { product: Product }) {
                   />
                 </button>
               ))}
+              {/* Video thumbnail - always visible if video exists */}
+              {videoEmbed && (
+                <button
+                  onClick={() => setSelectedSlide(product.images.length)}
+                  className={cn(
+                    'relative h-20 w-16 flex-shrink-0 overflow-hidden rounded-lg transition-all flex flex-col items-center justify-center gap-0.5 bg-gray-100 dark:bg-[#1A1A1A]',
+                    isVideoSlide
+                      ? 'ring-2 ring-[#d79c4a] ring-offset-2 ring-offset-white dark:ring-offset-[#0A0A0A]'
+                      : 'ring-1 ring-border opacity-60 hover:opacity-100 hover:ring-2 hover:ring-[#d79c4a]'
+                  )}
+                >
+                  <Film className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-[7px] text-muted-foreground font-medium leading-none">Video</span>
+                </button>
+              )}
             </div>
-          ) : null}
+          )}
         </div>
 
         {/* Right Column - Product Info */}

@@ -10,6 +10,7 @@ import {
   MessageCircle,
   Twitter,
   Youtube,
+  Globe,
 } from 'lucide-react';
 import { useUIStore } from '@/stores/ui-store';
 
@@ -156,6 +157,31 @@ export function Footer() {
     navigateHome,
     navigateToAbout,
   } = useUIStore();
+
+  const [socialLinks, setSocialLinks] = useState<Array<{ label: string; icon: React.ComponentType<{ className?: string }>; href: string }>>([
+    { label: 'Instagram', icon: Instagram, href: 'https://instagram.com/burqahijab' },
+    { label: 'Facebook', icon: Facebook, href: 'https://facebook.com' },
+    { label: 'Twitter', icon: Twitter, href: 'https://twitter.com' },
+    { label: 'Youtube', icon: Youtube, href: 'https://youtube.com' },
+  ]);
+
+  // Fetch social links from settings API
+  useEffect(() => {
+    fetch('/api/settings')
+      .then((res) => res.json())
+      .then((data) => {
+        const links: Array<{ label: string; icon: React.ComponentType<{ className?: string }>; href: string }> = [];
+        if (data.instagramUrl) links.push({ label: 'Instagram', icon: Instagram, href: data.instagramUrl });
+        if (data.facebookUrl) links.push({ label: 'Facebook', icon: Facebook, href: data.facebookUrl });
+        if (data.tiktokUrl) links.push({ label: 'TikTok', icon: Globe, href: data.tiktokUrl });
+        if (data.twitterUrl) links.push({ label: 'Twitter', icon: Twitter, href: data.twitterUrl });
+        if (data.youtubeUrl) links.push({ label: 'Youtube', icon: Youtube, href: data.youtubeUrl });
+        if (links.length > 0) setSocialLinks(links);
+      })
+      .catch(() => {
+        // Keep defaults on error
+      });
+  }, []);
 
   const [showBackToTop, setShowBackToTop] = useState(false);
 

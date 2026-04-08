@@ -131,3 +131,15 @@ model Order {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 }
+
+model SiteSettings {
+  id               String   @id @default("main")
+  facebookUrl      String   @default("")
+  instagramUrl     String   @default("https://instagram.com/burqahijab")
+  tiktokUrl        String   @default("")
+  twitterUrl       String   @default("")
+  youtubeUrl       String   @default("")
+  whatsappNumber   String   @default("")
+  whatsappMessage  String   @default("")
+  updatedAt        DateTime @updatedAt
+}
