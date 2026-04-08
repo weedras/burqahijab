@@ -2,18 +2,19 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Lock, Loader2, ShieldCheck, ArrowLeft, KeyRound, Eye, EyeOff, CheckCircle2 } from 'lucide-react';
+import { Lock, Loader2, ShieldCheck, ArrowLeft, KeyRound, Eye, EyeOff, CheckCircle2, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
 interface AdminLoginProps {
   onSuccess: () => void;
+  onBack: () => void;
 }
 
 type View = 'login' | 'forgot' | 'forgot-step2' | 'success';
 
-export function AdminLogin({ onSuccess }: AdminLoginProps) {
+export function AdminLogin({ onSuccess, onBack }: AdminLoginProps) {
   const [view, setView] = useState<View>('login');
 
   // Login state
@@ -116,7 +117,15 @@ export function AdminLogin({ onSuccess }: AdminLoginProps) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
+    <div className="relative min-h-screen flex items-center justify-center bg-background p-4">
+      {/* Back to Store button — top right */}
+      <button
+        onClick={onBack}
+        className="absolute top-5 right-5 flex items-center gap-2 rounded-xl border border-border bg-card/80 backdrop-blur-sm px-4 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:border-foreground/20 transition-all duration-200 shadow-sm hover:shadow-md"
+      >
+        <X className="h-4 w-4" />
+        Back to Store
+      </button>
       <motion.div
         initial={{ opacity: 0, y: 20, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}

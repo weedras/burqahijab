@@ -132,3 +132,24 @@ Stage Summary:
 - Featured products grid now professionally aligned with consistent card heights
 - ESLint: 0 errors, 0 warnings
 - Dev server compiles successfully
+
+---
+Task ID: 5
+Agent: Main Agent
+Task: Fix admin password + add back button to login page
+
+Work Log:
+- **ROOT CAUSE**: The `.env` file was missing `ADMIN_PASSWORD` and `RESET_CODE` entries entirely. The `getAdminPassword()` function returned `null`, causing a 500 error on every login attempt.
+- Added `ADMIN_PASSWORD=&#@Burqa00189` and `RESET_CODE=bhq-reset-2024` to `.env`
+- Verified password match via direct string comparison test
+- Confirmed API login returns 200 for correct password, 401 for wrong password
+- Added "Back to Store" button (✕ icon) to admin login page:
+  - New `onBack` prop on `AdminLogin` component
+  - Styled button: top-right corner, rounded-xl border, card bg with backdrop blur, hover effects
+  - Connected to `navigateHome()` via `admin-panel.tsx` prop passing
+
+Stage Summary:
+- Admin password now works correctly — `ADMIN_PASSWORD` was missing from `.env`
+- Added `RESET_CODE` for password recovery flow
+- Login page now has a "Back to Store" button in the top-right corner
+- ESLint: 0 errors, 0 warnings

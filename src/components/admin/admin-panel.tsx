@@ -194,7 +194,7 @@ export function AdminPanel() {
 
   // Show login if not authenticated
   if (!isAuthenticated) {
-    return <AdminLogin onSuccess={handleLoginSuccess} />;
+    return <AdminLogin onSuccess={handleLoginSuccess} onBack={navigateHome} />;
   }
 
   const handleNavClick = (section: AdminSection) => {
