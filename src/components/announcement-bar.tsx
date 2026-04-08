@@ -85,10 +85,10 @@ export function AnnouncementBar() {
 
           <button
             onClick={handleDismiss}
-            className="absolute right-2 flex h-5 w-5 items-center justify-center rounded-full transition-colors hover:bg-white/10"
+            className="absolute right-0 top-0 flex h-full w-10 items-center justify-center transition-colors hover:bg-white/20 active:bg-white/30"
             aria-label="Dismiss announcement"
           >
-            <X className="h-3 w-3 text-white/80" />
+            <X className="h-4 w-4 text-white" />
           </button>
         </motion.div>
       )}
