@@ -1,13 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Heart, Trash2, ShoppingBag } from 'lucide-react';
+import { ArrowLeft, Heart, Trash2, ShoppingBag, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { products } from '@/data/seed';
 import { useWishlistStore } from '@/stores/wishlist-store';
 import { useCartStore } from '@/stores/cart-store';
 import { useUIStore } from '@/stores/ui-store';
+import { useProductStore } from '@/stores/product-store';
 import { formatPrice } from '@/lib/format';
 import { cn } from '@/lib/utils';
 
@@ -16,8 +16,11 @@ export function WishlistPage() {
   const toggleItem = useWishlistStore((s) => s.toggleItem);
   const addItem = useCartStore((s) => s.addItem);
   const { navigateHome, navigateToProduct } = useUIStore();
+  const { products: dbProducts, initialize } = useProductStore();
 
-  const wishlistedProducts = products.filter((p) => wishlistItems.includes(p.id));
+  useEffect(() => { initialize(); }, [initialize]);
+
+  const wishlistedProducts = dbProducts.filter((p) => wishlistItems.includes(p.id));
 
   return (
     <motion.div
@@ -93,13 +96,18 @@ export function WishlistPage() {
                     className="relative mb-3 cursor-pointer overflow-hidden rounded-xl bg-gray-50 dark:bg-[#141414]"
                     onClick={() => navigateToProduct(product)}
                   >
-                    <div
-                      className="aspect-[3/4] w-full bg-cover bg-center transition-transform duration-500 group-hover:scale-[1.03]"
-                      style={{
-                        backgroundImage: product.images[0] ? `url('${product.images[0]}')` : undefined,
-                        backgroundColor: product.images[0] ? undefined : '#1A1A1A',
-                      }}
-                    />
+                    {product.images[0] ? (
+                      <img
+                        src={product.images[0]}
+                        alt={product.name}
+                        className="aspect-[3/4] w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className="aspect-[3/4] w-full flex items-center justify-center bg-gray-100 dark:bg-[#1A1A1A]">
+                        <Package className="h-8 w-8 text-gray-300 dark:text-gray-600" />
+                      </div>
+                    )}
                     {/* Remove button */}
                     <button
                       onClick={(e) => {

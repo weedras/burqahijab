@@ -154,15 +154,15 @@ export function SearchDialog() {
                     >
                       {/* Thumbnail */}
                       <div className="relative h-14 w-11 flex-shrink-0 overflow-hidden rounded-lg bg-gray-50 dark:bg-[#141414]">
-                        <div
-                          className="h-full w-full bg-cover bg-center"
-                          style={{
-                            backgroundImage: product.images[0]
-                              ? `url('${product.images[0]}')`
-                              : undefined,
-                            backgroundColor: product.images[0] ? undefined : '#1A1A1A',
-                          }}
-                        />
+                        {product.images[0] ? (
+                          <img
+                            src={product.images[0]}
+                            alt={product.name}
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          <div className="h-full w-full bg-gray-200 dark:bg-[#1A1A1A]" />
+                        )}
                       </div>
                       {/* Info */}
                       <div className="flex-1 min-w-0">

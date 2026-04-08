@@ -20,6 +20,33 @@ interface ProductState {
   invalidate: () => void;
 }
 
+const MAX_RETRIES = 3;
+const FETCH_TIMEOUT = 10000; // 10 seconds
+
+async function fetchWithTimeout(url: string, timeout: number): Promise<Response> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeout);
+  try {
+    const res = await fetch(url, { signal: controller.signal });
+    return res;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+function parseArrayField<T = string>(value: unknown): T[] {
+  if (Array.isArray(value)) return value;
+  if (typeof value === 'string') {
+    try {
+      const parsed = JSON.parse(value);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  }
+  return [];
+}
+
 export const useProductStore = create<ProductState>()((set, get) => ({
   products: [],
   categories: [],
@@ -28,31 +55,37 @@ export const useProductStore = create<ProductState>()((set, get) => ({
   error: null,
   initialized: false,
 
-  fetchProducts: async () => {
-    set({ loading: true, error: null });
+  fetchProducts: async (attempt = 1) => {
+    if (attempt === 1) set({ loading: true, error: null });
     try {
-      const res = await fetch('/api/products');
-      if (!res.ok) throw new Error('Failed to fetch products');
+      const res = await fetchWithTimeout('/api/products', FETCH_TIMEOUT);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
-      // Ensure images/colors/sizes are arrays (handle both string and array)
       const products: Product[] = (Array.isArray(data) ? data : data.products || []).map((p: Record<string, unknown>) => ({
         ...p,
-        images: typeof p.images === 'string' ? JSON.parse(p.images) : (Array.isArray(p.images) ? p.images : []),
-        colors: typeof p.colors === 'string' ? JSON.parse(p.colors) : (Array.isArray(p.colors) ? p.colors : []),
-        sizes: typeof p.sizes === 'string' ? JSON.parse(p.sizes) : (Array.isArray(p.sizes) ? p.sizes : []),
+        images: parseArrayField<string>(p.images),
+        colors: parseArrayField<string>(p.colors),
+        sizes: parseArrayField<string>(p.sizes),
       }));
-      set({ products, loading: false });
+      set({ products, loading: false, error: null });
     } catch (err) {
-      console.error('Failed to fetch products:', err);
-      set({ error: 'Failed to load products', loading: false });
+      console.error(`Failed to fetch products (attempt ${attempt}/${MAX_RETRIES}):`, err);
+      if (attempt < MAX_RETRIES) {
+        // Retry with exponential backoff
+        setTimeout(() => {
+          get().fetchProducts(attempt + 1);
+        }, attempt * 1000);
+      } else {
+        set({ error: 'Failed to load products', loading: false });
+      }
     }
   },
 
   fetchCategoriesAndCollections: async () => {
     try {
       const [catRes, colRes] = await Promise.all([
-        fetch('/api/categories'),
-        fetch('/api/collections'),
+        fetchWithTimeout('/api/categories', FETCH_TIMEOUT),
+        fetchWithTimeout('/api/collections', FETCH_TIMEOUT),
       ]);
 
       const categories = catRes.ok ? await catRes.json() : [];
@@ -65,10 +98,11 @@ export const useProductStore = create<ProductState>()((set, get) => ({
   },
 
   initialize: async () => {
-    if (get().initialized) return;
-    set({ initialized: true });
+    // Allow re-initialization if previous attempt failed
+    if (get().initialized && !get().error) return;
+    set({ initialized: true, error: null });
     await Promise.all([
-      get().fetchProducts(),
+      get().fetchProducts(1),
       get().fetchCategoriesAndCollections(),
     ]);
   },
@@ -83,14 +117,12 @@ export const useProductStore = create<ProductState>()((set, get) => ({
 
   getProductsByCategorySlug: (slug) => {
     const { products, categories } = get();
-    // Find category by slug (or parent slug match)
     const categoryIds = new Set<string>();
     for (const cat of categories) {
       if (cat.slug === slug) {
         categoryIds.add(cat.id);
       }
       if (cat.parentId) {
-        // Check parent
         const parent = categories.find((c) => c.id === cat.parentId);
         if (parent && parent.slug === slug) {
           categoryIds.add(cat.id);
@@ -98,7 +130,6 @@ export const useProductStore = create<ProductState>()((set, get) => ({
       }
     }
     if (categoryIds.size === 0) return products;
-    // Match products that have these category IDs in their categories array
     return products.filter((p) => {
       const productCats = (p as Record<string, unknown>).categories as Array<{ id: string }> | undefined;
       if (!productCats || !Array.isArray(productCats)) return false;
@@ -116,7 +147,7 @@ export const useProductStore = create<ProductState>()((set, get) => ({
   },
 
   invalidate: () => {
-    set({ initialized: false });
+    set({ initialized: false, error: null, loading: false });
     get().initialize();
   },
 }));

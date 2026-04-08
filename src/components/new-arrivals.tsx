@@ -2,8 +2,9 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Heart, ShoppingCart, Shield, Star, Truck, Package, Play } from 'lucide-react';
+import { Heart, ShoppingCart, Shield, Star, Truck, Package, Play, Loader2, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useProductStore } from '@/stores/product-store';
 import { useCartStore } from '@/stores/cart-store';
 import { useWishlistStore, isProductWishlisted } from '@/stores/wishlist-store';
@@ -40,7 +41,8 @@ function FeaturedProductCard({ product, index }: { product: Product; index: numb
   const toggleItem = useWishlistStore((s) => s.toggleItem);
   const wishlistItems = useWishlistStore((s) => s.items);
   const { navigateToProduct } = useUIStore();
-  const hasImage = product.images.length > 0 && product.images[0];
+  const [imgError, setImgError] = useState(false);
+  const hasImage = product.images.length > 0 && product.images[0] && !imgError;
 
   return (
     <motion.div
@@ -65,6 +67,7 @@ function FeaturedProductCard({ product, index }: { product: Product; index: numb
               alt={product.name}
               className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
               loading="lazy"
+              onError={() => setImgError(true)}
             />
           ) : product.videoUrl ? (
             <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900">
@@ -185,9 +188,25 @@ function FeaturedProductCard({ product, index }: { product: Product; index: numb
   );
 }
 
+function ProductCardSkeleton() {
+  return (
+    <div className="flex flex-col h-full overflow-hidden rounded-2xl bg-white dark:bg-[#141414] border border-gray-200/80 dark:border-gray-800/60">
+      <div className="relative aspect-[3/4] bg-gray-200 dark:bg-[#1a1a1a]">
+        <Skeleton className="absolute inset-0 w-full h-full rounded-none" />
+      </div>
+      <div className="flex flex-col flex-1 px-4 pt-3.5 pb-4">
+        <Skeleton className="h-4 w-3/4 mb-2" />
+        <Skeleton className="h-4 w-1/2 mb-3" />
+        <div className="flex-1" />
+        <Skeleton className="h-5 w-20" />
+      </div>
+    </div>
+  );
+}
+
 export function NewArrivals() {
   const { navigateToShop } = useUIStore();
-  const { products: dbProducts, initialize } = useProductStore();
+  const { products: dbProducts, loading, error, initialize, invalidate } = useProductStore();
 
   useEffect(() => { initialize(); }, [initialize]);
 
@@ -195,6 +214,7 @@ export function NewArrivals() {
   const newArrivalsList = useMemo(() => dbProducts.filter((p) => p.isNew).slice(0, 4), [dbProducts]);
 
   const displayProducts = featuredProducts.length > 0 ? featuredProducts : newArrivalsList;
+  const isLoading = loading && dbProducts.length === 0;
 
   return (
     <>
@@ -217,28 +237,58 @@ export function NewArrivals() {
             <p className="section-subtitle mt-4">Handpicked favorites just for you</p>
           </motion.div>
 
+          {/* Loading Skeletons */}
+          {isLoading && (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 lg:gap-5 items-start">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <ProductCardSkeleton key={i} />
+              ))}
+            </div>
+          )}
+
+          {/* Error State */}
+          {!isLoading && error && (
+            <div className="flex flex-col items-center justify-center gap-4 py-12">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#d79c4a]/10">
+                <RefreshCw className="h-6 w-6 text-[#d79c4a]" />
+              </div>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Unable to load products</p>
+              <button
+                onClick={() => invalidate()}
+                className="flex items-center gap-2 rounded-lg bg-[#d79c4a] px-4 py-2 text-xs font-bold uppercase tracking-wider text-[#0A0A0A] hover:bg-[#c48a35] transition-colors"
+              >
+                <RefreshCw className="h-3.5 w-3.5" />
+                Try Again
+              </button>
+            </div>
+          )}
+
           {/* Product Grid — aligned with equal-height cards */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 lg:gap-5 items-start">
-            {displayProducts.map((product, index) => (
-              <FeaturedProductCard key={product.id} product={product} index={index} />
-            ))}
-          </div>
+          {!isLoading && !error && displayProducts.length > 0 && (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 lg:gap-5 items-start">
+              {displayProducts.map((product, index) => (
+                <FeaturedProductCard key={product.id} product={product} index={index} />
+              ))}
+            </div>
+          )}
 
           {/* View All CTA */}
-          <motion.div
-            initial={{ y: 20, opacity: 0 }}
-            whileInView={{ y: 0, opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="text-center mt-10 sm:mt-14"
-          >
-            <button
-              onClick={() => navigateToShop()}
-              className="btn-primary border border-gray-900 text-gray-900 bg-transparent hover:bg-gray-900 hover:text-white dark:border-white dark:text-white dark:hover:bg-white dark:hover:text-gray-900"
+          {!isLoading && !error && (
+            <motion.div
+              initial={{ y: 20, opacity: 0 }}
+              whileInView={{ y: 0, opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="text-center mt-10 sm:mt-14"
             >
-              View All Products
-            </button>
-          </motion.div>
+              <button
+                onClick={() => navigateToShop()}
+                className="btn-primary border border-gray-900 text-gray-900 bg-transparent hover:bg-gray-900 hover:text-white dark:border-white dark:text-white dark:hover:bg-white dark:hover:text-gray-900"
+              >
+                View All Products
+              </button>
+            </motion.div>
+          )}
         </div>
       </section>
 

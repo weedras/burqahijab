@@ -11,6 +11,7 @@ import {
   Heart,
   ShoppingCart,
   Loader2,
+  Package,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -72,8 +73,10 @@ function ProductCardShop({ product }: { product: Product }) {
   const wishlistItems = useWishlistStore((s) => s.items);
   const { navigateToProduct } = useUIStore();
   const [hovered, setHovered] = useState(false);
+  const [imgError, setImgError] = useState(false);
 
   const price = product.salePrice ?? product.price;
+  const hasImage = product.images.length > 0 && product.images[0] && !imgError;
 
   return (
     <motion.div
@@ -94,13 +97,21 @@ function ProductCardShop({ product }: { product: Product }) {
       <div
         className="relative mb-3 overflow-hidden rounded-xl bg-gray-50 dark:bg-[#141414]"
       >
-        <div
-          className="aspect-[3/4] w-full bg-cover bg-center transition-transform duration-500 group-hover:scale-[1.03]"
-          style={{
-            backgroundImage: product.images[0] ? `url('${product.images[0]}')` : undefined,
-            backgroundColor: product.images[0] ? undefined : '#1A1A1A',
-          }}
-        />
+        {hasImage ? (
+          <img
+            src={product.images[0]}
+            alt={product.name}
+            className="aspect-[3/4] w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+            loading="lazy"
+            onError={() => setImgError(true)}
+          />
+        ) : (
+          <div
+            className="aspect-[3/4] w-full flex items-center justify-center bg-gray-100 dark:bg-[#1A1A1A]"
+          >
+            <Package className="h-8 w-8 text-gray-300 dark:text-gray-600" />
+          </div>
+        )}
         {/* Badges */}
         <div className="absolute top-3 left-3 flex flex-col gap-1.5">
           {product.isNew && (

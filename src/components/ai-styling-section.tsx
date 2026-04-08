@@ -1,20 +1,27 @@
 'use client';
 
+import { useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { ShoppingCart } from 'lucide-react';
+import { ShoppingCart, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { products } from '@/data/seed';
 import { useCartStore } from '@/stores/cart-store';
 import { useUIStore } from '@/stores/ui-store';
+import { useProductStore } from '@/stores/product-store';
 import { formatPrice } from '@/lib/format';
-
-const aiProducts = products.filter((p) =>
-  ['prod-1', 'prod-5', 'prod-11'].includes(p.id)
-);
 
 export function AIStylingSection() {
   const addItem = useCartStore((s) => s.addItem);
   const { navigateToProduct } = useUIStore();
+  const { products: dbProducts, initialize } = useProductStore();
+
+  useEffect(() => { initialize(); }, [initialize]);
+
+  // Show top-rated or featured products as AI suggestions
+  const aiProducts = useMemo(() => {
+    return dbProducts
+      .filter((p) => p.isFeatured || p.isBestSeller || p.rating > 4)
+      .slice(0, 3);
+  }, [dbProducts]);
 
   return (
     <section className="relative px-4 py-20 sm:px-6 lg:px-8">
@@ -28,12 +35,10 @@ export function AIStylingSection() {
             transition={{ duration: 0.7 }}
             className="relative overflow-hidden rounded-2xl"
           >
-            <div
-              className="aspect-[3/4] w-full bg-cover bg-center"
-              style={{
-                backgroundImage: "url('/images/products/abaya-2.png')",
-                backgroundColor: '#1A1A1A',
-              }}
+            <img
+              src="/images/products/abaya-2.png"
+              alt="AI-Curated Styling"
+              className="aspect-[3/4] w-full object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
             <div className="absolute bottom-6 left-6">
@@ -62,25 +67,25 @@ export function AIStylingSection() {
 
             {/* Product Thumbnails */}
             <div className="mt-8 space-y-4">
-              {aiProducts.map((product) => (
+              {aiProducts.length > 0 ? aiProducts.map((product) => (
                 <div
                   key={product.id}
                   className="group flex items-center gap-4 rounded-xl border border-border bg-surface p-3 transition-colors hover:border-[#d79c4a]/30 hover:bg-elevated cursor-pointer"
                   onClick={() => navigateToProduct(product)}
                 >
                   {/* Thumbnail */}
-                  <div
-                    className="h-16 w-14 flex-shrink-0 overflow-hidden rounded-lg bg-background"
-                  >
-                    <div
-                      className="h-full w-full bg-cover bg-center"
-                      style={{
-                        backgroundImage: product.images[0]
-                          ? `url('${product.images[0]}')`
-                          : undefined,
-                        backgroundColor: product.images[0] ? undefined : '#1A1A1A',
-                      }}
-                    />
+                  <div className="h-16 w-14 flex-shrink-0 overflow-hidden rounded-lg bg-background">
+                    {product.images[0] ? (
+                      <img
+                        src={product.images[0]}
+                        alt={product.name}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <div className="h-full w-full flex items-center justify-center bg-gray-100 dark:bg-[#1A1A1A]">
+                        <Package className="h-4 w-4 text-gray-400" />
+                      </div>
+                    )}
                   </div>
 
                   {/* Info */}
@@ -111,7 +116,11 @@ export function AIStylingSection() {
                     <ShoppingCart className="h-3.5 w-3.5" />
                   </Button>
                 </div>
-              ))}
+              )) : (
+                <div className="py-8 text-center text-sm text-muted-foreground">
+                  Loading curated picks...
+                </div>
+              )}
             </div>
           </motion.div>
         </div>

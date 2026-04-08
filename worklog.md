@@ -253,3 +253,43 @@ Stage Summary:
 - Free shipping threshold, shipping cost, and return window are now dynamic across: checkout, cart drawer, trust signals, FAQ, shipping page, returns page
 - WhatsApp number shows in footer and contact page with clickable link
 - Phone number, email, address, business hours all show in footer with proper icons and links
+
+---
+Task ID: 9
+Agent: Main Agent
+Task: Fix "no photos are shown" bug and improve product image reliability
+
+Work Log:
+- **Root cause analysis**: Investigated multiple possible causes for missing product photos:
+  - Verified all 51 image files exist in public/images/ and public/uploads/products/
+  - Verified API returns correct data (13 products with valid image arrays)
+  - Verified database has correct image paths stored as JSON strings
+  - Discovered product store's `initialize()` had no retry logic and would silently fail
+- **Fixed product store** (`src/stores/product-store.ts`):
+  - Added fetch timeout (10 seconds) using AbortController
+  - Added retry logic (3 attempts with exponential backoff: 1s, 2s, 3s)
+  - Fixed `initialize()` to allow re-initialization if previous attempt failed
+  - Added `fetchWithTimeout` utility and `parseArrayField` helper
+- **Added loading/error states** to `new-arrivals.tsx`:
+  - Loading skeletons (4 product card placeholders) while products fetch
+  - Error state with "Unable to load products" message and "Try Again" button
+  - View All CTA hidden during loading/error states
+- **Added image error handling** across ALL product image components:
+  - `new-arrivals.tsx` FeaturedProductCard: Added `imgError` state + `onError` handler
+  - `shop-page.tsx` ProductCardShop: Changed from `background-image` CSS to `<img>` with `onError` + fallback
+  - `product-detail.tsx` ProductCard: Changed from `background-image` to `<img>` with error handling
+  - `product-detail.tsx` main gallery: Changed from `background-image` to `<img>` with per-image error tracking via Set
+  - `product-detail.tsx` gallery thumbnails: Changed from `background-image` to `<img>` with error tracking
+  - `search-dialog.tsx` search results: Changed from `background-image` to `<img>` with fallback
+  - `wishlist-page.tsx`: Changed from `background-image` to `<img>` with fallback
+- **Critical bug fix**: `wishlist-page.tsx` was still importing from `@/data/seed` instead of `useProductStore`. Updated to use product store + added `initialize()` call
+- **Critical bug fix**: `ai-styling-section.tsx` was still importing from `@/data/seed` with hardcoded seed IDs (`prod-1`, `prod-5`, `prod-11`). Updated to use product store, showing featured/best-selling products from database
+- All image fallbacks show a Package icon on dark background when images fail to load
+- ESLint: 0 errors, 0 warnings
+
+Stage Summary:
+- Product images now have proper error handling with graceful fallbacks across all components
+- Product store retries failed fetches up to 3 times with exponential backoff
+- Featured Products section shows loading skeletons and error state with retry button
+- Fixed 2 critical bugs where wishlist and AI styling sections were still using hardcoded seed data instead of database
+- All `background-image` CSS approaches replaced with `<img>` tags for better error handling and accessibility

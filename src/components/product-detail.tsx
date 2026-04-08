@@ -84,6 +84,7 @@ function StarRating({ rating, count }: { rating: number; count: number }) {
 }
 
 function ProductCard({ product, onClick }: { product: Product; onClick: () => void }) {
+  const [imgError, setImgError] = useState(false);
   return (
     <motion.div
       whileHover={{ y: -4 }}
@@ -94,13 +95,22 @@ function ProductCard({ product, onClick }: { product: Product; onClick: () => vo
       onKeyDown={(e) => { if (e.key === 'Enter') onClick(); }}
     >
       <div className="relative mb-2 overflow-hidden rounded-xl bg-gray-50 dark:bg-[#141414]">
-        <div
-          className="aspect-[3/4] w-full bg-cover bg-center transition-transform duration-500 group-hover:scale-[1.03]"
-          style={{
-            backgroundImage: product.images[0] ? `url('${product.images[0]}')` : undefined,
-            backgroundColor: product.images[0] ? undefined : '#1A1A1A',
-          }}
-        />
+        {product.images[0] && !imgError ? (
+          <img
+            src={product.images[0]}
+            alt={product.name}
+            className="aspect-[3/4] w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+            loading="lazy"
+            onError={() => setImgError(true)}
+          />
+        ) : (
+          <div
+            className="aspect-[3/4] w-full flex items-center justify-center"
+            style={{ backgroundColor: '#1A1A1A' }}
+          >
+            <Film className="h-8 w-8 text-gray-600" />
+          </div>
+        )}
         {product.isNew && (
           <span className="absolute top-2 left-2 rounded-full bg-[#d79c4a] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[#0A0A0A] ">
             New
@@ -243,6 +253,7 @@ function ProductDetailContent({ product }: { product: Product }) {
   const toggleItem = useWishlistStore((s) => s.toggleItem);
   const wishlistItems = useWishlistStore((s) => s.items);
   const { products: dbProducts, collections: dbCollections, initialize } = useProductStore();
+  const [imgErrors, setImgErrors] = useState<Set<number>>(new Set());
 
   useEffect(() => { initialize(); }, [initialize]);
 
@@ -356,10 +367,12 @@ function ProductDetailContent({ product }: { product: Product }) {
           >
             {/* Image slide */}
             {!isVideoSlide && (
-              product.images[selectedSlide] ? (
-                <div
-                  className="aspect-[3/4] w-full bg-cover bg-center"
-                  style={{ backgroundImage: `url('${product.images[selectedSlide]}')` }}
+              product.images[selectedSlide] && !imgErrors.has(selectedSlide) ? (
+                <img
+                  src={product.images[selectedSlide]}
+                  alt={product.name}
+                  className="aspect-[3/4] w-full object-cover"
+                  onError={() => setImgErrors((prev) => new Set(prev).add(selectedSlide))}
                 />
               ) : (
                 <div className="aspect-[3/4] w-full flex items-center justify-center bg-[#1A1A1A]">
@@ -421,7 +434,7 @@ function ProductDetailContent({ product }: { product: Product }) {
           {hasGallery && (
             <div className="flex gap-3">
               {/* Image thumbnails */}
-              {product.images.map((_, idx) => (
+              {product.images.map((img, idx) => (
                 <button
                   key={idx}
                   onClick={() => setSelectedSlide(idx)}
@@ -432,13 +445,16 @@ function ProductDetailContent({ product }: { product: Product }) {
                       : 'ring-1 ring-border opacity-60 hover:opacity-100'
                   )}
                 >
-                  <div
-                    className="h-full w-full bg-cover bg-center"
-                    style={{
-                      backgroundImage: product.images[idx] ? `url('${product.images[idx]}')` : undefined,
-                      backgroundColor: product.images[idx] ? undefined : '#1A1A1A',
-                    }}
-                  />
+                  {img && !imgErrors.has(idx) ? (
+                    <img
+                      src={img}
+                      alt={`${product.name} ${idx + 1}`}
+                      className="h-full w-full object-cover"
+                      onError={() => setImgErrors((prev) => new Set(prev).add(idx))}
+                    />
+                  ) : (
+                    <div className="h-full w-full bg-gray-200 dark:bg-[#1A1A1A]" />
+                  )}
                 </button>
               ))}
               {/* Video thumbnail in gallery strip */}
