@@ -48,14 +48,17 @@ function ProductCard({ product }: { product: Product }) {
       whileInView={{ y: 0, opacity: 1 }}
       viewport={{ once: true, margin: '-20px' }}
       transition={{ duration: 0.5 }}
-      className="group bg-white dark:bg-[#141414] rounded-lg overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500"
+      className="group bg-white dark:bg-[#141414] rounded-lg overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 cursor-pointer"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      onClick={() => navigateToProduct(product)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => { if (e.key === 'Enter') navigateToProduct(product); }}
     >
       {/* Image */}
       <div
-        className="relative aspect-[3/4] overflow-hidden bg-gray-100 dark:bg-[#1A1A1A] cursor-pointer"
-        onClick={() => navigateToProduct(product)}
+        className="relative aspect-[3/4] overflow-hidden bg-gray-100 dark:bg-[#1A1A1A]"
       >
         <div
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 bg-cover bg-center"
@@ -115,8 +118,7 @@ function ProductCard({ product }: { product: Product }) {
       {/* Info */}
       <div className="p-4 pb-0">
         <h3
-          className="text-sm font-medium text-gray-900 dark:text-white line-clamp-2 cursor-pointer hover:text-[#d79c4a] transition-colors"
-          onClick={() => navigateToProduct(product)}
+          className="text-sm font-medium text-gray-900 dark:text-white line-clamp-2 hover:text-[#d79c4a] transition-colors"
         >
           {product.name}
         </h3>

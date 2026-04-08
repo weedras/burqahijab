@@ -10,6 +10,7 @@ import {
   ChevronDown,
   Heart,
   ShoppingCart,
+  Loader2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,6 +18,7 @@ import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Separator } from '@/components/ui/separator';
 import { Slider } from '@/components/ui/slider';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
@@ -80,14 +82,17 @@ function ProductCardShop({ product }: { product: Product }) {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 20 }}
       transition={{ duration: 0.3 }}
-      className="group"
+      className="group cursor-pointer"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      onClick={() => navigateToProduct(product)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => { if (e.key === 'Enter') navigateToProduct(product); }}
     >
       {/* Image */}
       <div
-        className="relative mb-3 cursor-pointer overflow-hidden rounded-xl bg-gray-50 dark:bg-[#141414]"
-        onClick={() => navigateToProduct(product)}
+        className="relative mb-3 overflow-hidden rounded-xl bg-gray-50 dark:bg-[#141414]"
       >
         <div
           className="aspect-[3/4] w-full bg-cover bg-center transition-transform duration-500 group-hover:scale-[1.03]"
@@ -150,7 +155,7 @@ function ProductCardShop({ product }: { product: Product }) {
         </motion.div>
       </div>
       {/* Info */}
-      <div className="cursor-pointer" onClick={() => navigateToProduct(product)}>
+      <div>
         <h3 className="line-clamp-2 text-sm font-medium leading-tight text-gray-900 dark:text-white ">
           {product.name}
         </h3>
@@ -356,11 +361,13 @@ function FilterSidebar({
 
 export function ShopPage() {
   const { selectedCategory, selectedCollection, navigateHome, navigateToProduct } = useUIStore();
-  const { products: dbProducts, categories: dbCategories, collections: dbCollections, initialize } = useProductStore();
+  const { products: dbProducts, categories: dbCategories, collections: dbCollections, loading, initialize } = useProductStore();
   const [filters, setFilters] = useState<FilterState>(DEFAULT_FILTERS);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   useEffect(() => { initialize(); }, [initialize]);
+
+  const isDataLoading = loading || (!useProductStore.getState().initialized && dbProducts.length === 0);
 
   // Dynamic category options from the store (top-level only)
   const CATEGORY_OPTIONS = useMemo(() => {
@@ -653,12 +660,27 @@ export function ShopPage() {
             </AnimatePresence>
 
             {/* Product Count */}
-            <p className="mb-6 text-sm text-gray-500 dark:text-gray-400 ">
-              Showing {filteredProducts.length} of {baseProducts.length} products
-            </p>
+            {!isDataLoading && (
+              <p className="mb-6 text-sm text-gray-500 dark:text-gray-400 ">
+                Showing {filteredProducts.length} of {baseProducts.length} products
+              </p>
+            )}
+
+            {/* Loading Skeleton */}
+            {isDataLoading && (
+              <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4 pb-20 md:pb-4">
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <div key={i} className="space-y-3">
+                    <Skeleton className="aspect-[3/4] w-full rounded-xl" />
+                    <Skeleton className="h-4 w-3/4" />
+                    <Skeleton className="h-4 w-1/2" />
+                  </div>
+                ))}
+              </div>
+            )}
 
             {/* Product Grid */}
-            {filteredProducts.length > 0 ? (
+            {!isDataLoading && filteredProducts.length > 0 ? (
               <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4 pb-20 md:pb-4">
                 <AnimatePresence>
                   {filteredProducts.map((product) => (
@@ -666,7 +688,7 @@ export function ShopPage() {
                   ))}
                 </AnimatePresence>
               </div>
-            ) : (
+            ) : !isDataLoading && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}

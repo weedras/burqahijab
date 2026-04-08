@@ -126,7 +126,6 @@ function ProductDetailContent({ product }: { product: Product }) {
   const [addedFeedback, setAddedFeedback] = useState(false);
   const [arOpen, setArOpen] = useState(false);
   const [videoHovered, setVideoHovered] = useState(false);
-  const videoRef = useState<HTMLIFrameElement | HTMLVideoElement | null>(null);
 
   // Build slide gallery: images + video as a selectable slide
   const videoEmbed = useMemo(() => product.videoUrl ? getEmbedUrl(product.videoUrl) : null, [product.videoUrl]);
@@ -206,7 +205,6 @@ function ProductDetailContent({ product }: { product: Product }) {
               >
                 {videoEmbed.type === 'iframe' ? (
                   <iframe
-                    ref={(el) => { videoRef(el); }}
                     src={videoHovered ? videoEmbed.srcAuto : videoEmbed.src}
                     className="w-full h-full"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -215,7 +213,6 @@ function ProductDetailContent({ product }: { product: Product }) {
                   />
                 ) : (
                   <video
-                    ref={(el) => { videoRef(el); }}
                     src={videoEmbed.src}
                     className="w-full h-full object-contain"
                     playsInline
